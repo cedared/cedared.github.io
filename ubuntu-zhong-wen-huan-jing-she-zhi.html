@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>ubuntu 中文环境设置</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Just Be Free! </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="/category/misc.html">misc</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/ubuntu-zhong-wen-huan-jing-she-zhi.html" rel="bookmark"
+           title="Permalink to ubuntu 中文环境设置">ubuntu 中文环境设置</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:36:41">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->      <h1 id="ubuntu_">ubuntu 中文环境设置</h1>
+
+<h2 id="">一、安装中文语言包</h2>
+
+<pre><code>    sudo apt-get install language-pack-zh-hans
+</code></pre>
+
+<h2 id="locale">二、配置自己想要的locale。</h2>
+
+<pre><code>    普遍推荐的方法是拷贝所有ubuntu支持的locale到自己的配置文件里，然后编辑。
+
+    cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local
+
+    vi /var/lib/locales/supported.d/local，用dd命令删啊删，只留下en_系列和zh_系列, 或者其他你要的locale
+
+    rm /var/lib/locales/supported.d/en 
+
+    rm /var/lib/locales/supported.d/zh 这两个文件跟local一样功能，也可以把en系列写在en文件里，zh系列写在zh文件里，分类方便而已。我既然都写在local里，这两个就用不着了。
+</code></pre>
+
+<h2 id="locale">三、重新生成locale支持文件</h2>
+
+<pre><code>    locale-gen --purge
+
+    这一步会将/usr/lib/locale/里面的locale支持文件删掉，重新生成。如果设置的locale没有生成过，或者设置的时候拼写错误，在这个目录找不到同名的支持文件就会提示No such file了。
+</code></pre>
+
+<h2 id="locale">四、配置locale环境。</h2>
+
+<pre><code>    敲locale把输出的那些环境变量拷贝到/etc/environment里面，自己手工修改。可以设的值就是/var/lib/locales/supported.d/local里面包括的值，或者生成在/usr/lib/locale/里面的文件夹名称。
+</code></pre>
+
+<h2 id="">五、退出重新登录。</h2>
+
+<pre><code>    再敲locale看看，没错误了。
+</code></pre>
+
+<h2 id="man">六、安装中文man</h2>
+
+<pre><code>    sudo apt-get install manpages-zh
+</code></pre>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>

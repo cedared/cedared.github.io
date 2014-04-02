@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>在cent6上分别安装python2.7和python3</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Just Be Free! </a></h1>
+                <nav><ul>
+                    <li class="active"><a href="/category/misc.html">misc</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html" rel="bookmark"
+           title="Permalink to 在cent6上分别安装python2.7和python3">在cent6上分别安装python2.7和python3</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:37:16">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->      <h1 id="cent6python27python3">在cent6上分别安装python2.7和python3</h1>
+
+<p>cent6上自带的python版本为2.6.6.你可以在系统中手动升级到2.7或者3.但是你要注意的是,在升级过程中你不能破坏系统原有的2.6.6,因为包括yum在内的一些核心组件是依赖于2.6.6的.如果你破坏了了2.6.6,这些组件就会报错.</p>
+
+<p>下面我们来看下如何在系统中安装Python2.7和python3而不对2.6.6进行更改.安装2.7和3的步骤除了虚拟环境的文件名不同,其他都差不多.有人反馈说这个方法在centos5.8上依然适用,但是我没测试过.请用root权限或者sudo处理下列命令.</p>
+
+<h2 id="">安装开发工具</h2>
+
+<p>为了编译python包我们首先必须安装开发工具和一些依赖库.严格来说这些依赖库在编译python的过程中并不全是必须的,但是少了这些程序,你的Python程序的作用就会大打折扣.</p>
+
+<pre><code>    # yum groupinstall "Development tools"
+    # yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel
+</code></pre>
+
+<h2 id="python">下载安装python</h2>
+
+<p>在make的时候我们使用altinstall而非install,这样避免了在安装过程中,新python中的可执行程序被命名为python.可以省去很多不必要的麻烦</p>
+
+<h3 id="python27">下载安装python2.7</h3>
+
+<pre><code>    #wget http://python.org/ftp/python/2.7.3/Python-2.7.3.tar.bz2
+    # tar xf Python-2.7.3.tar.bz2
+    # cd Python-2.7.3
+    # ./configure --prefix=/usr/local
+    # make &amp;&amp; make altinstall
+</code></pre>
+
+<h3 id="python3">下载安装python3</h3>
+
+<pre><code>    # wget http://python.org/ftp/python/3.3.0/Python-3.3.0.tar.bz2
+    # tar xf Python-3.3.0.tar.bz2
+    # cd Python-3.3.0
+    # ./configure --prefix=/usr/local
+    # make &amp;&amp; make altinstall
+</code></pre>
+
+<p>安装完成之后/uer/local/bin中会出现Python2.7和python3,而系统的python版本仍然为2.6.6</p>
+
+<h2 id="distribute">下载安装distribute</h2>
+
+<h3 id="python27distribute">为python2.7下载安装distribute</h3>
+
+<p>distribute 提供了一个从python package index 安装python包的框架.系统中的不同版本的python程序需要安装自己版本的Distribute</p>
+
+<pre><code>    # wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.35.tar.gz
+    # tar xf distribute-0.6.35.tar.gz
+    # cd distribute-0.6.35
+    # python2.7 setup.py install
+</code></pre>
+
+<p>如果你使用python2.7安装python包系统会默认调用/usr/local/bin/easy_install-2.7安装python包,然后将包安装到/usr/local/lib/python2.7/site-packages/中</p>
+
+<h3 id="python3distribute">为python3下载安装distribute</h3>
+
+<pre><code>    # wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.35.tar.gz
+    # tar xf distribute-0.6.35.tar.gz
+    # cd distribute-0.6.35
+    # python3.3 setup.py install
+</code></pre>
+
+<p>如果你使用python3安装python包系统会默认调用/usr/local/bin/easy_install-3安装python包,然后将包安装到/usr/local/lib/python3/site-packages/中</p>
+
+<h2 id="">下一步</h2>
+
+<p>使用多版本的python工作极复杂又极易出错,我强烈推荐使用virturalenv virtualenv是一个让python在类沙盒环境中运行的虚拟唤醒,每个沙盒可以有他自己的python版本及包.当你管理多个项目,每个项目的依赖包又不同时这就会变得相当有用</p>
+
+<h3 id="python27virturalenv">为python2.7下载安装virturalenv</h3>
+
+<pre><code>    # easy_install-2.7 virtualenv
+    # virtualenv-2.7 --distribute someproject
+    New python executable in someproject/bin/python2.7
+    Also creating executable in someproject/bin/python
+    Installing distribute...................done.
+    Installing pip................done.
+    # source someproject/bin/activate
+    (someproject)# python --version
+    Python 2.7.3
+    (someproject)#
+</code></pre>
+
+<h3 id="python3virturalenv">为python3下载安装virturalenv</h3>
+
+<pre><code>    # easy_install-3.3 virtualenv
+    # virtualenv-3.3 --distribute otherproject
+    New python executable in otherproject/bin/python3.3
+    Also creating executable in otherproject/bin/python
+    Installing distribute...................done.
+    Installing pip................done.
+    # source otherproject/bin/activate
+    (otherproject)# python --version
+    Python 3.3.0
+    (otherproject)#
+</code></pre>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
