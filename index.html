@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+        <meta charset="utf-8" />
+        <title>Just Be Free!</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+
+        <!--[if IE]>
+            <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">Just Be Free! </a></h1>
+                <nav><ul>
+                    <li><a href="/category/misc.html">misc</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+
+            <aside id="featured" class="body">
+                <article>
+                    <h1 class="entry-title"><a href="/zai-iis75shang-bu-shu-djangohuan-jing.html">在iis7.5上部署Django环境</a></h1>
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:38:21">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info --><blockquote>
+  <p>终于还是在再一次vps搬家的时候补上了 iis的django配置.又折磨了自己小两天才搞定,这次一定要记住</p>
+</blockquote>
+
+<h2 id="">一.安装环境及数据库</h2>
+
+<p>这部分没啥可说,直接用web Platform installer安装相应内容就好,具体要安装的内容如下:</p>
+
+<ol>
+<li>python</li>
+<li>django</li>
+<li>mysql</li>
+<li>php</li>
+<li>python fastcgi 网关</li>
+<li>以上为必装,其他的自己研究就好</li>
+</ol>
+
+<h2 id="_fastcgi">二. 配置fastcgi</h2>
+
+<p>以下操作需要在cmd中进行</p>
+
+<ol>
+<li><p>安装iis的fastcgi扩展</p>
+
+<pre><code>start /wait %windir%\System32\\PkgMgr.exe /iu:IIS-WebServerRole;IIS-WebServer;IIS-CommonHttpFeatures;IIS-StaticContent;IIS-DefaultDocument;IIS-DirectoryBrowsing;IIS-HttpErrors;IIS-HealthAndDiagnostics;IIS-HttpLogging;IIS-LoggingLibraries;IIS-RequestMonitor;IIS-Security;IIS-RequestFiltering;IIS-HttpCompressionStatic;IIS-WebServerManagementTools;IIS-ManagementConsole;WAS-WindowsActivationService;WAS-ProcessModel;WAS-NetFxEnvironment;WAS-ConfigurationAPI;IIS-CGI
+</code></pre></li>
+<li><p>设置python fastcgi相关配置</p>
+
+<pre><code>%windir%\system32\inetsrv\appcmd set config /section:system.webServer/fastCGI "/+[fullPath='c:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py']"
+</code></pre></li>
+<li><p>设置网站配置</p>
+
+<pre><code>%windir%\system32\inetsrv\appcmd set config /section:system.webServer/handlers "/+[name='Python_via_FastCGI',path='*',verb='*',modules='FastCgiModule',scriptProcessor='c:\Python27\python.exe|C:\Python27\Scripts\wfastcgi.py',resourceType='Unspecified']"
+</code></pre></li>
+<li><p>django程序运行配置</p>
+
+<pre><code>%windir%\system32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='C:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py'].environmentVariables.[name='DJANGO_SETTINGS_MODULE',value='DjangoApplication.settings']" /commit:apphost
+注意 environment后边的配置要根据自己站点更改
+</code></pre></li>
+<li><p>配置Django环境变量 </p>
+
+<pre><code>%windir%\system32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='C:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py'].environmentVariables.[name='PYTHONPATH',value='C:\inetpub\wwwroot\DjangoApplication']" /commit:apphost
+注意 environment后边的配置要根据自己站点更改
+</code></pre></li>
+<li><p>配置fastcgi</p>
+
+<pre><code>%windir%\system32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='C:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py'].environmentVariables.[name='WSGI_HANDLER',value='django.core.handlers.wsgi.WSGIHandler()']" /commit:apphost
+</code></pre></li>
+<li><p>配置iis
+    在iis主配置中选择fastcgi设置,右键python项目点击编辑,监视对文件所做的更改-定位到djangosite下的settings.py文件
+    环境变量下 pythonpath 定位到settings.py上一级目录
+done!</p></li>
+</ol>
+
+<h2 id="_">三. 站点配置部分</h2>
+
+<p>配置过python环境之后,由于django无默认文件,所以直接默认识别站点文件夹,也就导致了该服务器上的其他站点都是默认使用python进行程序处理,为了解决这个问题,我们可以在iis配置-站点配置-处理程序映射-查看已排序的列表 中调整程序映射的优先级.</p>
+
+<hr />
+
+<p>以上 应该就可以了.</p>
+
+<blockquote>
+  <p>环境为Windows server 2008 r2 ;iis 7.5; windows webPlatform installer 4.6 python 2.7.2 django 1.4 </p>
+</blockquote>                </article>
+            </aside><!-- /#featured -->
+                <section id="content" class="body">
+                    <h1>Other articles</h1>
+                    <hr />
+                    <ol id="posts-list" class="hfeed">
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html" rel="bookmark"
+                           title="Permalink to 新技能get,递归下载整站文件">新技能get,递归下载整站文件</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:37:42">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->                <p>wget是linux下命令行的下载工具，功能很强大，虽然我很少用，一般下在一些小东西都是直接用firefox，seamonkey这些浏览器自带的下载功能下载，没有必要用wget或者其他下载工具。但是某些时候却不是浏览器自带的下载功能和一些其他的下载软件所能做的的，这时候就得用wget了。比如如果你想下载一个网页目录下的所有文件，如何做呢？</p>
+
+<pre><code>先介绍几个参数：
+    -c 断点续传（备注：使用断点续传要求服务器支持断点续传）
+    -r 递归下载（目录下的所有文件,包括子目录）
+    -np 递归下载不搜索上层目录
+    -k 把绝对链接转为相对链接这样下载之后的网页方便浏览
+    -L 递归时不进入其他主机
+    -p 下载网页所需要的所有文件。
+
+    比如：#wget -c -r -np -k -L -p http://www.kuqin.com/itman/liyanhong/ 下载酷勤网下面的目录“李彦宏”
+</code></pre>
+                <a class="readmore" href="/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html" rel="bookmark"
+                           title="Permalink to 在cent6上分别安装python2.7和python3">在cent6上分别安装python2.7和python3</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:37:16">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->                <h1 id="cent6python27python3">在cent6上分别安装python2.7和python3</h1>
+
+<p>cent6上自带的python版本为2.6.6.你可以在系统中手动升级到2.7或者3.但是你要注意的是,在升级过程中你不能破坏系统原有的2.6.6,因为包括yum在内的一些核心组件是依赖于2.6.6的.如果你破坏了了2.6.6,这些组件就会报错.</p>
+
+<p>下面我们来看下如何在系统中安装Python2.7和python3而不对2.6.6进行更改.安装2.7和3的步骤除了虚拟环境的文件名不同,其他都差不多.有人反馈说这个方法在centos5.8上依然适用,但是我没测试过.请用root权限或者sudo处理下列命令.</p>
+
+<h2 id="">安装开发工具</h2>
+
+<p>为了编译python包我们首先必须安装开发工具和一些依赖库.严格来说这些依赖库在编译python的过程中并不全是必须的,但是少了这些程序,你的Python程序的作用就会大打折扣.</p>
+
+<pre><code>    # yum groupinstall "Development tools"
+    # yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel
+</code></pre>
+
+<h2 id="python">下载安装python</h2>
+
+<p>在make的时候我们使用altinstall而非install,这样避免了在安装过程中 ...</p>
+                <a class="readmore" href="/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/ubuntu-zhong-wen-huan-jing-she-zhi.html" rel="bookmark"
+                           title="Permalink to ubuntu 中文环境设置">ubuntu 中文环境设置</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:36:41">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->                <h1 id="ubuntu_">ubuntu 中文环境设置</h1>
+
+<h2 id="">一、安装中文语言包</h2>
+
+<pre><code>    sudo apt-get install language-pack-zh-hans
+</code></pre>
+
+<h2 id="locale">二、配置自己想要的locale。</h2>
+
+<pre><code>    普遍推荐的方法是拷贝所有ubuntu支持的locale到自己的配置文件里，然后编辑。
+
+    cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local
+
+    vi /var/lib/locales/supported.d/local，用dd命令删啊删，只留下en_系列和zh_系列, 或者其他你要的locale
+
+    rm /var/lib/locales/supported.d/en 
+
+    rm /var/lib/locales/supported.d/zh 这两个文件跟local一样功能，也可以把en系列写在en文件里，zh系列写在zh文件里 ...</code></pre>
+                <a class="readmore" href="/ubuntu-zhong-wen-huan-jing-she-zhi.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/emacs-shi-yong-auto-complete-bu-quan.html" rel="bookmark"
+                           title="Permalink to Emacs 使用 auto-complete 补全">Emacs 使用 auto-complete 补全</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:36:17">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->                <p>1st 下载 auto-complete
+$wget http://cx4a.org/pub/auto-complete/auto-complete-1.3.1.tar.bz2
+$tar jxvf auto-complete-1.3.1.tar.bz2
+下载后解压到任意目录。</p>
+<p>2nd 安装auto-complete
+$cd auto-complete-1.3.1
+$make
+$make install
+这里会让你选择安装目录，这里输入你自己存放emacs插件的路径即可</p>
+<p>安装完成后会有如下提示
+Successfully installed!</p>
+<p>Add the following code to your .emacs:</p>
+<p>(add-to-list 'load-path "/home/backfire/emacs/auto-complete")
+(require ...</p>
+                <a class="readmore" href="/emacs-shi-yong-auto-complete-bu-quan.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/centos-xia-tian-jia-xin-ying-pan.html" rel="bookmark"
+                           title="Permalink to CentOS 下添加新硬盘">CentOS 下添加新硬盘</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:35:55">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->                <ol>
+<li><p>查看新硬盘</p>
+
+<pre><code>`#fdisk -l`
+
+
+`Disk /dev/xvdb: 32.2 GB, 32212254720 bytes
+255 heads, 63 sectors/track, 3916 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x3aca4f94`
+
+
+新添加的硬盘编号为 `/dev/xvdb`
+</code></pre></li>
+<li><p>硬盘分区</p>
+
+<pre><code>1 ...</code></pre></li></ol>
+                <a class="readmore" href="/centos-xia-tian-jia-xin-ying-pan.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+
+            <li><article class="hentry">
+                <header>
+                    <h1><a href="/2013nian-zhong-ge-ren-pan-dian.html" rel="bookmark"
+                           title="Permalink to 2013年终个人盘点">2013年终个人盘点</a></h1>
+                </header>
+
+                <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2014-04-03T00:35:34">
+                四 03 四月 2014
+        </abbr>
+
+        <address class="vcard author">
+                By <a class="url fn" href="/author/albert-young.html">Albert Young</a>
+        </address>
+<p>In <a href="/category/misc.html">misc</a>. </p>
+
+</footer><!-- /.post-info -->                <h1 id="2013">2013年终个人盘点</h1>
+
+<h2 id="_">一. 年度事件</h2>
+
+<h3 id="1_">1. 生活事件</h3>
+
+<ol>
+<li>生命中最重要的大事之一&#8212;-结婚</li>
+<li>买了房子</li>
+<li>搬家装修买家电</li>
+<li>和老婆摊牌</li>
+<li>老婆进了公立学校</li>
+</ol>
+
+<h3 id="2_">2. 工作事件</h3>
+
+<ol>
+<li>离开快播这个奋斗两年的地方</li>
+<li>进入国康</li>
+<li>xxgqdy电影站</li>
+<li>mucaijia木材站</li>
+</ol>
+
+<h3 id="3_">3. 个人成长事件</h3>
+
+<ol>
+<li>由win平台转到了</li>
+<li>体重稳定在90kg</li>
+<li>从android平台转到了ios平台</li>
+<li>参加了一次创业周末</li>
+<li>工作心态发生变化</li>
+<li>学习方面:产品,python,django,linux</li>
+<li>书籍:&#8221;英雄志&#8221;&#8220;人人都是产品经理&#8221;&#8220;headfirst系列&#8221;</li>
+</ol>
+
+<h2 id="_">二. 个人感悟</h2>
+
+<ol>
+<li>对于爱情有了比较深的感悟,感恩及感谢老婆为我付出的一切.</li>
+<li>通过回答从小挨揍的孩子对性格有什么影响-知乎 这个问题,反思了自己的性格,以及和父亲之间的心结</li>
+<li>通过结婚,深刻感悟了父母之爱,时刻想在孩子前边,不声不响为儿女安排所有,这就是父母之爱</li>
+<li>通过byvoid和程浩的事例,深刻感悟了时间管理的重要性,对自己应该做什么,怎么做进行了思考 ...</li></ol>
+                <a class="readmore" href="/2013nian-zhong-ge-ren-pan-dian.html">read more</a>
+                </div><!-- /.entry-content -->
+            </article></li>
+            </ol><!-- /#posts-list -->
+<p class="paginator">
+    Page 1 / 1
+</p>
+            </section><!-- /#content -->
+        <section id="extras" class="body">
+                <div class="blogroll">
+                        <h2>blogroll</h2>
+                        <ul>
+                            <li><a href="http://getpelican.com/">Pelican</a></li>
+                            <li><a href="http://python.org/">Python.org</a></li>
+                            <li><a href="http://jinja.pocoo.org/">Jinja2</a></li>
+                            <li><a href="#">You can modify those links in your config file</a></li>
+                        </ul>
+                </div><!-- /.blogroll -->
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+
+                            <li><a href="#">You can add links in your config file</a></li>
+                            <li><a href="#">Another social link</a></li>
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
