@@ -94,26 +94,40 @@
         <div id="blog_main_area" class="left col-md-9" count=9>
   <!-- article title -->
   <header>
-      <h1>新技能get,递归下载整站文件</h1>
+      <h1>Virtualenv 使用</h1>
     <small class="fsize13">
             <a href="/category/misc.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="9 articles in this category"><i class="fa fa-dot-circle-o"></i> misc</a>
-      <a href="/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <a href="/virtualenv-shi-yong.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="virtualenv-shi-yong.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
       <span class="label label-default light">四 03 四月 2014</span> 
     </small>
   </header>
 
   <article class='content'>
-    <p>wget是linux下命令行的下载工具，功能很强大，虽然我很少用，一般下在一些小东西都是直接用firefox，seamonkey这些浏览器自带的下载功能下载，没有必要用wget或者其他下载工具。但是某些时候却不是浏览器自带的下载功能和一些其他的下载软件所能做的的，这时候就得用wget了。比如如果你想下载一个网页目录下的所有文件，如何做呢？</p>
+    <h1 id="virtualenv">virtualenv</h1>
 
-<pre><code>先介绍几个参数：
-    -c 断点续传（备注：使用断点续传要求服务器支持断点续传）
-    -r 递归下载（目录下的所有文件,包括子目录）
-    -np 递归下载不搜索上层目录
-    -k 把绝对链接转为相对链接这样下载之后的网页方便浏览
-    -L 递归时不进入其他主机
-    -p 下载网页所需要的所有文件。
+<h2 id="_">一. 安装</h2>
 
-    比如：#wget -c -r -np -k -L -p http://www.kuqin.com/itman/liyanhong/ 下载酷勤网下面的目录“李彦宏”
+<pre><code>    #sudo pip install virtualenv
+</code></pre>
+
+<h2 id="_">二. 配置</h2>
+
+<pre><code>    #sudo virtualenv env1
+</code></pre>
+
+<h2 id="_">三. 激活</h2>
+
+<pre><code>    #source ../env1/bin/active
+</code></pre>
+
+<h2 id="_">四. 删除</h2>
+
+<pre><code>    #virtualenv --clear env1
+</code></pre>
+
+<h2 id="_">五. 退出</h2>
+
+<pre><code>    #deactivate
 </code></pre>
   </article>
 
@@ -121,11 +135,11 @@
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=/xin-ji-neng-getdi-gui-xia-zai-zheng-zhan-wen-jian.html&title=新技能get,递归下载整站文件&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=/virtualenv-shi-yong.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=/virtualenv-shi-yong.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=/virtualenv-shi-yong.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==/virtualenv-shi-yong.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=/virtualenv-shi-yong.html&title=Virtualenv 使用&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
