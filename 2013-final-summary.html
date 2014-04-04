@@ -96,71 +96,95 @@
         <div id="blog_main_area" class="left col-md-9" count=9>
   <!-- article title -->
   <header>
-      <h1>ubuntu 中文环境设置</h1>
+      <h1>2013年终个人盘点</h1>
     <small class="fsize13">
-            <a href="/category/linux.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="5 articles in this category"><i class="fa fa-dot-circle-o"></i> Linux</a>
-      <a href="/ubuntu-zhong-wen-huan-jing-she-zhi.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="ubuntu-zhong-wen-huan-jing-she-zhi.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+            <a href="/category/personal.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="1 article in this category"><i class="fa fa-dot-circle-o"></i> Personal</a>
+      <a href="/2013-final-summary.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="2013-final-summary.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
       <span class="label label-default light">四 03 四月 2014</span> 
     </small>
   </header>
 
   <article class='content'>
-    <h1 id="ubuntu_">ubuntu 中文环境设置</h1>
+    <h1 id="2013">2013年终个人盘点</h1>
 
-<h2 id="">一、安装中文语言包</h2>
+<h2 id="_">一. 年度事件</h2>
 
-<pre><code>    sudo apt-get install language-pack-zh-hans
-</code></pre>
+<h3 id="1_">1. 生活事件</h3>
 
-<h2 id="locale">二、配置自己想要的locale。</h2>
+<ol>
+<li>生命中最重要的大事之一&#8212;-结婚</li>
+<li>买了房子</li>
+<li>搬家装修买家电</li>
+<li>和老婆摊牌</li>
+<li>老婆进了公立学校</li>
+</ol>
 
-<pre><code>    普遍推荐的方法是拷贝所有ubuntu支持的locale到自己的配置文件里，然后编辑。
+<h3 id="2_">2. 工作事件</h3>
 
-    cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local
+<ol>
+<li>离开快播这个奋斗两年的地方</li>
+<li>进入国康</li>
+<li>xxgqdy电影站</li>
+<li>mucaijia木材站</li>
+</ol>
 
-    vi /var/lib/locales/supported.d/local，用dd命令删啊删，只留下en_系列和zh_系列, 或者其他你要的locale
+<h3 id="3_">3. 个人成长事件</h3>
 
-    rm /var/lib/locales/supported.d/en 
+<ol>
+<li>由win平台转到了</li>
+<li>体重稳定在90kg</li>
+<li>从android平台转到了ios平台</li>
+<li>参加了一次创业周末</li>
+<li>工作心态发生变化</li>
+<li>学习方面:产品,python,django,linux</li>
+<li>书籍:&#8221;英雄志&#8221;&#8220;人人都是产品经理&#8221;&#8220;headfirst系列&#8221;</li>
+</ol>
 
-    rm /var/lib/locales/supported.d/zh 这两个文件跟local一样功能，也可以把en系列写在en文件里，zh系列写在zh文件里，分类方便而已。我既然都写在local里，这两个就用不着了。
-</code></pre>
+<h2 id="_">二. 个人感悟</h2>
 
-<h2 id="locale">三、重新生成locale支持文件</h2>
+<ol>
+<li>对于爱情有了比较深的感悟,感恩及感谢老婆为我付出的一切.</li>
+<li>通过回答从小挨揍的孩子对性格有什么影响-知乎 这个问题,反思了自己的性格,以及和父亲之间的心结</li>
+<li>通过结婚,深刻感悟了父母之爱,时刻想在孩子前边,不声不响为儿女安排所有,这就是父母之爱</li>
+<li>通过byvoid和程浩的事例,深刻感悟了时间管理的重要性,对自己应该做什么,怎么做进行了思考.</li>
+<li>回家拜祭了姥爷,解了自己的一个心结</li>
+<li>看了&#8221;致青春&#8221;,对青春的感悟依然是:青春无悔,选择无错.</li>
+<li>工作过程中发现大量的内容都可以在大学的时候学到,但是理论无法结合实践.再次觉得荒废了大量的青春.</li>
+<li>工作心态发生变化,参与经历了一次创业过程之后,加之自身性格中的强烈自信,导致了自己在工作中心态发生较大变化,需要改进.</li>
+</ol>
 
-<pre><code>    locale-gen --purge
+<h2 id="_2014">三. 2014年计划</h2>
 
-    这一步会将/usr/lib/locale/里面的locale支持文件删掉，重新生成。如果设置的locale没有生成过，或者设置的时候拼写错误，在这个目录找不到同名的支持文件就会提示No such file了。
-</code></pre>
-
-<h2 id="locale">四、配置locale环境。</h2>
-
-<pre><code>    敲locale把输出的那些环境变量拷贝到/etc/environment里面，自己手工修改。可以设的值就是/var/lib/locales/supported.d/local里面包括的值，或者生成在/usr/lib/locale/里面的文件夹名称。
-</code></pre>
-
-<h2 id="">五、退出重新登录。</h2>
-
-<pre><code>    再敲locale看看，没错误了。
-</code></pre>
-
-<h2 id="man">六、安装中文man</h2>
-
-<pre><code>    sudo apt-get install manpages-zh
-</code></pre>
+<ol>
+<li>一份自己喜欢的工作</li>
+<li>玩啥么项目</li>
+<li>EHR社区项目</li>
+<li>买车</li>
+<li>养成GTD的习惯</li>
+<li>换台mbp</li>
+<li>家庭角色转变</li>
+<li>15-20本书,加上观后感</li>
+<li>玩明白django</li>
+<li>Treehouse codecademy</li>
+<li>随时增减</li>
+</ol>
   </article>
 
   <div class="divider"><!-- lines divider --></div>
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=/ubuntu-zhong-wen-huan-jing-she-zhi.html&title=ubuntu 中文环境设置&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=/2013-final-summary.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=/2013-final-summary.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=/2013-final-summary.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==/2013-final-summary.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=/2013-final-summary.html&title=2013年终个人盘点&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
   <p class="fsize16"> Tags:
+        <a href="/tag/personal.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> personal</a>
+        <a href="/tag/gtd.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> gtd</a>
   </p>
 
   <hr /><!-- divider -->

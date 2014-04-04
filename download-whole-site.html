@@ -96,55 +96,26 @@
         <div id="blog_main_area" class="left col-md-9" count=9>
   <!-- article title -->
   <header>
-      <h1>ubuntu 中文环境设置</h1>
+      <h1>新技能get√,递归下载整站文件</h1>
     <small class="fsize13">
             <a href="/category/linux.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="5 articles in this category"><i class="fa fa-dot-circle-o"></i> Linux</a>
-      <a href="/ubuntu-zhong-wen-huan-jing-she-zhi.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="ubuntu-zhong-wen-huan-jing-she-zhi.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <a href="/download-whole-site.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="download-whole-site.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
       <span class="label label-default light">四 03 四月 2014</span> 
     </small>
   </header>
 
   <article class='content'>
-    <h1 id="ubuntu_">ubuntu 中文环境设置</h1>
+    <p>wget是linux下命令行的下载工具，功能很强大，虽然我很少用，一般下在一些小东西都是直接用firefox，seamonkey这些浏览器自带的下载功能下载，没有必要用wget或者其他下载工具。但是某些时候却不是浏览器自带的下载功能和一些其他的下载软件所能做的的，这时候就得用wget了。比如如果你想下载一个网页目录下的所有文件，如何做呢？</p>
 
-<h2 id="">一、安装中文语言包</h2>
+<pre><code>先介绍几个参数：
+    -c 断点续传（备注：使用断点续传要求服务器支持断点续传）
+    -r 递归下载（目录下的所有文件,包括子目录）
+    -np 递归下载不搜索上层目录
+    -k 把绝对链接转为相对链接这样下载之后的网页方便浏览
+    -L 递归时不进入其他主机
+    -p 下载网页所需要的所有文件。
 
-<pre><code>    sudo apt-get install language-pack-zh-hans
-</code></pre>
-
-<h2 id="locale">二、配置自己想要的locale。</h2>
-
-<pre><code>    普遍推荐的方法是拷贝所有ubuntu支持的locale到自己的配置文件里，然后编辑。
-
-    cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local
-
-    vi /var/lib/locales/supported.d/local，用dd命令删啊删，只留下en_系列和zh_系列, 或者其他你要的locale
-
-    rm /var/lib/locales/supported.d/en 
-
-    rm /var/lib/locales/supported.d/zh 这两个文件跟local一样功能，也可以把en系列写在en文件里，zh系列写在zh文件里，分类方便而已。我既然都写在local里，这两个就用不着了。
-</code></pre>
-
-<h2 id="locale">三、重新生成locale支持文件</h2>
-
-<pre><code>    locale-gen --purge
-
-    这一步会将/usr/lib/locale/里面的locale支持文件删掉，重新生成。如果设置的locale没有生成过，或者设置的时候拼写错误，在这个目录找不到同名的支持文件就会提示No such file了。
-</code></pre>
-
-<h2 id="locale">四、配置locale环境。</h2>
-
-<pre><code>    敲locale把输出的那些环境变量拷贝到/etc/environment里面，自己手工修改。可以设的值就是/var/lib/locales/supported.d/local里面包括的值，或者生成在/usr/lib/locale/里面的文件夹名称。
-</code></pre>
-
-<h2 id="">五、退出重新登录。</h2>
-
-<pre><code>    再敲locale看看，没错误了。
-</code></pre>
-
-<h2 id="man">六、安装中文man</h2>
-
-<pre><code>    sudo apt-get install manpages-zh
+    比如：#wget -c -r -np -k -L -p http://www.kuqin.com/itman/liyanhong/ 下载酷勤网下面的目录“李彦宏”
 </code></pre>
   </article>
 
@@ -152,15 +123,17 @@
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=/ubuntu-zhong-wen-huan-jing-she-zhi.html&title=ubuntu 中文环境设置&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=/download-whole-site.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=/download-whole-site.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=/download-whole-site.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==/download-whole-site.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=/download-whole-site.html&title=新技能get√,递归下载整站文件&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
   <p class="fsize16"> Tags:
+        <a href="/tag/wget.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> wget</a>
+        <a href="/tag/linux.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> linux</a>
   </p>
 
   <hr /><!-- divider -->
