@@ -283,6 +283,32 @@
 
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
+                    <h4><a href="http://2bapm.com/shi-yong-nginxgunicornvirtualenvsupervisorhe-postgresqlda-jian-djangosheng-chan-huan-jing.html">使用Nginx，Gunicorn，Virtualenv，Supervisor和PostgreSQL搭建Django生产环境</a></h4>
+                  <p><h1>使用Nginx,Gunicorn,Virtualenv,Supervisor和PostgreSQL搭建Django生产环境</h1>
+<p>Django是一个高效，灵活，动态的Web应用开发框架。在Django刚开始流行的时候，大多数推荐的Django运行环境配置都是基于使用mod_wsgi模块的Apache。而近来大家所推荐的关于更高级的Django运行环境配置则更加高效和具有弹性，但同时也更加复杂，使用的工具包括：Nginx, Gunicorn, virtualenv, supervisord和PostgreSQL.
+在这篇文章中我会解释如何在Linux上将这些组件组合起来，成为一个能够运行django的服务器。</p>
+<h2>预置条件：</h2>
+<p>首先我假设你有一台具有Root权限的服务器，我正在使用的Linux发行版是debian7，所以以下的内容也同样适用于Ubuntu或者其他基于Debian的Linux发行版。如果你是在使用基于RPM的Linux发行版（比如说CentOS），你需要用yum替换掉以下命令中提到的apt-get，如果你在使用FreeBSD，你可以使用Ports安装这些组件。</p>
+<p>同样的我也假设你已经将你的域名通过DNS指向了你的服务器IP，而你的域名是example.com。
+升级系统：
+首先我们需要确定我们的系统是否是最新的。</p>
+<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
+    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">upgradePostgreSQL</span>
+</pre></div>
+
+
+<h2>PostgreSQL</h2>
+<p>在基于Debian的系统上运行以下命令安装PostgreSQL</p>
+<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">postgresql</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">contrib</span>
+</pre></div>
+
+
+<p>创建一个数据库以及拥有该数据库权限的用户 ...</p></p>
+                  <a href="http://2bapm.com/shi-yong-nginxgunicornvirtualenvsupervisorhe-postgresqlda-jian-djangosheng-chan-huan-jing.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                </div>
+              </div>
+              <div class="col-md-4 quick-hover">
+                <div class="quick-item">
                     <h4><a href="http://2bapm.com/ubuntuxia-an-zhuang-zsh.html">Ubuntu下安装zsh</a></h4>
                   <p><h1>Ubuntu下安装zsh，配置oh-my-zsh</h1>
 <h2>一、首先安装zsh</h2>
@@ -336,14 +362,6 @@
 <pre><code>    #deactivate
 </code></pre></p>
                   <a href="http://2bapm.com/virtualenv-shi-yong.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
-                </div>
-              </div>
-              <div class="col-md-4 quick-hover">
-                <div class="quick-item">
-                    <h4><a href="http://2bapm.com/ubuntu-landscape.html">ubuntu landscape</a></h4>
-                  <p><h3>ubuntu ssh登录 显示系统信息</h3>
-<p>apt-get install landscape-common</p></p>
-                  <a href="http://2bapm.com/ubuntu-landscape.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
  
