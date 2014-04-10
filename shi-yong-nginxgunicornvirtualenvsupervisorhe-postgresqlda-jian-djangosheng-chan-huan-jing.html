@@ -107,10 +107,11 @@
   </header>
 
   <article class='content'>
-    <h1>使用Nginx,Gunicorn,Virtualenv,Supervisor和PostgreSQL搭建Django生产环境</h1>
+    <h2>django 生产环境配置</h2>
+<p>使用Nginx,Gunicorn,Virtualenv,Supervisor和PostgreSQL搭建Django生产环境</p>
 <p>Django是一个高效，灵活，动态的Web应用开发框架。在Django刚开始流行的时候，大多数推荐的Django运行环境配置都是基于使用mod_wsgi模块的Apache。而近来大家所推荐的关于更高级的Django运行环境配置则更加高效和具有弹性，但同时也更加复杂，使用的工具包括：Nginx, Gunicorn, virtualenv, supervisord和PostgreSQL.
 在这篇文章中我会解释如何在Linux上将这些组件组合起来，成为一个能够运行django的服务器。</p>
-<h2>预置条件：</h2>
+<h3>预置条件：</h3>
 <p>首先我假设你有一台具有Root权限的服务器，我正在使用的Linux发行版是debian7，所以以下的内容也同样适用于Ubuntu或者其他基于Debian的Linux发行版。如果你是在使用基于RPM的Linux发行版（比如说CentOS），你需要用yum替换掉以下命令中提到的apt-get，如果你在使用FreeBSD，你可以使用Ports安装这些组件。</p>
 <p>同样的我也假设你已经将你的域名通过DNS指向了你的服务器IP，而你的域名是example.com。
 升级系统：
@@ -120,7 +121,7 @@
 </pre></div>
 
 
-<h2>PostgreSQL</h2>
+<h3>PostgreSQL</h3>
 <p>在基于Debian的系统上运行以下命令安装PostgreSQL</p>
 <div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">postgresql</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">contrib</span>
 </pre></div>
@@ -173,7 +174,7 @@
 </pre></div>
 
 
-<h2>安装virtualenv然后为你的django应用创建一个运行环境</h2>
+<h3>安装virtualenv然后为你的django应用创建一个运行环境</h3>
 <p>Virtualenv是一个能够允许你在系统中创建隔离的Python环境的工具。这使你能够在同一台服务器上运行需要不同设置的应用程序（例如，一个基于Django1.2，另一个基于Django1.5）。Virtualenv在debian系统上很容易安装：</p>
 <div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">virtualenv</span>
 </pre></div>
@@ -215,7 +216,7 @@
 
 
 <p>使用http://example.com:8000来访问服务器试一下，在这之前，请确保你的服务器防火墙开了8000端口。</p>
-<h2>设置PostgreSQL在Django下工作</h2>
+<h3>设置PostgreSQL在Django下工作</h3>
 <p>要在Django下使用PostgreSQL，你需要在虚拟环境中安装psycopg2数据库适配器，这一步需要原生扩展编译，如果没法找到头文件、使用libpq（用来与Postgres通信的库）链接C程序的静态库和创建Python模块的python开发库（python-dev package）,编译将会失败。所以我们必须先安装这些依赖包，然后再使用PIP安装psycopg2。
 安装依赖包</p>
 <div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span>
@@ -234,7 +235,7 @@
 
 
 <p>P.S. 如果你使用了MySQL作为数据库，那么你需要安装Python-MySQL来使python程序能够访问mysql，具体安装部骤网上很多，可以自行google一下。</p>
-<h2>Gunicorn</h2>
+<h3>Gunicorn</h3>
 <p>在生产环境中我们肯定不会使用Django的单线程开发服务器，而是使用一个专用的应用服务器，叫作Gunicorn。</p>
 <p>在你的应用虚拟环境中安装Gunicorn</p>
 <div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">gunicorn</span>
@@ -328,7 +329,7 @@
 </pre></div>
 
 
-<h2>使用Supervisor来启动和监测应用</h2>
+<h3>使用Supervisor来启动和监测应用</h3>
 <p>现在gunicorn_start脚本已经可以正常工作了，下面我们需要让它在开机时自启动，或者在某些情况下能够正常重启。我们使用supervisor来处理这些任务。</p>
 <p>安装非常简单：</p>
 <div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">supervisor</span>
@@ -366,7 +367,7 @@
 
 
 <p>现在，你的应用将可以在系统重启之后自动启动，或者在由于某些原因发生错误时自动重启。</p>
-<h2>Nginx</h2>
+<h3>Nginx</h3>
 <p>现在是时候为我们的应用和静态文件配置Nginx服务了，安装并启动Nginx:</p>
 <div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">nginx</span><span class="err">$</span> <span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">start</span>
 </pre></div>
@@ -439,13 +440,13 @@
 <p>现在再访问http://example.com你应该要以看到django的欢迎界面了。
 如果你在以上的配置中发现任何问题，可以在评论中留言。
 最终的目录结构：
-/webapps/hello_django/
-├── bin  /usr/include/python2.7
-├── lib
-│ └── python2.7
-├── lib64 -&gt; /webapps/proxydemo/lib
-├── logs </p>
-<h2>卸载django应用</h2>
+/webapps/hello_django/</p>
+<p>├── bin  /usr/include/python2.7</p>
+<p>├── lib</p>
+<p>│ └── python2.7</p>
+<p>├── lib64 -&gt; /webapps/proxydemo/lib</p>
+<p>├── logs </p>
+<h3>卸载django应用</h3>
 <p>如果你需要卸载掉你的django应用，按照以下步骤
 移除Nginx sites-enabled文件夹中的虚拟服务器配置文件</p>
 <div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">rm</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">enabled</span><span class="o">/</span><span class="n">hello_django</span>
