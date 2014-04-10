@@ -283,6 +283,31 @@
 
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
+                    <h4><a href="http://2bapm.com/ubuntuxia-an-zhuang-zsh.html">Ubuntu下安装zsh</a></h4>
+                  <p><h1>Ubuntu下安装zsh，配置oh-my-zsh</h1>
+<h2>一、首先安装zsh</h2>
+<h3>1. 去zsh官网<a href="http://zsh.org">http://zsh.org</a>下载最新版zsh安装包</h3>
+<h3>2. 解压到任意目录</h3>
+<h3>3. 编译安装</h3>
+<div class="highlight"><pre>    <span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">configure</span>
+    <span class="err">$</span> <span class="n">make</span>
+    <span class="err">$</span> <span class="n">sudo</span> <span class="n">make</span> <span class="n">install</span>
+</pre></div>
+
+
+<h3>4. 将系统旧版本zsh替换</h3>
+<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">old</span>
+    <span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">x</span><span class="p">.</span><span class="n">x</span><span class="p">.</span><span class="n">x</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span>
+</pre></div>
+
+
+<p>注：x.x.x为你下载安装的zsh版本号</p>
+<h3>5 ...</h3></p>
+                  <a href="http://2bapm.com/ubuntuxia-an-zhuang-zsh.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                </div>
+              </div>
+              <div class="col-md-4 quick-hover">
+                <div class="quick-item">
                     <h4><a href="http://2bapm.com/virtualenv-shi-yong.html">Virtualenv 使用</a></h4>
                   <p><h1 id="virtualenv">virtualenv</h1>
 
@@ -319,37 +344,6 @@
                   <p><h3>ubuntu ssh登录 显示系统信息</h3>
 <p>apt-get install landscape-common</p></p>
                   <a href="http://2bapm.com/ubuntu-landscape.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
-                </div>
-              </div>
-              <div class="col-md-4 quick-hover">
-                <div class="quick-item">
-                    <h4><a href="http://2bapm.com/zai-iis75shang-bu-shu-djangohuan-jing.html">在iis7.5上部署Django环境</a></h4>
-                  <p><blockquote>
-  <p>终于还是在再一次vps搬家的时候补上了 iis的django配置.又折磨了自己小两天才搞定,这次一定要记住</p>
-</blockquote>
-
-<h2 id="">一.安装环境及数据库</h2>
-
-<p>这部分没啥可说,直接用web Platform installer安装相应内容就好,具体要安装的内容如下:</p>
-
-<ol>
-<li>python</li>
-<li>django</li>
-<li>mysql</li>
-<li>php</li>
-<li>python fastcgi 网关</li>
-<li>以上为必装,其他的自己研究就好</li>
-</ol>
-
-<h2 id="_fastcgi">二. 配置fastcgi</h2>
-
-<p>以下操作需要在cmd中进行</p>
-
-<ol>
-<li><p>安装iis的fastcgi扩展</p>
-
-<pre><code>start /wait %windir%\System32\\PkgMgr.exe /iu:IIS-WebServerRole;IIS-WebServer;IIS-CommonHttpFeatures;IIS-StaticContent;IIS-DefaultDocument;IIS-DirectoryBrowsing;IIS-HttpErrors;IIS-HealthAndDiagnostics;IIS-HttpLogging;IIS-LoggingLibraries;IIS-RequestMonitor;IIS-Security;IIS-RequestFiltering;IIS-HttpCompressionStatic;IIS-WebServerManagementTools;IIS-ManagementConsole;WAS-WindowsActivationService;WAS-ProcessModel;WAS-NetFxEnvironment ...</code></pre></li></ol></p>
-                  <a href="http://2bapm.com/zai-iis75shang-bu-shu-djangohuan-jing.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
  
