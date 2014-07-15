@@ -94,9 +94,83 @@
     <article class="container">
 
       <div class="row">
-        <div id="blog_main_area" class="left col-md-9" count=12>
+        <div id="blog_main_area" class="left col-md-9" count=14>
   <!-- blog item -->
 
+      <div class="item">
+        <div class="item-title">
+            <h2><a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html">使用proxychains为命令行设置代理</a></h2>
+          <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
+          <a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html#disqus_thread" class="label label-default light"><i class="fa fa-comment-o"></i> ?? Comments</a>
+          <span class="label label-default light">二 15 七月 2014</span>
+        </div>
+        <!-- image -->
+
+        <!-- blog short preview -->
+        <p>
+            <h3>一、安装相关程序</h3>
+<div class="highlight"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">proxychains</span>
+</pre></div>
+
+
+<h3>二、配置proxychains</h3>
+<div class="highlight"><pre><span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">proxychains</span><span class="p">.</span><span class="n">conf</span>
+</pre></div>
+
+
+<p>光标移动到最后，配置格式如下：</p>
+<div class="highlight"><pre><span class="err">协议名</span> <span class="n">ip</span> <span class="err">端口</span>
+<span class="n">socks</span> <span class="mf">127.0.0.1</span> <span class="mi">1080</span>
+</pre></div>
+
+
+<h3>三、配置代理程序</h3>
+<p>不管你们用啥吧……反正代理要先搭起来啊，我用的是shadowsocks</p>
+<h3>四、使用</h3>
+<div class="highlight"><pre><span class="n">proxychains</span> <span class="err">命令</span>
+</pre></div>
+
+
+<p>例如</p>
+<div class="highlight"><pre><span class="n">proxychiains</span> <span class="o">~/</span><span class="p">.</span><span class="n">dropbox</span><span class="o">-</span><span class="n">dist</span><span class="o">/</span><span class="n">dropboxd</span>
+</pre></div>
+
+
+<p>这样dropbox就走代理了~</p>
+        </p>
+
+        <!-- read more button -->
+        <a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+      </div>
+      <div class="item">
+        <div class="item-title">
+            <h2><a href="http://2bapm.com/ban-cheng-ge-ren-zong-jie.html">半程个人总结</a></h2>
+          <a href="category/personal.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Personal</a> 
+          <a href="http://2bapm.com/ban-cheng-ge-ren-zong-jie.html#disqus_thread" class="label label-default light"><i class="fa fa-comment-o"></i> ?? Comments</a>
+          <span class="label label-default light">一 23 六月 2014</span>
+        </div>
+        <!-- image -->
+
+        <!-- blog short preview -->
+        <p>
+            <h2>半程个人总结</h2>
+<h3>一、年度计划回顾</h3>
+<ol>
+<li>自己喜欢的工作--虽然累一点，但是基本算是完成，感谢媛媛</li>
+<li>两个项目目前无限期搁置……希望想找一点赚快钱的项目</li>
+<li>买车还没解决，目前考驾照中</li>
+<li>GTD的习惯初步养成了，每天的工作内容和重要事件记录坚持下来了</li>
+<li>今年算是最重要的事情之一吧，强换了rmbp</li>
+<li>就快当爹了，祈祷孩子健健康康的！</li>
+<li>书的话需要继续看……耐下性子完整的看一下</li>
+<li>django几乎没进展python也丢差不多了</li>
+<li>treehouse无限期搁置 codecademy也没搞</li>
+</ol>
+        </p>
+
+        <!-- read more button -->
+        <a href="http://2bapm.com/ban-cheng-ge-ren-zong-jie.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+      </div>
       <div class="item">
         <div class="item-title">
             <h2><a href="http://2bapm.com/chanpin-sheji-fangan.html">产品经理如何根据产品所处的阶段选择设计方案</a></h2>
@@ -359,7 +433,8 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
-      <div class="item">
+ 
+      <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/ubuntu-zhong-wen-huan-jing-she-zhi.html">ubuntu 中文环境设置</a></h2>
           <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
@@ -393,7 +468,7 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/ubuntu-zhong-wen-huan-jing-she-zhi.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
-      <div class="item">
+      <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/emacs-shi-yong-auto-complete-bu-quan.html">Emacs 使用 auto-complete 补全</a></h2>
           <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
@@ -423,7 +498,6 @@ Successfully installed!</p>
         <!-- read more button -->
         <a href="http://2bapm.com/emacs-shi-yong-auto-complete-bu-quan.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
- 
       <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/centos-xia-tian-jia-xin-ying-pan.html">CentOS 下添加新硬盘</a></h2>
@@ -610,13 +684,27 @@ Disk identifier: 0x3aca4f94`
 
             <!-- hide this part -->
             <div class="hidden">
-  None  None  None  None  None  None  None  None  None  None  None  None             </div>
+  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
 
             <ul class="tree">
               <li>
                 <span><i class="fa fa-minus-square-o"></i>2014</span>
                 <ul>
                   <li>
+                    <span><i class="fa fa-plus-square-o"></i>07</span>
+                    <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html">
+                          <small>二 15 七月 2014</small>使用proxychains为命令行设置代理</a>
+                      </li>
+                    </ul>
+                    <span><i class="fa fa-plus-square-o"></i>06</span>
+                    <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/ban-cheng-ge-ren-zong-jie.html">
+                          <small>一 23 六月 2014</small>半程个人总结</a>
+                      </li>
+                    </ul>
                     <span><i class="fa fa-plus-square-o"></i>04</span>
                     <ul>
                       <li style="display: none;">

@@ -98,32 +98,60 @@
         <div id="blog_main_area" class="left col-md-9" count=14>
   <!-- article title -->
   <header>
-      <h1>ubuntu landscape</h1>
+      <h1>使用proxychains为命令行设置代理</h1>
     <small class="fsize13">
             <a href="http://2bapm.com/category/linux.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="8 articles in this category"><i class="fa fa-dot-circle-o"></i> Linux</a>
-      <a href="http://2bapm.com/ubuntu-landscape.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="ubuntu-landscape.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
-      <span class="label label-default light">四 03 四月 2014</span> 
+      <a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <span class="label label-default light">二 15 七月 2014</span> 
     </small>
   </header>
 
   <article class='content'>
-    <h3>ubuntu ssh登录 显示系统信息</h3>
-<p>apt-get install landscape-common</p>
+    <h3>一、安装相关程序</h3>
+<div class="highlight"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">proxychains</span>
+</pre></div>
+
+
+<h3>二、配置proxychains</h3>
+<div class="highlight"><pre><span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">proxychains</span><span class="p">.</span><span class="n">conf</span>
+</pre></div>
+
+
+<p>光标移动到最后，配置格式如下：</p>
+<div class="highlight"><pre><span class="err">协议名</span> <span class="n">ip</span> <span class="err">端口</span>
+<span class="n">socks</span> <span class="mf">127.0.0.1</span> <span class="mi">1080</span>
+</pre></div>
+
+
+<h3>三、配置代理程序</h3>
+<p>不管你们用啥吧……反正代理要先搭起来啊，我用的是shadowsocks</p>
+<h3>四、使用</h3>
+<div class="highlight"><pre><span class="n">proxychains</span> <span class="err">命令</span>
+</pre></div>
+
+
+<p>例如</p>
+<div class="highlight"><pre><span class="n">proxychiains</span> <span class="o">~/</span><span class="p">.</span><span class="n">dropbox</span><span class="o">-</span><span class="n">dist</span><span class="o">/</span><span class="n">dropboxd</span>
+</pre></div>
+
+
+<p>这样dropbox就走代理了~</p>
   </article>
 
   <div class="divider"><!-- lines divider --></div>
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/ubuntu-landscape.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=http://2bapm.com/ubuntu-landscape.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=http://2bapm.com/ubuntu-landscape.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/ubuntu-landscape.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/ubuntu-landscape.html&title=ubuntu landscape&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html&title=使用proxychains为命令行设置代理&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
   <p class="fsize16"> Tags:
+        <a href="/tag/fan-qiang.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> 翻墙</a>
   </p>
 
   <hr /><!-- divider -->
@@ -132,9 +160,9 @@
       <div id="disqus_thread"></div>
       <script type="text/javascript">
         var disqus_shortname = '2bapm';
-        var disqus_identifier = "ubuntu-landscape.html";
-        var disqus_title = "ubuntu landscape";
-        var disqus_url = "http://2bapm.com/ubuntu-landscape.html";
+        var disqus_identifier = "shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html";
+        var disqus_title = "使用proxychains为命令行设置代理";
+        var disqus_url = "http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html";
         (function() {
           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
           dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
