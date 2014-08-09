@@ -94,9 +94,41 @@
     <article class="container">
 
       <div class="row">
-        <div id="blog_main_area" class="left col-md-9" count=14>
+        <div id="blog_main_area" class="left col-md-9" count=15>
   <!-- blog item -->
 
+      <div class="item">
+        <div class="item-title">
+            <h2><a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html">python中__init__.py的作用</a></h2>
+          <a href="category/python.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Python</a> 
+          <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html#disqus_thread" class="label label-default light"><i class="fa fa-comment-o"></i> ?? Comments</a>
+          <span class="label label-default light">六 09 八月 2014</span>
+        </div>
+        <!-- image -->
+
+        <!-- blog short preview -->
+        <p>
+            <h2>Python中__init__.py的作用</h2>
+<p>python的每个模块的包中，都有一个__init__.py文件，有了这个文件，我们才能导入这个目录下的module。
+那么，<strong>init</strong>.py还有什么别的功能呢？
+其实，<strong>init</strong>.py里面还是可以有内容的，我们在导入一个包时，实际上导入了它的__init__.py文件。
+我们可以再__init__.py文件中再导入其他的包，或者模块。
+    [python]
+    import readers 
+    import writers 
+    import commands 
+    import users 
+    import meta 
+    import auth 
+    import admin </p>
+<p>这样，当我们导入这个包的时候，<strong>init</strong>.py文件自动运行。帮我们导入了这么多个模块，我们就不需要将所有的import语句写在一个文件里了，也可以减少代码量。
+不需要一个个去导入module了。
+<strong>init</strong>.py 中还有一个重要的变量，叫做 <strong>all</strong>。我们有时会使出一招“全部导入”，也就是这样 ...</p>
+        </p>
+
+        <!-- read more button -->
+        <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+      </div>
       <div class="item">
         <div class="item-title">
             <h2><a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html">使用proxychains为命令行设置代理</a></h2>
@@ -400,7 +432,8 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/download-whole-site.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
-      <div class="item">
+ 
+      <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html">在cent6上分别安装python2.7和python3</a></h2>
           <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
@@ -433,7 +466,6 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
- 
       <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/ubuntu-zhong-wen-huan-jing-she-zhi.html">ubuntu 中文环境设置</a></h2>
@@ -684,13 +716,20 @@ Disk identifier: 0x3aca4f94`
 
             <!-- hide this part -->
             <div class="hidden">
-  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
+  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
 
             <ul class="tree">
               <li>
                 <span><i class="fa fa-minus-square-o"></i>2014</span>
                 <ul>
                   <li>
+                    <span><i class="fa fa-plus-square-o"></i>08</span>
+                    <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html">
+                          <small>六 09 八月 2014</small>python中__init__.py的作用</a>
+                      </li>
+                    </ul>
                     <span><i class="fa fa-plus-square-o"></i>07</span>
                     <ul>
                       <li style="display: none;">
