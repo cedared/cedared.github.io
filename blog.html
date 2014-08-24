@@ -94,9 +94,33 @@
     <article class="container">
 
       <div class="row">
-        <div id="blog_main_area" class="left col-md-9" count=15>
+        <div id="blog_main_area" class="left col-md-9" count=16>
   <!-- blog item -->
 
+      <div class="item">
+        <div class="item-title">
+            <h2><a href="http://2bapm.com/sshkey-login-linux-vps.html">如何使用私钥登录linux服务器</a></h2>
+          <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
+          <a href="http://2bapm.com/sshkey-login-linux-vps.html#disqus_thread" class="label label-default light"><i class="fa fa-comment-o"></i> ?? Comments</a>
+          <span class="label label-default light">日 24 八月 2014</span>
+        </div>
+        <!-- image -->
+
+        <!-- blog short preview -->
+        <p>
+            <h1>如何使用私钥登录linux服务器</h1>
+<p>启用密钥ssh登陆服务器：
+ 
+首先得生成一对密钥，一把私有密钥(id_rsa)和一把公用密钥(id_rsa.pub)，公用密钥用于对消息进行加密，只有拥有私有密钥的人才能对该消息进行解密。把公钥放到我们要远程登录的主机（remote）上
+<code>（~/.ssh/authorized_keys）</code>
+专用密钥放置到本地机（local）或是U盘。
+ 
+认证过程中，romote接收到local的登录请求后，romote的sshd 会生成一个随机数，并用我们先前拷贝过去的公用密钥对这个随机数进行加密，然后，sshd把加密了的随机数发回给正在local上运行的ssh程序，然后是local计算机对该随机数的解密，再发回给romote，通过后，romote则允许local登录了。</p>
+        </p>
+
+        <!-- read more button -->
+        <a href="http://2bapm.com/sshkey-login-linux-vps.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+      </div>
       <div class="item">
         <div class="item-title">
             <h2><a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html">python中__init__.py的作用</a></h2>
@@ -404,7 +428,8 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/zai-iis75shang-bu-shu-djangohuan-jing.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
-      <div class="item">
+ 
+      <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/download-whole-site.html">新技能get√,递归下载整站文件</a></h2>
           <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
@@ -432,7 +457,6 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/download-whole-site.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
- 
       <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html">在cent6上分别安装python2.7和python3</a></h2>
@@ -716,7 +740,7 @@ Disk identifier: 0x3aca4f94`
 
             <!-- hide this part -->
             <div class="hidden">
-  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
+  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
 
             <ul class="tree">
               <li>
@@ -725,6 +749,10 @@ Disk identifier: 0x3aca4f94`
                   <li>
                     <span><i class="fa fa-plus-square-o"></i>08</span>
                     <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/sshkey-login-linux-vps.html">
+                          <small>日 24 八月 2014</small>如何使用私钥登录linux服务器</a>
+                      </li>
                       <li style="display: none;">
                         <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html">
                           <small>六 09 八月 2014</small>python中__init__.py的作用</a>

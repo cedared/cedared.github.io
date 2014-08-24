@@ -98,44 +98,39 @@
         <div id="blog_main_area" class="left col-md-9" count=16>
   <!-- article title -->
   <header>
-      <h1>新技能get√,递归下载整站文件</h1>
+      <h1>如何使用私钥登录linux服务器</h1>
     <small class="fsize13">
             <a href="http://2bapm.com/category/linux.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="9 articles in this category"><i class="fa fa-dot-circle-o"></i> Linux</a>
-      <a href="http://2bapm.com/download-whole-site.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="download-whole-site.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
-      <span class="label label-default light">四 03 四月 2014</span> 
+      <a href="http://2bapm.com/sshkey-login-linux-vps.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="sshkey-login-linux-vps.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <span class="label label-default light">日 24 八月 2014</span> 
     </small>
   </header>
 
   <article class='content'>
-    <p>wget是linux下命令行的下载工具，功能很强大，虽然我很少用，一般下在一些小东西都是直接用firefox，seamonkey这些浏览器自带的下载功能下载，没有必要用wget或者其他下载工具。但是某些时候却不是浏览器自带的下载功能和一些其他的下载软件所能做的的，这时候就得用wget了。比如如果你想下载一个网页目录下的所有文件，如何做呢？</p>
-
-<pre><code>先介绍几个参数：
-    -c 断点续传（备注：使用断点续传要求服务器支持断点续传）
-    -r 递归下载（目录下的所有文件,包括子目录）
-    -np 递归下载不搜索上层目录
-    -k 把绝对链接转为相对链接这样下载之后的网页方便浏览
-    -L 递归时不进入其他主机
-    -p 下载网页所需要的所有文件。
-
-    比如：#wget -c -r -np -k -L -p http://www.kuqin.com/itman/liyanhong/ 下载酷勤网下面的目录“李彦宏”
-</code></pre>
+    <h1>如何使用私钥登录linux服务器</h1>
+<p>启用密钥ssh登陆服务器：
+ 
+首先得生成一对密钥，一把私有密钥(id_rsa)和一把公用密钥(id_rsa.pub)，公用密钥用于对消息进行加密，只有拥有私有密钥的人才能对该消息进行解密。把公钥放到我们要远程登录的主机（remote）上
+<code>（~/.ssh/authorized_keys）</code>
+专用密钥放置到本地机（local）或是U盘。
+ 
+认证过程中，romote接收到local的登录请求后，romote的sshd 会生成一个随机数，并用我们先前拷贝过去的公用密钥对这个随机数进行加密，然后，sshd把加密了的随机数发回给正在local上运行的ssh程序，然后是local计算机对该随机数的解密，再发回给romote，通过后，romote则允许local登录了。</p>
   </article>
 
   <div class="divider"><!-- lines divider --></div>
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/download-whole-site.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=http://2bapm.com/download-whole-site.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=http://2bapm.com/download-whole-site.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/download-whole-site.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/download-whole-site.html&title=新技能get√,递归下载整站文件&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/sshkey-login-linux-vps.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=http://2bapm.com/sshkey-login-linux-vps.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=http://2bapm.com/sshkey-login-linux-vps.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/sshkey-login-linux-vps.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/sshkey-login-linux-vps.html&title=如何使用私钥登录linux服务器&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
   <p class="fsize16"> Tags:
-        <a href="/tag/linux.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> linux</a>
-        <a href="/tag/wget.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> wget</a>
+        <a href="/tag/ssh-si-yao-vps.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> ssh 私钥 vps</a>
   </p>
 
   <hr /><!-- divider -->
@@ -144,9 +139,9 @@
       <div id="disqus_thread"></div>
       <script type="text/javascript">
         var disqus_shortname = '2bapm';
-        var disqus_identifier = "download-whole-site.html";
-        var disqus_title = "新技能get√,递归下载整站文件";
-        var disqus_url = "http://2bapm.com/download-whole-site.html";
+        var disqus_identifier = "sshkey-login-linux-vps.html";
+        var disqus_title = "如何使用私钥登录linux服务器";
+        var disqus_url = "http://2bapm.com/sshkey-login-linux-vps.html";
         (function() {
           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
           dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
