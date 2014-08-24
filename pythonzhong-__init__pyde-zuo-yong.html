@@ -98,7 +98,7 @@
         <div id="blog_main_area" class="left col-md-9" count=16>
   <!-- article title -->
   <header>
-      <h1>python中\_\_init\_\_.py的作用</h1>
+      <h1>python中__init__.py的作用</h1>
     <small class="fsize13">
             <a href="http://2bapm.com/category/python.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="4 articles in this category"><i class="fa fa-dot-circle-o"></i> Python</a>
       <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="pythonzhong-__init__pyde-zuo-yong.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
@@ -111,15 +111,18 @@
 <p>python的每个模块的包中，都有一个__init__.py文件，有了这个文件，我们才能导入这个目录下的module。
 那么，__init__.py还有什么别的功能呢？
 其实，__init__.py里面还是可以有内容的，我们在导入一个包时，实际上导入了它的__init__.py文件。
-我们可以再__init__.py文件中再导入其他的包，或者模块。
-    [python]
-    import readers 
-    import writers 
-    import commands 
-    import users 
-    import meta 
-    import auth 
-    import admin </p>
+我们可以再__init__.py文件中再导入其他的包，或者模块。</p>
+<div class="highlight"><pre><span class="k">[python]</span>
+<span class="err">import</span> <span class="err">readers</span> 
+<span class="err">import</span> <span class="err">writers</span> 
+<span class="err">import</span> <span class="err">commands</span> 
+<span class="err">import</span> <span class="err">users</span> 
+<span class="err">import</span> <span class="err">meta</span> 
+<span class="err">import</span> <span class="err">auth</span> 
+<span class="err">import</span> <span class="err">admin</span>
+</pre></div>
+
+
 <p>这样，当我们导入这个包的时候，__init__.py文件自动运行。帮我们导入了这么多个模块，我们就不需要将所有的import语句写在一个文件里了，也可以减少代码量。
 不需要一个个去导入module了。
 __init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使出一招“全部导入”，也就是这样：
@@ -138,7 +141,7 @@ from PackageName import *
     <a href="http://twitter.com/home?status=http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
     <a href="https://plus.google.com/share?url=http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
     <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html&title=python中\_\_init\_\_.py的作用&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html&title=python中__init__.py的作用&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
@@ -152,7 +155,7 @@ from PackageName import *
       <script type="text/javascript">
         var disqus_shortname = '2bapm';
         var disqus_identifier = "pythonzhong-__init__pyde-zuo-yong.html";
-        var disqus_title = "python中\_\_init\_\_.py的作用";
+        var disqus_title = "python中__init__.py的作用";
         var disqus_url = "http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html";
         (function() {
           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
@@ -261,7 +264,7 @@ from PackageName import *
                       </li>
                       <li style="display: none;">
                         <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html">
-                          <small>六 09 八月 2014</small>python中\_\_init\_\_.py的作用</a>
+                          <small>六 09 八月 2014</small>python中__init__.py的作用</a>
                       </li>
                     </ul>
                     <span><i class="fa fa-plus-square-o"></i>07</span>
