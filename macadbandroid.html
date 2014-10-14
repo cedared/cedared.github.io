@@ -98,202 +98,39 @@
         <div id="blog_main_area" class="left col-md-9" count=19>
   <!-- article title -->
   <header>
-      <h1>Virtualenv 使用</h1>
+      <h1>Mac下adb识别非主流android手机</h1>
     <small class="fsize13">
-            <a href="http://2bapm.com/category/python.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="4 articles in this category"><i class="fa fa-dot-circle-o"></i> Python</a>
-      <a href="http://2bapm.com/virtualenv-shi-yong.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="virtualenv-shi-yong.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
-      <span class="label label-default light">四 03 四月 2014</span> 
+            <a href="http://2bapm.com/category/android.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="1 article in this category"><i class="fa fa-dot-circle-o"></i> Android</a>
+      <a href="http://2bapm.com/macadbandroid.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="macadbandroid.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <span class="label label-default light">二 14 十月 2014</span> 
     </small>
   </header>
 
   <article class='content'>
-    <h1 id="virtualenv">virtualenv</h1>
-
-<h2 id="_">一. 安装</h2>
-
-<pre><code>    #sudo pip install virtualenv
-</code></pre>
-
-<h2 id="_">二. 配置</h2>
-
-<pre><code>    #sudo virtualenv env1
-</code></pre>
-
-<h2 id="_">三. 激活</h2>
-
-<pre><code>    #source ../env1/bin/active
-</code></pre>
-
-<h2 id="_">四. 删除</h2>
-
-<pre><code>    #virtualenv --clear env1
-</code></pre>
-
-<h2 id="_">五. 退出</h2>
-
-<pre><code>    #deactivate
-</code></pre>
-
-<p>Virtualenv＠Debian 安装及配置cnblogs.com</p>
-<p>基本是照着这篇资料来的：http://www.openfoundry.org/tw/tech-column/8516-pythons-virtual-environment-and-multi-version-programming-tools-virtualenv-and-pythonbrew
-Virtualenv的官网：传送门
-Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影響。在建立並啟動虛擬環境後，透過 pip 安裝的套件會被放在虛擬環境中，專案就可以擁有一個獨立的環境。
-簡而言之，Virtualenv 可以幫你做到：</p>
-<ul>
-<li>在沒有權限的情況下安裝新套件</li>
-<li>不同專案可以使用不同版本的相同套件</li>
-<li>套件版本升級時不會影響其他專案</li>
-</ul>
-<p>一、安装
-我是用pip安装的，其实Virtualenv 在安裝时会附带 pip 这个 Python 的套件安裝工具，所以你直接用apt-get install也可以
- sudo pip install Virtualenv
-口胡！安装就是这么简单，关键还是使用嘛：
-二、建立虚拟环境
-$ virtualenv [虚拟环境名称]
-插个嘴，回想当年犯过用sudo执行这个命令的傻逼行为，默哀。。
-我的命令是这样滴：
-$ virtualenv war
-现在用ls就可以看到你刚刚建的那个环境了。
-預設在建立虛擬環境時，會依賴系統環境中的 site packages，如果想完全不依賴系統的 packages，可以加上參數 --no-site-packages 來建立虛擬環境：
-$ virtualenv --no-site-packages [指定虛擬環境的名稱]
-这个我用不着，不过还是贴上以备将来需要
-另外，在创建Virtualenv的时候指定python版本只需要加上－p
-mkvirtualenv war --no-site-packages -p /usr/local/bin/python2.7
-三、启动虚拟环境
-进入你刚刚建立的那个虚拟环境
-$ cd war
-启动她（邪恶感）
-$ source bin/activate
-这时候你的命令行就变身了！ (￣ˇ￣) 然後就可以注意到，在 shell 提示字元的最前面多了虛擬環境的名稱提示：
-(war)user@host-name:~/war$
-四、退出
-耍完之后怎么退出？
-$ deactivate
-●ω● 这样你就回到系统的环境中鸟～
-五、在虚拟环境中安装python套件
-换句话说就是怎么在这个小世界里为所欲为 hia hia hia
-在虚拟环境中安装各种python的包都用pip
-如果系统已经装了pip，用的时候一定注意下是不是在虚拟环境中，不然的话东西可就装到系统中了。像我这样的马大哈说不准哪天就会被这种问题困扰半天，为了避免pip在没有进入虚拟环境的时候使用，也就是说只能在虚拟环境中使用，可以在 ~/.bashrc 加上：
-export PIP_REQUIRE_VIRTUALENV=true
-也可以用下面的设定，让系統的 pip 自动使用启动中的虚拟环境。
-export PIP_RESPECT_VIRTUALENV=true
-如果上面的操作已经了如指掌就可以进阶啦～
-六、延伸套件 Virtualenvwrapper
-这个是用来干啥的呢？
-Virtualenvwrapper 是一個 Virtualenv 的 extension，可使虛擬環境的管理變得更容易。
-詳細來說，Virtualenvwrapper 提供下述功能：</p>
-<ol>
-<li>將所有的虛擬環境整合在一個目錄下。</li>
-<li>管理（新增、移除、複製）所有的虛擬環境。</li>
-<li>可以使用一個命令切換虛擬環境。</li>
-<li>Tab 補全虛擬環境的名字。</li>
-<li>每個操作都提供允許使用者自訂的 hooks。</li>
-<li>
-<p>可撰寫容易分享的 extension plugin 系統。</p>
-</li>
-<li>
-<p>安装，这次我是用apt－get装的
-$ sudo apt-get install virtualenvwrapper</p>
-</li>
-<li>使用方法
-a.设定老窝
-也就是设定$WORKON_HOME，因为所有的环境均在$WORKON_HOME下
-export WORKON_HOME=~/Envsmkdir -p $WORKON_HOMEsource /usr/local/bin/virtualenvwrapper.sh#修改bash_profileexport WORKON_HOME=~/Envssource /usr/local/bin/virtualenvwrapper.sh
-b.进入你的$WORKON_HOME并创建环境
-$ mkvirtualenv [-i package] [-r requirements_file] [virtualenv options] ENVNAME
-c.列出所有的环境，其中-b 是简短模式；-l 是详细模式（预设）；-h 是 help。
-$ lsvirtualenv [-b] [-l] [-h]
-(￣o￣) . z Z　大中午的刚吃完饭好困啊。。好吧继续
-d.删除一个虚拟环境
-$ rmvirtualenv ENVNAME
-e.复制一个虚拟环境：
-$ cpvirtualenv ENVNAME TARGETENVNAME
-f.启动虚拟环境：
-$ workon [environment_name]
-g.如果只輸入workon，则会列出所有的虚拟环境。
-离开虚拟环境一样是使用 deactivate。
-可以使用下面的设定來告诉 pip Virtualenv 的路径。
-export PIP_VIRTUALENV_BASE=$WORKON_HOME
-其他牛逼功能就到官方文档去瞅瞅吧。</li>
-</ol>
-<p>Pythonbrew01. 安裝
-Pythonbrew 是個比較新的專案，雖然比較新，卻非常完整。它也有整合上面介紹的 Virtualenv。可以用類似 Virtualenvwrapper 的方式來操作 Virtualenv。
-安裝方式與 Virtualenv 一樣，只要輸入下面的指令就可以了：</p>
-<h1>easy_install $ pythonbrew</h1>
-<p>Pythonbrew 官方有推薦的安裝方式，但這篇教學為求一致性，就不額外介紹了，可以參考pythonbrew/README.rst。
-對於 Windows 的使用者，很可惜地，Pythonbrew 暫時沒有支援 Windows 的計畫 (#6: Windows Support? - Issues - utahta/pythonbrew - GitHub)。所以 Windows 暫時還沒辦法使用 Pythonbrew 囉。
-經過 easy_install 的安裝後，還需要在 shell 執行：
-$ pythonbrew_install
-才會把初始的設定檔和資料夾配置進你的家目錄。接著要修改 ~/.bashrc 的配置：
-$ echo "source ~/.pythonbrew/etc/bashrc" &gt;&gt; ~/.bashrc
-這樣就算安裝完全囉。
-Pythonbrew 使用 curl 來抓取資料，如果你的系統沒有，請記得安裝。Ubuntu 上可以使用這行指令：
-$ sudo apt-get install curl02. 編譯前準備
-因為 Pythonbrew 採取下載 tarball，並編譯、安裝的方法，所以我們要先為系統準備好編譯 Python 所需的套件。
-也因為許多 Linux 發行版都已打包 Python，所以我們可以偷懶一點，用已經打包好的套件來解決編譯所需的相依性。在 Ubuntu/Debian 上，可以透過：
-$ sudo apt-get build-dep python2.7
-來安裝所有編譯 Python 2.7 所需的套件。雖然已經能夠安裝得相當完整，但還是缺少了 gdbm 這個 module，如果需要的話，可以透過：
-$ sudo apt-get build-dep python-gdbm
-來安裝編譯 gdbm 所需的套件。
-註：bsddb185、linuxaudiodev、ossaudiodev、sunaudiodev 等是按以上方式安裝後，仍會缺少的 module。其中 ossaudiodev（Open Sound System）在隨 Ubuntu 發布的 Python 中有提供，列出來讓大家參考。
-Fedora/CentOS/Redhat/openSUSE 則可以使用 yum-builddep 這個指令。
-03. 使用方法
-Pythonbrew 的操作不外乎安裝、移除、列出及使用新的 Python 版本，下面是依照初次使用時所需的指令順序來介紹。
-I. 列出可安裝的版本
-首先我們用 list --know 列出可以安裝的 Python 版本：
-$ pythonbrew list --know
-II. 安裝新的版本
-接著利用 install VERSION 來下載並編譯 Python 到本機，除了接 Python 的版本編號以外，也可以接 Python 的 tarball 路徑或網址來安裝；也能調整編譯 Python 的選項。下面是一些例子：
-$ pythonbrew install 2.7.2$ pythonbrew install --verbose 2.7.2$ pythonbrew install --force 2.7.2$ pythonbrew install --no-test 2.7.2$ pythonbrew install --configure="CC=gcc_4.1" 2.7.2$ pythonbrew install --no-setuptools 2.7.2$ pythonbrew install http://www.python.org/ftp/python/2.7/Python-2.7.2.tgz$ pythonbrew install /path/to/Python-2.7.2.tgz$ pythonbrew install /path/to/Python-2.7.2$ pythonbrew install 2.7.2 3.2III. 清理安裝時產生的檔案
-下載的 Python tarball 會放在 ~/.pythonbrew/dists/ 下；而編譯則會在 ~/.pythonbrew/build/ 下進行。如果想清理這兩個目錄，可以使用：
-$ pythonbrew cleanupIV. 列出所有已安裝的版本
-安裝好之後，可以使用 list 命令列出所有已安裝的 Python 版本：
-$ pythonbrew list
-後面有打星號的，就是現在正在使用的 Python 版本。
-V. 切換已安裝的版本
-可以使用 switch 來切換預設的 Python 版本：
-$ pythonbrew switch VERSION
-如果只想在當前的 shell 下切換，可以使用 use：
-$ pythonbrew use VERSION
-要切換回預設的環境時，使用 off：
-$ pythonbrew off
-就會返回系統環境的 Python 了。
-VI. 批次在不同版本下測試
-最重要的是，可以用系統內所有安裝過的 Python 版本，或指定的 Python 版本來測試自己的程式！
-$ pythonbrew py test.py # 使用所有有安裝的版本$ pythonbrew py -v test.py # 詳細輸出$ pythonbrew py -p 2.7.2 -p 3.2 test.py # 指定特定的版本VII. 移除已安裝的版本
-若想移除已經安裝的 Python，則可以使用 uninstall：
-$ pythonbrew uninstall 2.7.2$ pythonbrew uninstall 2.7.2 3.2VIII. 與 Virtualenv 的整合
-要注意 Pythonbrew 中所提供的 Virtualenv，是基於 Pythonbrew 中所安裝的 Python（置於~/.pythonbrew/venvs/Python-VERSION/ 下）。在不使用 Pythonbrew 的情況下，無法使用附屬於 Pythonbrew 的 venv 功能。
-Pythonbrew 提供了和 Virtualenvwrapper 類似的功能，只是沒有像 Virtualenvwrapper 那麼完整的 plugin 系統。所有在 Pythonbrew 中的 Virtualenv 指令都以 venv 作為第一個副命令。
-$ pythonbrew venv create [指定虛擬環境的名稱]$ pythonbrew venv list$ pythonbrew venv use [指定虛擬環境的名稱]$ pythonbrew venv delete [指定虛擬環境的名稱]
-離開虛擬環境一樣是使用 deactivate。
-IX. Buildout
-如果有使用 Buildout 這個工具，也可以透過 Pythonbrew 來執行：
-$ pythonbrew buildout$ pythonbrew buildout -p 2.6.6 # 指定版本
-X. 自我更新
-最後，Pythonbrew 有內建更新自己的指令：
-$ pythonbrew update$ pythonbrew update --master$ pythonbrew update --develop
-Virtualenv 和 Pythonbrew 就介紹到這邊，如果想獲得更多資訊，可以多多參考它們的官網哦。祝大家玩得愉快。
-vim-virtualenv
-vim-virtualenv is Jeremey Cantrell’s plugin for controlling virtualenvs from within vim. When used together with virtualenvwrapper, vim-virtualenv identifies the virtualenv to activate based on the name of the file being edited.
-这个先mark下来抽空研究</p>
-<p>Original Page: http://www.cnblogs.com/Phenix_Yang/archive/2012/05/08/2489724.html
-Shared from Pocket</p>
+    <h1>mac下识别非主流android手机</h1>
+<h2>一、找到手机厂商ID</h2>
+<p>关于本机-系统报告-硬件-USB-欲连接的手机-厂商ID</p>
+<p>记住厂商ID</p>
+<h2>二、配置usb信息并重启adb服务</h2>
+<p><code>echo 厂商ID &gt;&gt; /.android/adb\_usb.ini
+``adb kill-server</code>
+<code>adb start-server</code></p>
   </article>
 
   <div class="divider"><!-- lines divider --></div>
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/virtualenv-shi-yong.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=http://2bapm.com/virtualenv-shi-yong.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=http://2bapm.com/virtualenv-shi-yong.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/virtualenv-shi-yong.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/virtualenv-shi-yong.html&title=Virtualenv 使用&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/macadbandroid.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=http://2bapm.com/macadbandroid.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=http://2bapm.com/macadbandroid.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/macadbandroid.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/macadbandroid.html&title=Mac下adb识别非主流android手机&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
   <p class="fsize16"> Tags:
+        <a href="/tag/android-adb.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> android adb</a>
   </p>
 
   <hr /><!-- divider -->
@@ -302,9 +139,9 @@ Shared from Pocket</p>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
         var disqus_shortname = '2bapm';
-        var disqus_identifier = "virtualenv-shi-yong.html";
-        var disqus_title = "Virtualenv 使用";
-        var disqus_url = "http://2bapm.com/virtualenv-shi-yong.html";
+        var disqus_identifier = "macadbandroid.html";
+        var disqus_title = "Mac下adb识别非主流android手机";
+        var disqus_url = "http://2bapm.com/macadbandroid.html";
         (function() {
           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
           dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';

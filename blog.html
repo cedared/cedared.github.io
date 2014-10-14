@@ -94,9 +94,87 @@
     <article class="container">
 
       <div class="row">
-        <div id="blog_main_area" class="left col-md-9" count=16>
+        <div id="blog_main_area" class="left col-md-9" count=19>
   <!-- blog item -->
 
+      <div class="item">
+        <div class="item-title">
+            <h2><a href="http://2bapm.com/.html">linux的进程管理</a></h2>
+          <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
+          <a href="http://2bapm.com/.html#disqus_thread" class="label label-default light"><i class="fa fa-comment-o"></i> ?? Comments</a>
+          <span class="label label-default light">二 14 十月 2014</span>
+        </div>
+        <!-- image -->
+
+        <!-- blog short preview -->
+        <p>
+            <h1>linux的进程管理</h1>
+<p>fg、bg、jobs、&amp;、ctrl + z都是跟系统任务有关的，虽然现在基本上不怎么需要用到这些命令，但学会了也是很实用的
+一。&amp; 最经常被用到
+   这个用在一个命令的最后，可以把这个命令放到后台执行
+二。ctrl + z
+     可以将一个正在前台执行的命令放到后台，并且暂停
+三。jobs
+     查看当前有多少在后台运行的命令
+四。fg
+     将后台中的命令调至前台继续运行
+   如果后台中有多个命令，可以用 fg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid)
+五。bg
+     将一个在后台暂停的命令，变成继续执行
+   如果后台中有多个命令，可以用bg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid) 
+  
+  
+Linux下使用Shell命令控制任务Jobs执行</p>
+<p>下列命令可以用来操纵进程任务：
+　　ps 列出系统中正在运行的进程；
+　　kill 发送信号给一个或多个进程（经常用来杀死一个进程）；
+　　jobs 列出当前shell环境中已启动的任务状态，若未指定jobsid，则显示所有活动的任务状态信息；如果报告了一个任务的终止 ...</p>
+        </p>
+
+        <!-- read more button -->
+        <a href="http://2bapm.com/.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+      </div>
+      <div class="item">
+        <div class="item-title">
+            <h2><a href="http://2bapm.com/macadbandroid.html">Mac下adb识别非主流android手机</a></h2>
+          <a href="category/android.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Android</a> 
+          <a href="http://2bapm.com/macadbandroid.html#disqus_thread" class="label label-default light"><i class="fa fa-comment-o"></i> ?? Comments</a>
+          <span class="label label-default light">二 14 十月 2014</span>
+        </div>
+        <!-- image -->
+
+        <!-- blog short preview -->
+        <p>
+            <h1>mac下识别非主流android手机</h1>
+<h2>一、找到手机厂商ID</h2>
+<p>关于本机-系统报告-硬件-USB-欲连接的手机-厂商ID</p>
+<p>记住厂商ID</p>
+<h2>二、配置usb信息并重启adb服务</h2>
+<p><code>echo 厂商ID &gt;&gt; /.android/adb\_usb.ini
+``adb kill-server</code>
+<code>adb start-server</code></p>
+        </p>
+
+        <!-- read more button -->
+        <a href="http://2bapm.com/macadbandroid.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+      </div>
+      <div class="item">
+        <div class="item-title">
+            <h2><a href="http://2bapm.com/chanpinshengjijiaoxun.html">产品升级教训</a></h2>
+          <a href="category/product.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Product</a> 
+          <a href="http://2bapm.com/chanpinshengjijiaoxun.html#disqus_thread" class="label label-default light"><i class="fa fa-comment-o"></i> ?? Comments</a>
+          <span class="label label-default light">五 29 八月 2014</span>
+        </div>
+        <!-- image -->
+
+        <!-- blog short preview -->
+        <p>
+             + ' ...'
+        </p>
+
+        <!-- read more button -->
+        <a href="http://2bapm.com/chanpinshengjijiaoxun.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+      </div>
       <div class="item">
         <div class="item-title">
             <h2><a href="http://2bapm.com/sshkey-login-linux-vps.html">如何使用私钥登录linux服务器</a></h2>
@@ -324,7 +402,8 @@ __init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使
         <!-- read more button -->
         <a href="http://2bapm.com/ubuntuxia-an-zhuang-zsh.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
-      <div class="item">
+ 
+      <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/virtualenv-shi-yong.html">Virtualenv 使用</a></h2>
           <a href="category/python.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Python</a> 
@@ -372,7 +451,7 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/virtualenv-shi-yong.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
-      <div class="item">
+      <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/ubuntu-landscape.html">ubuntu landscape</a></h2>
           <a href="category/linux.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Linux</a> 
@@ -390,7 +469,7 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/ubuntu-landscape.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
-      <div class="item">
+      <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/zai-iis75shang-bu-shu-djangohuan-jing.html">在iis7.5上部署Django环境</a></h2>
           <a href="category/python.html" class="label label-default light"><i class="fa fa-dot-circle-o"></i> Python</a> 
@@ -431,7 +510,6 @@ Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影
         <!-- read more button -->
         <a href="http://2bapm.com/zai-iis75shang-bu-shu-djangohuan-jing.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
       </div>
- 
       <div class="item" style="display: none;">
         <div class="item-title">
             <h2><a href="http://2bapm.com/download-whole-site.html">新技能get√,递归下载整站文件</a></h2>
@@ -724,7 +802,9 @@ Disk identifier: 0x3aca4f94`
             <h3>Categories</h3>
 
             <ul>
-               <li><a href="http://2bapm.com/category/linux.html"><i class="fa fa-dot-circle-o"></i> Linux</a>
+               <li><a href="http://2bapm.com/category/android.html"><i class="fa fa-dot-circle-o"></i> Android</a>
+              </li>
+              <li><a href="http://2bapm.com/category/linux.html"><i class="fa fa-dot-circle-o"></i> Linux</a>
               </li>
               <li><a href="http://2bapm.com/category/personal.html"><i class="fa fa-dot-circle-o"></i> Personal</a>
               </li>
@@ -743,15 +823,30 @@ Disk identifier: 0x3aca4f94`
 
             <!-- hide this part -->
             <div class="hidden">
-  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
+  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
 
             <ul class="tree">
               <li>
                 <span><i class="fa fa-minus-square-o"></i>2014</span>
                 <ul>
                   <li>
+                    <span><i class="fa fa-plus-square-o"></i>10</span>
+                    <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/.html">
+                          <small>二 14 十月 2014</small>linux的进程管理</a>
+                      </li>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/macadbandroid.html">
+                          <small>二 14 十月 2014</small>Mac下adb识别非主流android手机</a>
+                      </li>
+                    </ul>
                     <span><i class="fa fa-plus-square-o"></i>08</span>
                     <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/chanpinshengjijiaoxun.html">
+                          <small>五 29 八月 2014</small>产品升级教训</a>
+                      </li>
                       <li style="display: none;">
                         <a href="http://2bapm.com/sshkey-login-linux-vps.html">
                           <small>日 24 八月 2014</small>如何使用私钥登录linux服务器</a>

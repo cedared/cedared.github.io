@@ -287,76 +287,50 @@
 
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
-                    <h4><a href="http://2bapm.com/sshkey-login-linux-vps.html">如何使用私钥登录linux服务器</a></h4>
-                  <p><h1>如何使用私钥登录linux服务器</h1>
-<p>启用密钥ssh登陆服务器：
- 
-首先得生成一对密钥，一把私有密钥(id_rsa)和一把公用密钥(id_rsa.pub)，公用密钥用于对消息进行加密，只有拥有私有密钥的人才能对该消息进行解密。把公钥放到我们要远程登录的主机（remote）上
-<code>（~/.ssh/authorized_keys）</code>
-专用密钥放置到本地机（local）或是U盘。
- 
-认证过程中，romote接收到local的登录请求后，romote的sshd 会生成一个随机数，并用我们先前拷贝过去的公用密钥对这个随机数进行加密，然后，sshd把加密了的随机数发回给正在local上运行的ssh程序，然后是local计算机对该随机数的解密，再发回给romote，通过后，romote则允许local登录了。</p></p>
-                  <a href="http://2bapm.com/sshkey-login-linux-vps.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                    <h4><a href="http://2bapm.com/.html">linux的进程管理</a></h4>
+                  <p><h1>linux的进程管理</h1>
+<p>fg、bg、jobs、&amp;、ctrl + z都是跟系统任务有关的，虽然现在基本上不怎么需要用到这些命令，但学会了也是很实用的
+一。&amp; 最经常被用到
+   这个用在一个命令的最后，可以把这个命令放到后台执行
+二。ctrl + z
+     可以将一个正在前台执行的命令放到后台，并且暂停
+三。jobs
+     查看当前有多少在后台运行的命令
+四。fg
+     将后台中的命令调至前台继续运行
+   如果后台中有多个命令，可以用 fg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid)
+五。bg
+     将一个在后台暂停的命令，变成继续执行
+   如果后台中有多个命令，可以用bg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid) 
+  
+  
+Linux下使用Shell命令控制任务Jobs执行</p>
+<p>下列命令可以用来操纵进程任务：
+　　ps 列出系统中正在运行的进程；
+　　kill 发送信号给一个或多个进程（经常用来杀死一个进程）；
+　　jobs 列出当前shell环境中已启动的任务状态，若未指定jobsid，则显示所有活动的任务状态信息；如果报告了一个任务的终止 ...</p></p>
+                  <a href="http://2bapm.com/.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
-                    <h4><a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html">python中__init__.py的作用</a></h4>
-                  <p><h2>Python中__init__.py的作用</h2>
-<p>python的每个模块的包中，都有一个__init__.py文件，有了这个文件，我们才能导入这个目录下的module。
-那么，__init__.py还有什么别的功能呢？
-其实，__init__.py里面还是可以有内容的，我们在导入一个包时，实际上导入了它的__init__.py文件。
-我们可以再__init__.py文件中再导入其他的包，或者模块。</p>
-<div class="highlight"><pre><span class="k">[python]</span>
-<span class="err">import</span> <span class="err">readers</span> 
-<span class="err">import</span> <span class="err">writers</span> 
-<span class="err">import</span> <span class="err">commands</span> 
-<span class="err">import</span> <span class="err">users</span> 
-<span class="err">import</span> <span class="err">meta</span> 
-<span class="err">import</span> <span class="err">auth</span> 
-<span class="err">import</span> <span class="err">admin</span>
-</pre></div>
-
-
-<p>这样，当我们导入这个包的时候，__init__.py文件自动运行。帮我们导入了这么多个模块，我们就不需要将所有的import语句写在一个文件里了，也可以减少代码量。
-不需要一个个去导入module了。
-__init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使出一招“全部导入”，也就是这样 ...</p></p>
-                  <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                    <h4><a href="http://2bapm.com/macadbandroid.html">Mac下adb识别非主流android手机</a></h4>
+                  <p><h1>mac下识别非主流android手机</h1>
+<h2>一、找到手机厂商ID</h2>
+<p>关于本机-系统报告-硬件-USB-欲连接的手机-厂商ID</p>
+<p>记住厂商ID</p>
+<h2>二、配置usb信息并重启adb服务</h2>
+<p><code>echo 厂商ID &gt;&gt; /.android/adb\_usb.ini
+``adb kill-server</code>
+<code>adb start-server</code></p></p>
+                  <a href="http://2bapm.com/macadbandroid.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
-                    <h4><a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html">使用proxychains为命令行设置代理</a></h4>
-                  <p><h3>一、安装相关程序</h3>
-<div class="highlight"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">proxychains</span>
-</pre></div>
-
-
-<h3>二、配置proxychains</h3>
-<div class="highlight"><pre><span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">proxychains</span><span class="p">.</span><span class="n">conf</span>
-</pre></div>
-
-
-<p>光标移动到最后，配置格式如下：</p>
-<div class="highlight"><pre><span class="err">协议名</span> <span class="n">ip</span> <span class="err">端口</span>
-<span class="n">socks</span> <span class="mf">127.0.0.1</span> <span class="mi">1080</span>
-</pre></div>
-
-
-<h3>三、配置代理程序</h3>
-<p>不管你们用啥吧……反正代理要先搭起来啊，我用的是shadowsocks</p>
-<h3>四、使用</h3>
-<div class="highlight"><pre><span class="n">proxychains</span> <span class="err">命令</span>
-</pre></div>
-
-
-<p>例如</p>
-<div class="highlight"><pre><span class="n">proxychiains</span> <span class="o">~/</span><span class="p">.</span><span class="n">dropbox</span><span class="o">-</span><span class="n">dist</span><span class="o">/</span><span class="n">dropboxd</span>
-</pre></div>
-
-
-<p>这样dropbox就走代理了~</p></p>
-                  <a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                    <h4><a href="http://2bapm.com/chanpinshengjijiaoxun.html">产品升级教训</a></h4>
+                  <p></p>
+                  <a href="http://2bapm.com/chanpinshengjijiaoxun.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
  
