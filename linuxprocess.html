@@ -98,32 +98,110 @@
         <div id="blog_main_area" class="left col-md-9" count=21>
   <!-- article title -->
   <header>
-      <h1>产品升级教训</h1>
+      <h1>linux的进程管理</h1>
     <small class="fsize13">
-            <a href="http://2bapm.com/category/product.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="2 articles in this category"><i class="fa fa-dot-circle-o"></i> Product</a>
-      <a href="http://2bapm.com/chanpinshengjijiaoxun.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="chanpinshengjijiaoxun.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
-      <span class="label label-default light">五 29 八月 2014</span> 
+            <a href="http://2bapm.com/category/linux.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="10 articles in this category"><i class="fa fa-dot-circle-o"></i> Linux</a>
+      <a href="http://2bapm.com/linuxprocess.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="linuxprocess.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <span class="label label-default light">二 14 十月 2014</span> 
     </small>
   </header>
 
   <article class='content'>
-    
+    <h1>linux的进程管理</h1>
+<p>fg、bg、jobs、&amp;、ctrl + z都是跟系统任务有关的，虽然现在基本上不怎么需要用到这些命令，但学会了也是很实用的
+一。&amp; 最经常被用到
+   这个用在一个命令的最后，可以把这个命令放到后台执行
+二。ctrl + z
+     可以将一个正在前台执行的命令放到后台，并且暂停
+三。jobs
+     查看当前有多少在后台运行的命令
+四。fg
+     将后台中的命令调至前台继续运行
+   如果后台中有多个命令，可以用 fg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid)
+五。bg
+     将一个在后台暂停的命令，变成继续执行
+   如果后台中有多个命令，可以用bg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid) 
+  
+  
+Linux下使用Shell命令控制任务Jobs执行</p>
+<p>下列命令可以用来操纵进程任务：
+　　ps 列出系统中正在运行的进程；
+　　kill 发送信号给一个或多个进程（经常用来杀死一个进程）；
+　　jobs 列出当前shell环境中已启动的任务状态，若未指定jobsid，则显示所有活动的任务状态信息；如果报告了一个任务的终止(即任务的状态被标记为Terminated)，shell 从当前的shell环境已知的列表中删除任务的进程标识；
+　　bg 将进程搬到后台运行（Background）；
+　　fg 将进程搬到前台运行（Foreground）； </p>
+<p>将job转移到后台运行 
+　　如果你经常在X图形下工作，你可能有这样的经历：通过终端命令运行一个GUI程序，GUI界面出来了，但是你的终端还停留在原地，你不能在shell中继续执行其他命令了，除非将GUI程序关掉。 </p>
+<p>为了使程序执行后终端还能继续接受命令，你可以将进程移到后台运行，使用如下命令运行程序： #假设要运行xmms</p>
+<p>$xmms &amp;</p>
+<p>这样打开xmms后，终端的提示又回来了。现在xmms在后台运行着呢；但万一你运行程序时忘记使用“&amp;”了，又不想重新执行；你可以先使用ctrl+z挂起程序，然后敲入bg命令，这样程序就在后台继续运行了。</p>
+<p>概念：当前任务 </p>
+<p>如果后台的任务号有2个，<a href="">1</a>,<a href="">2</a>；如果当第一个后台任务顺利执行完毕，第二个后台任务还在执行中时，当前任务便会自动变成后台任务号码“<a href="">2</a>”的后台任务。所以可以得出一点，即当前任务是会变动的。当用户输入“fg”、“bg”和“stop”等命令时，如果不加任何引号，则所变动的均是当前任务。</p>
+<p>察看jobs 
+　　使用jobs或ps命令可以察看正在执行的jobs。 </p>
+<p>jobs命令执行的结果，＋表示是一个当前的作业，减号表是是一个当前作业之后的一个作业，jobs -l选项可显示所有任务的PID,jobs的状态可以是running, stopped, Terminated,但是如果任务被终止了（kill），shell 从当前的shell环境已知的列表中删除任务的进程标识；也就是说，jobs命令显示的是当前shell环境中所起的后台正在运行或者被挂起的任务信息；</p>
+<p>进程的挂起 </p>
+<p>后台进程的挂起： </p>
+<p>在solaris中通过stop命令执行，通过jobs命令查看job号(假设为num)，然后执行stop %num；</p>
+<p>在redhat中，不存在stop命令，可通过执行命令kill -stop PID，将进程挂起；</p>
+<p>当要重新执行当前被挂起的任务时，通过bg %num 即可将挂起的job的状态由stopped改为running，仍在后台执行；当需要改为在前台执行时，执行命令fg %num即可；</p>
+<p>前台进程的挂起：</p>
+<p>ctrl+Z;</p>
+<p>进程的终止 </p>
+<p>后台进程的终止：
+　　方法一：
+　　通过jobs命令查看job号（假设为num），然后执行kill %num</p>
+<p>方法二：
+　　通过ps命令查看job的进程号（PID，假设为pid），然后执行kill pid </p>
+<p>前台进程的终止：</p>
+<p>ctrl+c</p>
+<p>kill的其他作用 
+　　kill除了可以终止进程，还能给进程发送其它信号，使用kill -l 可以察看kill支持的信号。 </p>
+<p>SIGTERM是不带参数时kill发送的信号，意思是要进程终止运行，但执行与否还得看进程是否支持。如果进程还没有终止，可以使用kill -SIGKILL pid，这是由内核来终止进程，进程不能监听这个信号。
+ 
+ 
+ctrl+c和ctrl+z都是中断命令,但是他们的作用却不一样.
+ctrl+c是强制中断程序的执行,
+而ctrl+z的是将任务中断,但是此任务并没有结束,他仍然在进程中他只是维持挂起的状态,用户可以使用fg/bg操作继续前台或后台的任务,fg命令重新启动前台被中断的任务,bg命令把被中断的任务放在后台执行.（jobs查看后台运行的进程）
+例如:
+当你vi一个文件是,如果需要用shell执行别的操作,但是你又不打算关闭vi,因为你得
+存盘推出,你可以简单的按下ctrl+z,shell会将vi进程挂起,当你结束了那个shell操作之后,你可以用fg命令继续vi你的文件.
+ 
+ctrl+c强行中断当前程序的执行。
+ctrl+d表示结束当前输入（即用户不再给当前程序发出指令），那么Linux通常将结束当前程序。
+ctrl+z表示将当前前台运行的经常放在后台并挂起，如需其在后台继续运行，需用“bg 进程号”使其继续运行；再用"fg 进程号"可将后台进程前台化。
+ 
+ctrl+c,ctrl+d,ctrl+z在linux中意义
+ linux下： ctrl-c 发送 SIGINT 信号给前台进程组中的所有进程。常用于终止正在运行的程序。 ctrl-z 发送 SIGTSTP 信号给前台进程组中的所有进程，常用于挂起一个进程。 ctrl-d 不是发送信号，而是表示一个特殊的二进制值，表
+linux下：
+ctrl-c 发送 SIGINT 信号给前台进程组中的所有进程。常用于终止正在运行的程序。
+ctrl-z 发送 SIGTSTP 信号给前台进程组中的所有进程，常用于挂起一个进程。
+ctrl-d 不是发送信号，而是表示一个特殊的二进制值，表示 EOF。
+ctrl-\ 发送 SIGQUIT 信号给前台进程组中的所有进程，终止前台进程并生成 core 文件。
+Key Function
+Ctrl-c Kill foreground process
+Ctrl-z Suspend foreground process
+Ctrl-d Terminate input, or exit shell
+Ctrl-s Suspend output
+Ctrl-q Resume output
+Ctrl-o Discard output
+Ctrl-l Clear screen</p>
   </article>
 
   <div class="divider"><!-- lines divider --></div>
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/chanpinshengjijiaoxun.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=http://2bapm.com/chanpinshengjijiaoxun.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=http://2bapm.com/chanpinshengjijiaoxun.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/chanpinshengjijiaoxun.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/chanpinshengjijiaoxun.html&title=产品升级教训&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=http://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=http://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/linuxprocess.html&title=linux的进程管理&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
   <p class="fsize16"> Tags:
-        <a href="/tag/product.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> product</a>
+        <a href="/tag/linux.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="2 articles with this tag"><i class="fa fa-tags"></i> linux</a>
   </p>
 
   <hr /><!-- divider -->
@@ -132,9 +210,9 @@
       <div id="disqus_thread"></div>
       <script type="text/javascript">
         var disqus_shortname = '2bapm';
-        var disqus_identifier = "chanpinshengjijiaoxun.html";
-        var disqus_title = "产品升级教训";
-        var disqus_url = "http://2bapm.com/chanpinshengjijiaoxun.html";
+        var disqus_identifier = "linuxprocess.html";
+        var disqus_title = "linux的进程管理";
+        var disqus_url = "http://2bapm.com/linuxprocess.html";
         (function() {
           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
           dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
