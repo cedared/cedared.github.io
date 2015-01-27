@@ -287,6 +287,45 @@
 
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
+                    <h4><a href="http://2bapm.com/raspberry-bluetooth.html">树莓派蓝牙配置</a></h4>
+                  <p><h1>树莓派蓝牙配置</h1>
+<p>Raspbian ( Raspberry Pi Debian）装蓝牙：</p>
+<p><code>#apt-get install bluetooth bluez-utils bluez-compat blueman</code></p>
+<p>装上USB蓝牙适配器之后，
+<code>#lsusb</code>看有没有正确识别Bluetooth Dongle设备
+例如，
+<code>Bus 001 Device 005: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)</code>
+然后运行
+<code>#/etc/init.d/bluetooth status 或者 # service bluetooth status</code>看看Bluetooth服务是否正常运行。</p>
+<p>正常的话应该是
+<code>ok  bluetooth is running.</code></p>
+<p>用这个命令查看周围可见设备的地址和名称：
+<code># hcitool ...</code></p></p>
+                  <a href="http://2bapm.com/raspberry-bluetooth.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                </div>
+              </div>
+              <div class="col-md-4 quick-hover">
+                <div class="quick-item">
+                    <h4><a href="http://2bapm.com/raspberry-wifi.html">树莓派wifi配置</a></h4>
+                  <p><h1>树莓派wifi配置</h1>
+<h2>一、把WIFI网卡插入树莓派的USB口中，　用 lsusb 命令查看USB设备列表</h2>
+<p><code>lsusb</code></p>
+<p>可以见到USB设备列表中有 "RTL8188CUS 802.11N WLAN Adapter" 的字样
+说明该USB设备已被系统识别，芯片是RTL8188</p>
+<p>用 ifconfig 命令可以看到 wlan0 设备，但没有IP地址(未连接)</p>
+<h2>二、修改 /etc/network/interfaces 文件(这个文件是定义网络配置的)</h2>
+<p><code>sudo nano /etc/network/interfaces</code></p>
+<p>修改后文件内容如下：
+<code>auto lo</code>
+<code>iface lo inet loopback</code>
+<code>iface eth0 inet dhcp</code></p>
+<p><code>auto wlan0
+``allow-hotplug wlan0 ...</code></p></p>
+                  <a href="http://2bapm.com/raspberry-wifi.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                </div>
+              </div>
+              <div class="col-md-4 quick-hover">
+                <div class="quick-item">
                     <h4><a href="http://2bapm.com/.html">linux的进程管理</a></h4>
                   <p><h1>linux的进程管理</h1>
 <p>fg、bg、jobs、&amp;、ctrl + z都是跟系统任务有关的，虽然现在基本上不怎么需要用到这些命令，但学会了也是很实用的
@@ -310,27 +349,6 @@ Linux下使用Shell命令控制任务Jobs执行</p>
 　　kill 发送信号给一个或多个进程（经常用来杀死一个进程）；
 　　jobs 列出当前shell环境中已启动的任务状态，若未指定jobsid，则显示所有活动的任务状态信息；如果报告了一个任务的终止 ...</p></p>
                   <a href="http://2bapm.com/.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
-                </div>
-              </div>
-              <div class="col-md-4 quick-hover">
-                <div class="quick-item">
-                    <h4><a href="http://2bapm.com/macadbandroid.html">Mac下adb识别非主流android手机</a></h4>
-                  <p><h1>mac下识别非主流android手机</h1>
-<h2>一、找到手机厂商ID</h2>
-<p>关于本机-系统报告-硬件-USB-欲连接的手机-厂商ID</p>
-<p>记住厂商ID</p>
-<h2>二、配置usb信息并重启adb服务</h2>
-<p><code>echo 厂商ID &gt;&gt; /.android/adb\_usb.ini
-``adb kill-server</code>
-<code>adb start-server</code></p></p>
-                  <a href="http://2bapm.com/macadbandroid.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
-                </div>
-              </div>
-              <div class="col-md-4 quick-hover">
-                <div class="quick-item">
-                    <h4><a href="http://2bapm.com/chanpinshengjijiaoxun.html">产品升级教训</a></h4>
-                  <p></p>
-                  <a href="http://2bapm.com/chanpinshengjijiaoxun.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
  
