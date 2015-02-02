@@ -1,3 +1,4 @@
+<!-- 评论配置完毕 -->
 <!-- SWIFTYPE 搜索待配置 -->
 <!doctype html>
 <html lang="en-US">
@@ -94,23 +95,100 @@
     <article class="container">
 
       <div class="row">
-        <div id="blog_main_area" class="left col-md-9" count=11>
-  <div class="item">
-      <div class="item-title">
-        <h2>Linux</h2>
-      </div>
-          <p><span class="label label-default light"><a href="http://2bapm.com/ssh-forwards.html">一 02 二月 2015</span> SSH反向连接及Autossh</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/linuxprocess.html">二 14 十月 2014</span> linux的进程管理</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/sshkey-login-linux-vps.html">日 24 八月 2014</span> 如何使用私钥登录linux服务器</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html">二 15 七月 2014</span> 使用proxychains为命令行设置代理</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/ubuntuxia-an-zhuang-zsh.html">四 10 四月 2014</span> Ubuntu下安装zsh</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/ubuntu-landscape.html">四 03 四月 2014</span> ubuntu landscape</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/download-whole-site.html">四 03 四月 2014</span> 新技能get√,递归下载整站文件</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html">四 03 四月 2014</span> 在cent6上分别安装python2.7和python3</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/ubuntu-zhong-wen-huan-jing-she-zhi.html">四 03 四月 2014</span> ubuntu 中文环境设置</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/emacs-shi-yong-auto-complete-bu-quan.html">四 03 四月 2014</span> Emacs 使用 auto-complete 补全</a></p>
-          <p><span class="label label-default light"><a href="http://2bapm.com/centos-xia-tian-jia-xin-ying-pan.html">四 03 四月 2014</span> CentOS 下添加新硬盘</a></p>
-  </div>
+        <div id="blog_main_area" class="left col-md-9" count=22>
+  <!-- article title -->
+  <header>
+      <h1>SSH反向连接及Autossh</h1>
+    <small class="fsize13">
+            <a href="http://2bapm.com/category/linux.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="11 articles in this category"><i class="fa fa-dot-circle-o"></i> Linux</a>
+      <a href="http://2bapm.com/ssh-forwards.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="ssh-forwards.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <span class="label label-default light">一 02 二月 2015</span> 
+    </small>
+  </header>
+
+  <article class='content'>
+    <h1>SSH反向连接及Autossh</h1>
+<h2>0.理论介绍</h2>
+<p>接 触Linux恐怕对SSH再熟悉不过了，还有scp，sftp各种方便的功能，一般的使用都需要ip:port（如果不是默认22的话），但有些情况比较 特殊，就是想连接一台内网主机（比如公司内网，当然你肯定做不了Port Forwarding，除非你想在公司防火墙上拆个洞）。稍懂一点网络的童鞋会明白，Internet上去主动连接一台内网是不可能的，一般的解决方案分 两种，一种是端口映射（Port Forwarding），将内网主机的某个端口Open出防火墙，相当于两个外网主机通信；另一种是内网主机主动连接到外网主机，又被称作反向连接 （Reverse Connection），这样NAT路由/防火墙就会在内网主机和外网主机之间建立映射，自然可以相互通信了。但是，这种映射是NAT路由自动维持的，不 会持续下去，如果连接断开或者网络不稳定都会导致通信失败，这时内网主机需要再次主动连接到外网主机，建立连接。
+ </p>
+<h2>1.理论的介绍完了，下面实际操作：</h2>
+<p>A要控制B</p>
+<p>A主机：外网，ip：123.123.123.123，sshd端口：2221</p>
+<p>B主机：内网，sshd端口：2223</p>
+<p>无论是外网主机A，还是内网主机B都需要跑ssh daemon
+ </p>
+<h3>1.1.首先在B上执行</h3>
+<p><code>$ ssh -NfR 1234:localhost:2223 user1@123.123.123.123 -p2221</code>这句话的意思是将A主机的1234端口和B主机的2223端口绑定，相当于远程端口映射（Remote Port Forwarding）。
+这里每次需要输入A主机user1的登陆密码，后面会讲到解决办法。
+ </p>
+<h3>1.2.这时在A主机上sshd会listen本地1234端口</h3>
+<p><code>$ ss -ant
+``State      Recv-Q Send-Q        Local Address:Port          Peer Address:Port
+``LISTEN     0      128               127.0.0.1:1234                     *:*</code>### 1.3.像平时一样连接到A主机的1234端口就可以控制内网B主机了
+<code>$ ssh localhost -p1234</code> </p>
+<h2>2.自动连接</h2>
+<p>一开始提到，这种反向连接（Reverse Connection）不稳定，可能随时断开，需要内网主机B再次向外网A发起连接，这时需要个“朋友”帮你在内网B主机执行这条命令。它就是Autossh。
+在此之前还要解决之前的一个问题，那就是每次内网主机B连接外网主机A时都需要输入密码，这个问题ssh本身是提供另外一种验证方式——通过密钥验证用户身份，实现自动登录。
+ </p>
+<h3>2.1.在内网B主机上生产公钥和私钥</h3>
+<p><code>$ ssh-keygen</code>
+...(一直按Enter，最后在\~/.ssh/下生成密钥)
+<code>$ ls /.ssh/
+``id\_rsa id\_rsa.pub known\_hosts</code> </p>
+<h3>2.2.复制B主机上生成的id_rsa.pub公钥到外网A主机上，并将内容加入到\~/.ssh/authorized_keys中</h3>
+<p><code>$ cat idrsa.pub &gt;&gt; /.ssh/authorizedkeys</code>试下，内网B主机连接外网A主机，就不再输入密码验证了
+补充：今天了解到ssh-copy-id这个命令，上面这个操作就变的简单了
+<code>$ ssh-copy-id user1@123.123.123.123</code> </p>
+<h3>2.3.再来看看Autossh的用法</h3>
+<p><code>$ autossh -M 5678 -NR 1234:localhost:2223 user1@123.123.123.123 -p2221</code>比之前的命令添加的一个-M 5678参数，负责通过5678端口监视连接状态，连接有问题时就会自动重连，去掉了一个-f参数，因为autossh本身就会在background运行。
+ </p>
+<h2>3.终极方案：当重启内网B主机，谁来自动Autossh呢，加入daemon吧</h2>
+<p>以daemon方式执行，相当于root去执行autossh, ssh，这时刚才普通用户目录下的.ssh/authorized_keys文件会不起效。有两种办法解决，一种是用autossh的参数指定.ssh路 径；另外一种是以普通用户身份执行daemon，下面是第二种方式。
+<code>/bin/su -c '/usr/bin/autossh -M 5678 -NR 1234:localhost:2223 user1@123.123.123.123 -p2221' - user1</code>autossh还有很多参数，用来设置重连间隔等等。
+将上面命令放入下面各启动方式中，根据自己系统自己配置：
+<code>SysV：/etc/inid.d/autossh
+``Upstart: /etc/init/autossh.conf
+``systemd: /usr/lib/systemd/system/autossh.service</code> 
+ 
+P.S.
+1.家里是ADSL的话，用DDNS，解决ip问题
+2.外网有路由的可设下端口映射
+3.虽然有密钥和密码保护，但还请小心使用</p>
+  </article>
+
+  <div class="divider"><!-- lines divider --></div>
+
+  <!-- SOCIAL -->
+<p class="socials">
+    <a href="http://www.facebook.com/sharer/sharer.php?u=http://2bapm.com/ssh-forwards.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=http://2bapm.com/ssh-forwards.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=http://2bapm.com/ssh-forwards.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==http://2bapm.com/ssh-forwards.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=http://2bapm.com/ssh-forwards.html&title=SSH反向连接及Autossh&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+</p>  
+
+  <!-- TAGS -->
+  <p class="fsize16"> Tags:
+        <a href="/tag/linux.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="3 articles with this tag"><i class="fa fa-tags"></i> linux</a>
+  </p>
+
+  <hr /><!-- divider -->
+
+    <div id="comments" class="comments">
+      <div id="disqus_thread"></div>
+      <script type="text/javascript">
+        var disqus_shortname = '2bapm';
+        var disqus_identifier = "ssh-forwards.html";
+        var disqus_title = "SSH反向连接及Autossh";
+        var disqus_url = "http://2bapm.com/ssh-forwards.html";
+        (function() {
+          var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+          dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+          (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+      </script>
+      <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus</a>.</noscript>
+    </div>
         </div>
 
         <!-- SIDEBAR -->
@@ -199,7 +277,7 @@
 
             <!-- hide this part -->
             <div class="hidden">
-  None  None  None  None  None  None  None  None  None  None  None             </div>
+  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None  None             </div>
 
             <ul class="tree">
               <li>
@@ -213,6 +291,17 @@
                           <small>一 02 二月 2015</small>SSH反向连接及Autossh</a>
                       </li>
                     </ul>
+                    <span><i class="fa fa-plus-square-o"></i>01</span>
+                    <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/raspberry-bluetooth.html">
+                          <small>二 27 一月 2015</small>树莓派蓝牙配置</a>
+                      </li>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/raspberry-wifi.html">
+                          <small>二 27 一月 2015</small>树莓派wifi配置</a>
+                      </li>
+                    </ul>
                   </li>
                 </ul>
                 <span><i class="fa fa-minus-square-o"></i>2014</span>
@@ -224,12 +313,24 @@
                         <a href="http://2bapm.com/linuxprocess.html">
                           <small>二 14 十月 2014</small>linux的进程管理</a>
                       </li>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/macadbandroid.html">
+                          <small>二 14 十月 2014</small>Mac下adb识别非主流android手机</a>
+                      </li>
                     </ul>
                     <span><i class="fa fa-plus-square-o"></i>08</span>
                     <ul>
                       <li style="display: none;">
+                        <a href="http://2bapm.com/chanpinshengjijiaoxun.html">
+                          <small>五 29 八月 2014</small>产品升级教训</a>
+                      </li>
+                      <li style="display: none;">
                         <a href="http://2bapm.com/sshkey-login-linux-vps.html">
                           <small>日 24 八月 2014</small>如何使用私钥登录linux服务器</a>
+                      </li>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html">
+                          <small>六 09 八月 2014</small>python中__init__.py的作用</a>
                       </li>
                     </ul>
                     <span><i class="fa fa-plus-square-o"></i>07</span>
@@ -239,15 +340,38 @@
                           <small>二 15 七月 2014</small>使用proxychains为命令行设置代理</a>
                       </li>
                     </ul>
+                    <span><i class="fa fa-plus-square-o"></i>06</span>
+                    <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/ban-cheng-ge-ren-zong-jie.html">
+                          <small>一 23 六月 2014</small>半程个人总结</a>
+                      </li>
+                    </ul>
                     <span><i class="fa fa-plus-square-o"></i>04</span>
                     <ul>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/chanpin-sheji-fangan.html">
+                          <small>四 10 四月 2014</small>产品经理如何根据产品所处的阶段选择设计方案</a>
+                      </li>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/shi-yong-nginxgunicornvirtualenvsupervisorhe-postgresqlda-jian-djangosheng-chan-huan-jing.html">
+                          <small>四 10 四月 2014</small>使用Nginx，Gunicorn，Virtualenv，Supervisor和PostgreSQL搭建Django生产环境</a>
+                      </li>
                       <li style="display: none;">
                         <a href="http://2bapm.com/ubuntuxia-an-zhuang-zsh.html">
                           <small>四 10 四月 2014</small>Ubuntu下安装zsh</a>
                       </li>
                       <li style="display: none;">
+                        <a href="http://2bapm.com/virtualenv-shi-yong.html">
+                          <small>四 03 四月 2014</small>Virtualenv 使用</a>
+                      </li>
+                      <li style="display: none;">
                         <a href="http://2bapm.com/ubuntu-landscape.html">
                           <small>四 03 四月 2014</small>ubuntu landscape</a>
+                      </li>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/zai-iis75shang-bu-shu-djangohuan-jing.html">
+                          <small>四 03 四月 2014</small>在iis7.5上部署Django环境</a>
                       </li>
                       <li style="display: none;">
                         <a href="http://2bapm.com/download-whole-site.html">
@@ -268,6 +392,10 @@
                       <li style="display: none;">
                         <a href="http://2bapm.com/centos-xia-tian-jia-xin-ying-pan.html">
                           <small>四 03 四月 2014</small>CentOS 下添加新硬盘</a>
+                      </li>
+                      <li style="display: none;">
+                        <a href="http://2bapm.com/2013-final-summary.html">
+                          <small>四 03 四月 2014</small>2013年终个人盘点</a>
                       </li>
                     </ul>
                   </li>

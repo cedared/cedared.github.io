@@ -287,6 +287,19 @@
 
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
+                    <h4><a href="http://2bapm.com/ssh-forwards.html">SSH反向连接及Autossh</a></h4>
+                  <p><h1>SSH反向连接及Autossh</h1>
+<h2>0.理论介绍</h2>
+<p>接 触Linux恐怕对SSH再熟悉不过了，还有scp，sftp各种方便的功能，一般的使用都需要ip:port（如果不是默认22的话），但有些情况比较 特殊，就是想连接一台内网主机（比如公司内网，当然你肯定做不了Port Forwarding，除非你想在公司防火墙上拆个洞）。稍懂一点网络的童鞋会明白，Internet上去主动连接一台内网是不可能的，一般的解决方案分 两种，一种是端口映射（Port Forwarding），将内网主机的某个端口Open出防火墙，相当于两个外网主机通信；另一种是内网主机主动连接到外网主机，又被称作反向连接 （Reverse Connection），这样NAT路由/防火墙就会在内网主机和外网主机之间建立映射，自然可以相互通信了。但是，这种映射是NAT路由自动维持的，不 会持续下去，如果连接断开或者网络不稳定都会导致通信失败，这时内网主机需要再次主动连接到外网主机，建立连接。
+ </p>
+<h2>1.理论的介绍完了，下面实际操作：</h2>
+<p>A要控制B</p>
+<p>A主机：外网，ip：123.123.123 ...</p></p>
+                  <a href="http://2bapm.com/ssh-forwards.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                </div>
+              </div>
+              <div class="col-md-4 quick-hover">
+                <div class="quick-item">
                     <h4><a href="http://2bapm.com/raspberry-bluetooth.html">树莓派蓝牙配置</a></h4>
                   <p><h1>树莓派蓝牙配置</h1>
 <p>Raspbian ( Raspberry Pi Debian）装蓝牙：</p>
@@ -322,33 +335,6 @@
 <p><code>auto wlan0
 ``allow-hotplug wlan0 ...</code></p></p>
                   <a href="http://2bapm.com/raspberry-wifi.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
-                </div>
-              </div>
-              <div class="col-md-4 quick-hover">
-                <div class="quick-item">
-                    <h4><a href="http://2bapm.com/linuxprocess.html">linux的进程管理</a></h4>
-                  <p><h1>linux的进程管理</h1>
-<p>fg、bg、jobs、&amp;、ctrl + z都是跟系统任务有关的，虽然现在基本上不怎么需要用到这些命令，但学会了也是很实用的
-一。&amp; 最经常被用到
-   这个用在一个命令的最后，可以把这个命令放到后台执行
-二。ctrl + z
-     可以将一个正在前台执行的命令放到后台，并且暂停
-三。jobs
-     查看当前有多少在后台运行的命令
-四。fg
-     将后台中的命令调至前台继续运行
-   如果后台中有多个命令，可以用 fg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid)
-五。bg
-     将一个在后台暂停的命令，变成继续执行
-   如果后台中有多个命令，可以用bg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid) 
-  
-  
-Linux下使用Shell命令控制任务Jobs执行</p>
-<p>下列命令可以用来操纵进程任务：
-　　ps 列出系统中正在运行的进程；
-　　kill 发送信号给一个或多个进程（经常用来杀死一个进程）；
-　　jobs 列出当前shell环境中已启动的任务状态，若未指定jobsid，则显示所有活动的任务状态信息；如果报告了一个任务的终止 ...</p></p>
-                  <a href="http://2bapm.com/linuxprocess.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
  
