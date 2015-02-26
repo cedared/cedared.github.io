@@ -129,7 +129,7 @@ __init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使
 from PackageName import *
 这时 import 就会把注册在包 __init__.py 文件中 __all__ 列表中的子模块和子包导入到当前作用域中来。比如：
 文件 __init__.py</p>
-<div class="highlight"><pre><span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Module1&quot;</span><span class="p">,</span> <span class="s">&quot;Module2&quot;</span><span class="p">,</span> <span class="s">&quot;subPackage1&quot;</span><span class="p">,</span> <span class="s">&quot;subPackage2&quot;</span><span class="p">]</span>
+<div class="highlight"><pre>__all__ = [&quot;Module1&quot;, &quot;Module2&quot;, &quot;subPackage1&quot;, &quot;subPackage2&quot;]
 </pre></div>
   </article>
 

@@ -1,0 +1,1334 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Just Be Free!</title><link>http://2bapm.com/</link><description>Freedom,Foolish,Simple!</description><atom:link href="http://2bapm.com/feeds/albert-young.rss.xml" rel="self"></atom:link><lastBuildDate>Mon, 02 Feb 2015 15:23:00 +0800</lastBuildDate><item><title>SSH反向连接及Autossh</title><link>http://2bapm.com/ssh-forwards.html</link><description>&lt;h1&gt;SSH反向连接及Autossh&lt;/h1&gt;
+&lt;h2&gt;0.理论介绍&lt;/h2&gt;
+&lt;p&gt;接 触Linux恐怕对SSH再熟悉不过了，还有scp，sftp各种方便的功能，一般的使用都需要ip:port（如果不是默认22的话），但有些情况比较 特殊，就是想连接一台内网主机（比如公司内网，当然你肯定做不了Port Forwarding，除非你想在公司防火墙上拆个洞）。稍懂一点网络的童鞋会明白，Internet上去主动连接一台内网是不可能的，一般的解决方案分 两种，一种是端口映射（Port Forwarding），将内网主机的某个端口Open出防火墙，相当于两个外网主机通信；另一种是内网主机主动连接到外网主机，又被称作反向连接 （Reverse Connection），这样NAT路由/防火墙就会在内网主机和外网主机之间建立映射，自然可以相互通信了。但是，这种映射是NAT路由自动维持的，不 会持续下去，如果连接断开或者网络不稳定都会导致通信失败，这时内网主机需要再次主动连接到外网主机，建立连接。
+ &lt;/p&gt;
+&lt;h2&gt;1.理论的介绍完了，下面实际操作：&lt;/h2&gt;
+&lt;p&gt;A要控制B&lt;/p&gt;
+&lt;p&gt;A主机：外网，ip：123.123.123.123，sshd端口：2221&lt;/p&gt;
+&lt;p&gt;B主机：内网，sshd端口：2223&lt;/p&gt;
+&lt;p&gt;无论是外网主机A，还是内网主机B都需要跑ssh daemon
+ &lt;/p&gt;
+&lt;h3&gt;1.1.首先在B上执行&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;$ ssh -NfR 1234:localhost:2223 user1@123.123.123.123 -p2221&lt;/code&gt;这句话的意思是将A主机的1234端口和B主机的2223端口绑定，相当于远程端口映射（Remote Port Forwarding）。
+这里每次需要输入A主机user1的登陆密码，后面会讲到解决办法。
+ &lt;/p&gt;
+&lt;h3&gt;1.2.这时在A主机上sshd会listen本地1234端口&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;$ ss -ant
+``State      Recv-Q Send-Q        Local Address:Port          Peer Address:Port
+``LISTEN     0      128               127.0.0.1:1234                     *:*&lt;/code&gt;### 1.3.像平时一样连接到A主机的1234端口就可以控制内网B主机了
+&lt;code&gt;$ ssh localhost -p1234&lt;/code&gt; &lt;/p&gt;
+&lt;h2&gt;2.自动连接&lt;/h2&gt;
+&lt;p&gt;一开始提到，这种反向连接（Reverse Connection）不稳定，可能随时断开，需要内网主机B再次向外网A发起连接，这时需要个“朋友”帮你在内网B主机执行这条命令。它就是Autossh。
+在此之前还要解决之前的一个问题，那就是每次内网主机B连接外网主机A时都需要输入密码，这个问题ssh本身是提供另外一种验证方式——通过密钥验证用户身份，实现自动登录。
+ &lt;/p&gt;
+&lt;h3&gt;2.1.在内网B主机上生产公钥和私钥&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;$ ssh-keygen&lt;/code&gt;
+...(一直按Enter，最后在\~/.ssh/下生成密钥)
+&lt;code&gt;$ ls /.ssh/
+``id\_rsa id\_rsa.pub known\_hosts&lt;/code&gt; &lt;/p&gt;
+&lt;h3&gt;2.2.复制B主机上生成的id_rsa.pub公钥到外网A主机上，并将内容加入到\~/.ssh/authorized_keys中&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;$ cat idrsa.pub &amp;gt;&amp;gt; /.ssh/authorizedkeys&lt;/code&gt;试下，内网B主机连接外网A主机，就不再输入密码验证了
+补充：今天了解到ssh-copy-id这个命令，上面这个操作就变的简单了
+&lt;code&gt;$ ssh-copy-id user1@123.123.123.123&lt;/code&gt; &lt;/p&gt;
+&lt;h3&gt;2.3.再来看看Autossh的用法&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;$ autossh -M 5678 -NR 1234:localhost:2223 user1@123.123.123.123 -p2221&lt;/code&gt;比之前的命令添加的一个-M 5678参数，负责通过5678端口监视连接状态，连接有问题时就会自动重连，去掉了一个-f参数，因为autossh本身就会在background运行。
+ &lt;/p&gt;
+&lt;h2&gt;3.终极方案：当重启内网B主机，谁来自动Autossh呢，加入daemon吧&lt;/h2&gt;
+&lt;p&gt;以daemon方式执行，相当于root去执行autossh, ssh，这时刚才普通用户目录下的.ssh/authorized_keys文件会不起效。有两种办法解决，一种是用autossh的参数指定.ssh路 径；另外一种是以普通用户身份执行daemon，下面是第二种方式。
+&lt;code&gt;/bin/su -c '/usr/bin/autossh -M 5678 -NR 1234:localhost:2223 user1@123.123.123.123 -p2221' - user1&lt;/code&gt;autossh还有很多参数，用来设置重连间隔等等。
+将上面命令放入下面各启动方式中，根据自己系统自己配置：
+&lt;code&gt;SysV：/etc/inid.d/autossh
+``Upstart: /etc/init/autossh.conf
+``systemd: /usr/lib/systemd/system/autossh.service&lt;/code&gt; 
+ 
+P.S.
+1.家里是ADSL的话，用DDNS，解决ip问题
+2.外网有路由的可设下端口映射
+3.虽然有密钥和密码保护，但还请小心使用&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Mon, 02 Feb 2015 15:23:00 +0800</pubDate><guid>tag:2bapm.com,2015-02-02:ssh-forwards.html</guid><category>linux</category></item><item><title>树莓派蓝牙配置</title><link>http://2bapm.com/raspberry-bluetooth.html</link><description>&lt;h1&gt;树莓派蓝牙配置&lt;/h1&gt;
+&lt;p&gt;Raspbian ( Raspberry Pi Debian）装蓝牙：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;#apt-get install bluetooth bluez-utils bluez-compat blueman&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;装上USB蓝牙适配器之后，
+&lt;code&gt;#lsusb&lt;/code&gt;看有没有正确识别Bluetooth Dongle设备
+例如，
+&lt;code&gt;Bus 001 Device 005: ID 0a12:0001 Cambridge Silicon Radio, Ltd Bluetooth Dongle (HCI mode)&lt;/code&gt;
+然后运行
+&lt;code&gt;#/etc/init.d/bluetooth status 或者 # service bluetooth status&lt;/code&gt;看看Bluetooth服务是否正常运行。&lt;/p&gt;
+&lt;p&gt;正常的话应该是
+&lt;code&gt;ok  bluetooth is running.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;用这个命令查看周围可见设备的地址和名称：
+&lt;code&gt;# hcitool scan
+``aa:bb:cc:dd:ee:ff Wireless Keyboard
+``ff:ff:bb:cc:dd:aa Nokia XXXX&lt;/code&gt;
+运行 （后面换成你设备的地址）：
+&lt;code&gt;#bluez-simple-agent hci0 aa:bb:cc:dd:ee:ff&lt;/code&gt;在这边输入一个密码（0000），回车。
+如果是蓝牙键盘，去蓝牙设备那边输入刚才设置的密码（0000）回车。
+成功应该会说
+……
+Release&lt;/p&gt;
+&lt;p&gt;如果失败则会出现Creating device failed: ……之类的。请重试。确认蓝牙设备是在请求配对的状态。&lt;/p&gt;
+&lt;p&gt;…………
+用这个命令（别忘了替换成正确的地址）将这个新设备加入到信任列表：
+&lt;code&gt;#bluez-test-device trusted aa:bb:cc:dd:ee:ff yes&lt;/code&gt;
+用这个命令手工开始连接：
+&lt;code&gt;#bluez-test-input connect aa:bb:cc:dd:ee:ff&lt;/code&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Tue, 27 Jan 2015 14:57:00 +0800</pubDate><guid>tag:2bapm.com,2015-01-27:raspberry-bluetooth.html</guid><category></category></item><item><title>树莓派wifi配置</title><link>http://2bapm.com/raspberry-wifi.html</link><description>&lt;h1&gt;树莓派wifi配置&lt;/h1&gt;
+&lt;h2&gt;一、把WIFI网卡插入树莓派的USB口中，　用 lsusb 命令查看USB设备列表&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;lsusb&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;可以见到USB设备列表中有 "RTL8188CUS 802.11N WLAN Adapter" 的字样
+说明该USB设备已被系统识别，芯片是RTL8188&lt;/p&gt;
+&lt;p&gt;用 ifconfig 命令可以看到 wlan0 设备，但没有IP地址(未连接)&lt;/p&gt;
+&lt;h2&gt;二、修改 /etc/network/interfaces 文件(这个文件是定义网络配置的)&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;sudo nano /etc/network/interfaces&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;修改后文件内容如下：
+&lt;code&gt;auto lo&lt;/code&gt;
+&lt;code&gt;iface lo inet loopback&lt;/code&gt;
+&lt;code&gt;iface eth0 inet dhcp&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;auto wlan0
+``allow-hotplug wlan0
+``iface wlan0 inet dhcp
+``wpa-ssid "JoStudio"
+``wpa-psk "password”&lt;/code&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Tue, 27 Jan 2015 14:56:00 +0800</pubDate><guid>tag:2bapm.com,2015-01-27:raspberry-wifi.html</guid><category></category></item><item><title>linux的进程管理</title><link>http://2bapm.com/linuxprocess.html</link><description>&lt;h1&gt;linux的进程管理&lt;/h1&gt;
+&lt;p&gt;fg、bg、jobs、&amp;amp;、ctrl + z都是跟系统任务有关的，虽然现在基本上不怎么需要用到这些命令，但学会了也是很实用的
+一。&amp;amp; 最经常被用到
+   这个用在一个命令的最后，可以把这个命令放到后台执行
+二。ctrl + z
+     可以将一个正在前台执行的命令放到后台，并且暂停
+三。jobs
+     查看当前有多少在后台运行的命令
+四。fg
+     将后台中的命令调至前台继续运行
+   如果后台中有多个命令，可以用 fg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid)
+五。bg
+     将一个在后台暂停的命令，变成继续执行
+   如果后台中有多个命令，可以用bg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid) 
+  
+  
+Linux下使用Shell命令控制任务Jobs执行&lt;/p&gt;
+&lt;p&gt;下列命令可以用来操纵进程任务：
+　　ps 列出系统中正在运行的进程；
+　　kill 发送信号给一个或多个进程（经常用来杀死一个进程）；
+　　jobs 列出当前shell环境中已启动的任务状态，若未指定jobsid，则显示所有活动的任务状态信息；如果报告了一个任务的终止(即任务的状态被标记为Terminated)，shell 从当前的shell环境已知的列表中删除任务的进程标识；
+　　bg 将进程搬到后台运行（Background）；
+　　fg 将进程搬到前台运行（Foreground）； &lt;/p&gt;
+&lt;p&gt;将job转移到后台运行 
+　　如果你经常在X图形下工作，你可能有这样的经历：通过终端命令运行一个GUI程序，GUI界面出来了，但是你的终端还停留在原地，你不能在shell中继续执行其他命令了，除非将GUI程序关掉。 &lt;/p&gt;
+&lt;p&gt;为了使程序执行后终端还能继续接受命令，你可以将进程移到后台运行，使用如下命令运行程序： #假设要运行xmms&lt;/p&gt;
+&lt;p&gt;$xmms &amp;amp;&lt;/p&gt;
+&lt;p&gt;这样打开xmms后，终端的提示又回来了。现在xmms在后台运行着呢；但万一你运行程序时忘记使用“&amp;amp;”了，又不想重新执行；你可以先使用ctrl+z挂起程序，然后敲入bg命令，这样程序就在后台继续运行了。&lt;/p&gt;
+&lt;p&gt;概念：当前任务 &lt;/p&gt;
+&lt;p&gt;如果后台的任务号有2个，&lt;a href=""&gt;1&lt;/a&gt;,&lt;a href=""&gt;2&lt;/a&gt;；如果当第一个后台任务顺利执行完毕，第二个后台任务还在执行中时，当前任务便会自动变成后台任务号码“&lt;a href=""&gt;2&lt;/a&gt;”的后台任务。所以可以得出一点，即当前任务是会变动的。当用户输入“fg”、“bg”和“stop”等命令时，如果不加任何引号，则所变动的均是当前任务。&lt;/p&gt;
+&lt;p&gt;察看jobs 
+　　使用jobs或ps命令可以察看正在执行的jobs。 &lt;/p&gt;
+&lt;p&gt;jobs命令执行的结果，＋表示是一个当前的作业，减号表是是一个当前作业之后的一个作业，jobs -l选项可显示所有任务的PID,jobs的状态可以是running, stopped, Terminated,但是如果任务被终止了（kill），shell 从当前的shell环境已知的列表中删除任务的进程标识；也就是说，jobs命令显示的是当前shell环境中所起的后台正在运行或者被挂起的任务信息；&lt;/p&gt;
+&lt;p&gt;进程的挂起 &lt;/p&gt;
+&lt;p&gt;后台进程的挂起： &lt;/p&gt;
+&lt;p&gt;在solaris中通过stop命令执行，通过jobs命令查看job号(假设为num)，然后执行stop %num；&lt;/p&gt;
+&lt;p&gt;在redhat中，不存在stop命令，可通过执行命令kill -stop PID，将进程挂起；&lt;/p&gt;
+&lt;p&gt;当要重新执行当前被挂起的任务时，通过bg %num 即可将挂起的job的状态由stopped改为running，仍在后台执行；当需要改为在前台执行时，执行命令fg %num即可；&lt;/p&gt;
+&lt;p&gt;前台进程的挂起：&lt;/p&gt;
+&lt;p&gt;ctrl+Z;&lt;/p&gt;
+&lt;p&gt;进程的终止 &lt;/p&gt;
+&lt;p&gt;后台进程的终止：
+　　方法一：
+　　通过jobs命令查看job号（假设为num），然后执行kill %num&lt;/p&gt;
+&lt;p&gt;方法二：
+　　通过ps命令查看job的进程号（PID，假设为pid），然后执行kill pid &lt;/p&gt;
+&lt;p&gt;前台进程的终止：&lt;/p&gt;
+&lt;p&gt;ctrl+c&lt;/p&gt;
+&lt;p&gt;kill的其他作用 
+　　kill除了可以终止进程，还能给进程发送其它信号，使用kill -l 可以察看kill支持的信号。 &lt;/p&gt;
+&lt;p&gt;SIGTERM是不带参数时kill发送的信号，意思是要进程终止运行，但执行与否还得看进程是否支持。如果进程还没有终止，可以使用kill -SIGKILL pid，这是由内核来终止进程，进程不能监听这个信号。
+ 
+ 
+ctrl+c和ctrl+z都是中断命令,但是他们的作用却不一样.
+ctrl+c是强制中断程序的执行,
+而ctrl+z的是将任务中断,但是此任务并没有结束,他仍然在进程中他只是维持挂起的状态,用户可以使用fg/bg操作继续前台或后台的任务,fg命令重新启动前台被中断的任务,bg命令把被中断的任务放在后台执行.（jobs查看后台运行的进程）
+例如:
+当你vi一个文件是,如果需要用shell执行别的操作,但是你又不打算关闭vi,因为你得
+存盘推出,你可以简单的按下ctrl+z,shell会将vi进程挂起,当你结束了那个shell操作之后,你可以用fg命令继续vi你的文件.
+ 
+ctrl+c强行中断当前程序的执行。
+ctrl+d表示结束当前输入（即用户不再给当前程序发出指令），那么Linux通常将结束当前程序。
+ctrl+z表示将当前前台运行的经常放在后台并挂起，如需其在后台继续运行，需用“bg 进程号”使其继续运行；再用"fg 进程号"可将后台进程前台化。
+ 
+ctrl+c,ctrl+d,ctrl+z在linux中意义
+ linux下： ctrl-c 发送 SIGINT 信号给前台进程组中的所有进程。常用于终止正在运行的程序。 ctrl-z 发送 SIGTSTP 信号给前台进程组中的所有进程，常用于挂起一个进程。 ctrl-d 不是发送信号，而是表示一个特殊的二进制值，表
+linux下：
+ctrl-c 发送 SIGINT 信号给前台进程组中的所有进程。常用于终止正在运行的程序。
+ctrl-z 发送 SIGTSTP 信号给前台进程组中的所有进程，常用于挂起一个进程。
+ctrl-d 不是发送信号，而是表示一个特殊的二进制值，表示 EOF。
+ctrl-\ 发送 SIGQUIT 信号给前台进程组中的所有进程，终止前台进程并生成 core 文件。
+Key Function
+Ctrl-c Kill foreground process
+Ctrl-z Suspend foreground process
+Ctrl-d Terminate input, or exit shell
+Ctrl-s Suspend output
+Ctrl-q Resume output
+Ctrl-o Discard output
+Ctrl-l Clear screen&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Tue, 14 Oct 2014 13:50:00 +0800</pubDate><guid>tag:2bapm.com,2014-10-14:linuxprocess.html</guid><category>linux</category></item><item><title>Mac下adb识别非主流android手机</title><link>http://2bapm.com/macadbandroid.html</link><description>&lt;h1&gt;mac下识别非主流android手机&lt;/h1&gt;
+&lt;h2&gt;一、找到手机厂商ID&lt;/h2&gt;
+&lt;p&gt;关于本机-系统报告-硬件-USB-欲连接的手机-厂商ID&lt;/p&gt;
+&lt;p&gt;记住厂商ID&lt;/p&gt;
+&lt;h2&gt;二、配置usb信息并重启adb服务&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;echo 厂商ID &amp;gt;&amp;gt; /.android/adb\_usb.ini
+``adb kill-server&lt;/code&gt;
+&lt;code&gt;adb start-server&lt;/code&gt;&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Tue, 14 Oct 2014 13:43:00 +0800</pubDate><guid>tag:2bapm.com,2014-10-14:macadbandroid.html</guid><category>android adb</category></item><item><title>产品升级教训</title><link>http://2bapm.com/chanpinshengjijiaoxun.html</link><description></description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Fri, 29 Aug 2014 17:07:00 +0800</pubDate><guid>tag:2bapm.com,2014-08-29:chanpinshengjijiaoxun.html</guid><category>product</category></item><item><title>如何使用私钥登录linux服务器</title><link>http://2bapm.com/sshkey-login-linux-vps.html</link><description>&lt;h1&gt;如何使用私钥登录linux服务器&lt;/h1&gt;
+&lt;p&gt;启用密钥ssh登陆服务器：
+ 
+首先得生成一对密钥，一把私有密钥(id_rsa)和一把公用密钥(id_rsa.pub)，公用密钥用于对消息进行加密，只有拥有私有密钥的人才能对该消息进行解密。把公钥放到我们要远程登录的主机（remote）上
+&lt;code&gt;（~/.ssh/authorized_keys）&lt;/code&gt;
+专用密钥放置到本地机（local）或是U盘。
+ 
+认证过程中，romote接收到local的登录请求后，romote的sshd 会生成一个随机数，并用我们先前拷贝过去的公用密钥对这个随机数进行加密，然后，sshd把加密了的随机数发回给正在local上运行的ssh程序，然后是local计算机对该随机数的解密，再发回给romote，通过后，romote则允许local登录了。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Sun, 24 Aug 2014 22:17:00 +0800</pubDate><guid>tag:2bapm.com,2014-08-24:sshkey-login-linux-vps.html</guid><category>ssh 私钥 vps</category></item><item><title>python中__init__.py的作用</title><link>http://2bapm.com/pythonzhong-__init__pyde-zuo-yong.html</link><description>&lt;h2&gt;Python中__init__.py的作用&lt;/h2&gt;
+&lt;p&gt;python的每个模块的包中，都有一个__init__.py文件，有了这个文件，我们才能导入这个目录下的module。
+那么，__init__.py还有什么别的功能呢？
+其实，__init__.py里面还是可以有内容的，我们在导入一个包时，实际上导入了它的__init__.py文件。
+我们可以再__init__.py文件中再导入其他的包，或者模块。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;[python]&lt;/span&gt;
+&lt;span class="err"&gt;import&lt;/span&gt; &lt;span class="err"&gt;readers&lt;/span&gt; 
+&lt;span class="err"&gt;import&lt;/span&gt; &lt;span class="err"&gt;writers&lt;/span&gt; 
+&lt;span class="err"&gt;import&lt;/span&gt; &lt;span class="err"&gt;commands&lt;/span&gt; 
+&lt;span class="err"&gt;import&lt;/span&gt; &lt;span class="err"&gt;users&lt;/span&gt; 
+&lt;span class="err"&gt;import&lt;/span&gt; &lt;span class="err"&gt;meta&lt;/span&gt; 
+&lt;span class="err"&gt;import&lt;/span&gt; &lt;span class="err"&gt;auth&lt;/span&gt; 
+&lt;span class="err"&gt;import&lt;/span&gt; &lt;span class="err"&gt;admin&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样，当我们导入这个包的时候，__init__.py文件自动运行。帮我们导入了这么多个模块，我们就不需要将所有的import语句写在一个文件里了，也可以减少代码量。
+不需要一个个去导入module了。
+__init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使出一招“全部导入”，也就是这样：
+from PackageName import *
+这时 import 就会把注册在包 __init__.py 文件中 __all__ 列表中的子模块和子包导入到当前作用域中来。比如：
+文件 __init__.py&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;__all__ = [&amp;quot;Module1&amp;quot;, &amp;quot;Module2&amp;quot;, &amp;quot;subPackage1&amp;quot;, &amp;quot;subPackage2&amp;quot;]
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Sat, 09 Aug 2014 09:35:13 +0800</pubDate><guid>tag:2bapm.com,2014-08-09:pythonzhong-__init__pyde-zuo-yong.html</guid></item><item><title>使用proxychains为命令行设置代理</title><link>http://2bapm.com/shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html</link><description>&lt;h3&gt;一、安装相关程序&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;sudo apt-get install proxychains
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;二、配置proxychains&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;vim /etc/proxychains.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;光标移动到最后，配置格式如下：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;协议名 ip 端口
+socks 127.0.0.1 1080
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;三、配置代理程序&lt;/h3&gt;
+&lt;p&gt;不管你们用啥吧……反正代理要先搭起来啊，我用的是shadowsocks&lt;/p&gt;
+&lt;h3&gt;四、使用&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;proxychains 命令
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;例如&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;proxychiains ~/.dropbox-dist/dropboxd
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;这样dropbox就走代理了~&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Tue, 15 Jul 2014 17:04:06 +0800</pubDate><guid>tag:2bapm.com,2014-07-15:shi-yong-proxychainswei-ming-ling-xing-she-zhi-dai-li.html</guid><category>翻墙</category></item><item><title>半程个人总结</title><link>http://2bapm.com/ban-cheng-ge-ren-zong-jie.html</link><description>&lt;h2&gt;半程个人总结&lt;/h2&gt;
+&lt;h3&gt;一、年度计划回顾&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;自己喜欢的工作--虽然累一点，但是基本算是完成，感谢媛媛&lt;/li&gt;
+&lt;li&gt;两个项目目前无限期搁置……希望想找一点赚快钱的项目&lt;/li&gt;
+&lt;li&gt;买车还没解决，目前考驾照中&lt;/li&gt;
+&lt;li&gt;GTD的习惯初步养成了，每天的工作内容和重要事件记录坚持下来了&lt;/li&gt;
+&lt;li&gt;今年算是最重要的事情之一吧，强换了rmbp&lt;/li&gt;
+&lt;li&gt;就快当爹了，祈祷孩子健健康康的！&lt;/li&gt;
+&lt;li&gt;书的话需要继续看……耐下性子完整的看一下&lt;/li&gt;
+&lt;li&gt;django几乎没进展python也丢差不多了&lt;/li&gt;
+&lt;li&gt;treehouse无限期搁置 codecademy也没搞&lt;/li&gt;
+&lt;/ol&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Mon, 23 Jun 2014 12:30:47 +0800</pubDate><guid>tag:2bapm.com,2014-06-23:ban-cheng-ge-ren-zong-jie.html</guid></item><item><title>产品经理如何根据产品所处的阶段选择设计方案</title><link>http://2bapm.com/chanpin-sheji-fangan.html</link><description>&lt;h1&gt;产品经理如何根据产品所处的阶段选择设计方案&lt;/h1&gt;
+&lt;blockquote&gt;
+&lt;p&gt;via:蒋炜航，有道云笔记负责人 计算机系统博士&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.zhihu.com/question/23348943"&gt;http://www.zhihu.com/question/23348943&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;和其他互联网产品团队交流的过程中，许多朋友都提到过一个问题，怎么为自己的产品选择一个适合的设计方案？在有道云笔记iPhone新版的产品设计中，我们遇到的就是上述问题的一个典型情况。经过近4个月的探索和实践，我们找到了一些适合有道的解决方案。在知乎上分享出来，希望和有类似问题的朋友一起探讨。&lt;/p&gt;
+&lt;p&gt;文章比较长，为了让大家觉得这个分享可能真的有用，先列一些效果数据，吹吹牛皮。有道云笔记iPhone新版推出后，日活上升25%，人均每日新建笔记数量上升100%。用户对产品的评价方面，产品NPS达到55，到达历史最高峰，App Store五星好评达91%。初步数据显示改版还是比较成功的。&lt;/p&gt;
+&lt;p&gt;那么，下面就来说说我们的思考过程。&lt;/p&gt;
+&lt;p&gt;改版时机选择：产品需要跨越“早期尝鲜者”和“早期大众”的鸿沟&lt;/p&gt;
+&lt;p&gt;有道云笔记第一次和大家见面是在2011年6月。经过两年多的发展，云笔记的用户量从0飞速增长到2000多万。在这个过程中我们深切地感受到整个云笔记品类在中国用户的快速发展。从最开始还需要和周围的朋友介绍“云笔记”是什么，到现在许多人已经可以列举出几个尝试过的云笔记品牌。这也意味着云笔记已经从早期的GEEK型的“创新者”和“早期尝鲜者”，向更加广泛、主流的“早期大众”转化。我们有幸站在了这个鸿沟面前，如果能成功跨越，则可以把云笔记带入更加庞大的主流市场。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://cedared.qiniudn.com/pic/20140410-1.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;通过我们的用户调研，有道云笔记的主流大众用户已经越来越多，云笔记的初级/中级用户已占到总用户量的70%。因此，我们觉得是时候想想，对于初级和中级云笔记用户来说，有道云笔记的iPhone端应该是个什么样子。&lt;/p&gt;
+&lt;p&gt;改版目标：为主流用户提升基础功能使用效率
+​
+根据我们的调研发现，有道云笔记iPhone版最频繁使用的两大功能是：浏览笔记和快速的碎片化记录。数据显示，每天超过6成的iPhone端用户在浏览笔记内容，而大约3成的用户在做碎片化记录。而在我们的调研中，初级/中级用户表示，他们认同产品的高级功能（白板纠偏、笔记分享、待办事项、附件中心、笔记标签、微信收藏、阅读密码等），因为这些功能让他们确保这个产品是值得信赖和有潜力的。但他们觉得在当下自己并不需要知道如何使用这些高级功能。&lt;/p&gt;
+&lt;p&gt;于是摆在我们面前有两条路：
+1.为GEEK开发更多、更酷的高级功能，让他们形成口碑带动主流大众用户；
+2.为大众用户设计更简单实用的操作界面，核心功能被放在应用中垂手可得的位置，不用记也不用找，真正做到“Don't Make Me Think”。&lt;/p&gt;
+&lt;p&gt;前面说过，我们目前最重要的目标就是跨越鸿沟。因此对于现在的云笔记，我们缺的不是酷炫、亮眼的高级功能，而是如何让小白用户，在接触这个产品的前三分钟就能快速上手，并被打动。
+因此，最终我们选择了后者。&lt;/p&gt;
+&lt;p&gt;因此，此次改版的目标就十分清晰：为主流大众用户提升基础功能使用效率——也就是，让用户非常直观地进行笔记内容浏览和随手记录。&lt;/p&gt;
+&lt;p&gt;实施改版的三个阶段：定义基础交互、定义视觉方案、优化关键路径&lt;/p&gt;
+&lt;p&gt;1.定义基础交互&lt;/p&gt;
+&lt;p&gt;确定了目标后，我们需要确定云笔记的基础交互模式。我们又面临了一个选择：标签栏or抽屉式交互。
+从发布以来，我们一直采用标签栏（Tab Bar）的交互模式来引导用户在不同的功能中切换，这也是应用市场上最常见的交互模式。标签栏具有可直接展示内容，同时支持快速切换分类的优点，适合有5个以内核心分类且各分类都有较高使用率的应用。对于有道云笔记来说，这种交互模式会很适合极客用户去探索各种高级功能，同时保障对基础功能的便捷操作。2013年Google讲解了抽屉式交互（Navigation Drawer）的理念后，这种交互模式也开始被广泛使用。相比标签栏，抽屉式更少占用宝贵的屏幕空间，可以最大化地展示内容。同时，由于没有其他因素的干扰，可以让用户聚焦于当前内容。此外，抽屉内层级设计的灵活性可以很好地支持不同分类及层级间的切换，适合对导航的灵活性需求高的应用。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://cedared.qiniudn.com/pic/20140410-2.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;新版设计的目标是让用户非常直观地进行笔记内容浏览和随手记录。浏览行为需要最大化的、没有干扰的展示空间，而随手记录追求更快和更轻的体验。基于这两个核心目标，我们选择了抽屉式的交互模式。在这个模式下，用户一打开笔记就可以直接浏览最近修改过的笔记内容， 展示空间更大，干扰因素也被最小化。通过在主界面支持一键新建笔记，记录过程做到又轻又快。此外，通过抽屉内的功能入口，用户也保留了快速访问高级功能的便利。下面一张图比较直观的展示了新旧两版交互方式的对比。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://cedared.qiniudn.com/pic/20140410-3.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;2.定义视觉方案&lt;/p&gt;
+&lt;p&gt;这次全面改版中，我们也重新定义了云笔记的视觉方案。根据云笔记用户的特点，视觉方案的三个关键词被定义为个性化、年轻化、扁平化。
+个性化的落脚点是增强用户对笔记账号的认知。作为跨同平台同步的云笔记，用户的笔记账号是整个过程的核心枢纽。在我们的视觉方案中，用户账号不再是一个邮箱号，而被添加了用户头像、昵称、性别等元素，并被放在了一个非常醒目的位置——侧滑抽屉界面的顶部。我们希望通过这样的设计来向用户传递“有道云笔记是伴随你个人的笔记”这一理念。
+作为一款效率应用，有道云笔记的主色调一直是代表稳重、高效的深蓝色。越来越多的年轻白领和高校在校生成为了云笔记的用户，他们充满活力、对时尚敏感、敢于尝试新鲜事物。为了增加云笔记对更加年轻化的用户群的吸引，我们的新视觉方案采用了更加有趣和活泼的视觉元素，在色彩比例上以浅色为主、点缀活泼的几种颜色。此外，在这次改版中，我们也顺应了扁平化设计趋势，配合交互，让用户可以体会到简洁的风格。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://cedared.qiniudn.com/pic/20140410-4.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;3.优化关键路径&lt;/p&gt;
+&lt;p&gt;除了重新定义了主交互模式和主视觉方案，这次改版还针对用户使用云笔记的关键路径进行了优化。这里举几个例子。&lt;/p&gt;
+&lt;p&gt;1)提高首页浏览的效率
+有道云笔记的特点之一是能够让用户以多种多样的形式来记录笔记：文字、图片、声音、手写、附件等等。
+我们的调研发现，当用户对笔记进行快速浏览、定位时，笔记内容和笔记标题一样重要。因此在新版中，笔记核心内容要素被放置到和笔记标题一样重要的位置——在首页的笔记列表中展示出来。这样用户在浏览笔记列表时，可以通过笔记标题、正文摘要、图片摘要、附件摘要等元素快速定位笔记。
+伴随这个设计浮现的一个难点，是视觉上比文字更“重”的图片和文件元素打破了笔记列表的节奏感，使列表略显凌乱。期间我们进行了多次尝试，最后聚焦在卡片和内容分割两种样式上。
+通过对两种样式原型的反复试用和比较，我们意识到卡片虽然可以强制的对内容进行分割，但是以内容元素的组织进行分割更符合我们的设计原则——以最简约的形式让用户专注于笔记内容本身。我们通过对标题文字的颜色、摘要、图片、附件等元素间距的细微调整，使之更合理优雅的出现页面中。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://cedared.qiniudn.com/pic/20140410-5.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;2)快速的碎片化记录
+新版中，我们将新建笔记按钮从首页的底部中间移至右下角。点击醒目的绿色加号按钮，用户一键即可新建笔记。类似的加号设计在很多应用上也可以看到。与其他应用不同，点击加号按钮后，笔记应用不会展示出让用户选择新建笔记类型的选项，而是直接进入了编辑界面的文字编辑状态。
+这个设计基于的原则是"为用户的主要场景优化"。通过用户数据，我们发现用户在新建笔记时，文字类型笔记的比例远高于其他几类笔记。因此对于初中级用户而言，让TA不用思考和选择，直接开始记录文字类型笔记是最合适的。更加复杂的图片、音频、附件等其他内容类型，可以通过长按或进入编辑界面进行添加。&lt;/p&gt;
+&lt;p&gt;&lt;img alt="" src="http://cedared.qiniudn.com/pic/20140410-6.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;实施改版项目的敏捷管理&lt;/p&gt;
+&lt;p&gt;说完了设计思路的选择，最后再说说我们团队在这个改版项目上的敏捷管理方式。&lt;/p&gt;
+&lt;p&gt;我们从比较早就开始使用敏捷开发进行项目管理（相关内容可以参考：有道云笔记的Scrum敏捷开发实践）。在这次的改版项目上，我们在原有的敏捷项目管理的基础上做了进一步的优化。iPhone端改版项目开始于2013年底。项目共经历三个阶段：基础交互和主视觉定稿阶段、主体界面与功能开发阶段、面向体验的极速迭代开发阶段。重点分享下在第三阶段的改变和优化。&lt;/p&gt;
+&lt;p&gt;第一个阶段：基础交互和主视觉定稿阶段&lt;/p&gt;
+&lt;p&gt;产品经理和设计师一起反复比稿，最终确定了改版项目的主方向：以抽屉式交互为基础交互和主视觉方案的三个关键词是个性化、年轻化、扁平化，以及新版90%的交互设计图和视觉设计图。这个阶段耗时1个月。&lt;/p&gt;
+&lt;p&gt;第二个阶段：主体界面与功能开发阶段&lt;/p&gt;
+&lt;p&gt;研发团队参与到这个项目中。在这个阶段中，我们团队采用敏捷迭代的开发方式，通过3个迭代周期（每个迭代周期2周，共1.5个月）完成了新版85%的主体界面和功能。随着这个阶段接近尾声，我们意识到这个阶段的新版云笔记的完成度虽然高，但是还远不能让我们自己满意。
+这其中部分的原因是由于剩余15%的界面和功能没有完成，而更主要的原因是设计与体验之间的差距。换句话说，只有当工程师按照设计实现了产品后，我们才发现原来的设计的真实体验并不是完全和我们想象的一样。这时候，常规的敏捷迭代方式不再适合解决我们面临的问题。因为常规的敏捷迭代的原则之一是"在迭代周期内尽量不要修改产品设计需求"，而这中工作方式需要产品设计相对稳定。因此我们在第二个阶段后改换了工作模式，进入了第三个阶段。&lt;/p&gt;
+&lt;p&gt;第三个阶段：面向体验的极速迭代开发阶段&lt;/p&gt;
+&lt;p&gt;这个阶段可以说是这次改版项目中最关键的一个环节。在这个阶段里面我们不再有明确的迭代周期，而是围绕一处处影响用户体验的关键点进行极速迭代。研发团队针对这一个个关键点以天为周期进行迭代修改；核心用户群（由产品经理、设计师、资深用户）同样以天为周期安装最新安装包并在真实的环境中用自己真实的笔记账号体验，向研发团队提出对这些关键点的反馈和进一步修改意见。对于一些无法判断的关键点，研发团队甚至会打多个安装包让核心用户群作对比。例如说，围绕"提高首页浏览的效率"这个关键路径，核心用户群围绕加载流畅度、图片滑动体验、图片缩略图视觉体验、笔记列表分割体验等多个维度提出了几十个反馈意见。与之对应，研发团队先后迭代开发了近20个版本，最终在这个体验关键点上与核心用户的预期达成一致。这次改版的第三个阶段耗时1.5个月。&lt;/p&gt;
+&lt;p&gt;此次有道云笔记iPhone改版对有道云笔记团队来说是一次自我学习、自我突破的过程。接下来我们也会把相关经验和体会应用在其他平台上，希望通过每一步的努力让有道云笔记变得更加符合中国人的使用习惯，为改变国人的记录方式出一份力量。也希望能借此机会和业内同行学习和探讨。&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 10 Apr 2014 15:46:55 +0800</pubDate><guid>tag:2bapm.com,2014-04-10:chanpin-sheji-fangan.html</guid></item><item><title>使用Nginx，Gunicorn，Virtualenv，Supervisor和PostgreSQL搭建Django生产环境</title><link>http://2bapm.com/shi-yong-nginxgunicornvirtualenvsupervisorhe-postgresqlda-jian-djangosheng-chan-huan-jing.html</link><description>&lt;h2&gt;django 生产环境配置&lt;/h2&gt;
+&lt;p&gt;使用Nginx,Gunicorn,Virtualenv,Supervisor和PostgreSQL搭建Django生产环境&lt;/p&gt;
+&lt;p&gt;Django是一个高效，灵活，动态的Web应用开发框架。在Django刚开始流行的时候，大多数推荐的Django运行环境配置都是基于使用mod_wsgi模块的Apache。而近来大家所推荐的关于更高级的Django运行环境配置则更加高效和具有弹性，但同时也更加复杂，使用的工具包括：Nginx, Gunicorn, virtualenv, supervisord和PostgreSQL.
+在这篇文章中我会解释如何在Linux上将这些组件组合起来，成为一个能够运行django的服务器。&lt;/p&gt;
+&lt;h3&gt;预置条件：&lt;/h3&gt;
+&lt;p&gt;首先我假设你有一台具有Root权限的服务器，我正在使用的Linux发行版是debian7，所以以下的内容也同样适用于Ubuntu或者其他基于Debian的Linux发行版。如果你是在使用基于RPM的Linux发行版（比如说CentOS），你需要用yum替换掉以下命令中提到的apt-get，如果你在使用FreeBSD，你可以使用Ports安装这些组件。&lt;/p&gt;
+&lt;p&gt;同样的我也假设你已经将你的域名通过DNS指向了你的服务器IP，而你的域名是example.com。
+升级系统：
+首先我们需要确定我们的系统是否是最新的。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get update
+    $ sudo apt-get upgradePostgreSQL
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;PostgreSQL&lt;/h3&gt;
+&lt;p&gt;在基于Debian的系统上运行以下命令安装PostgreSQL&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get install postgresql postgresql-contrib
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;创建一个数据库以及拥有该数据库权限的用户&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo su - post
+    grespostgres@django:~$ createdb hello
+    postgres@django:~$ createuser -P
+    Enter name of role to add: hello_django
+    Enter password for new role:
+    Enter it again:
+    Shall the new role be a superuser? (y/n) n
+    Shall the new role be allowed to create databases? (y/n) n
+    Shall the new role be allowed to create more new roles? (y/n) n
+    postgres@django:~$ psql
+    psql (9.1.9)
+    Type &amp;quot;help&amp;quot; for help.
+    postgres=# GRANT ALL PRIVILEGES ON DATABASE hello TO hello_django;
+    GRANT
+    postgres=# \q
+    postgres@django:~$ logout
+    $
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;对于习惯使用Mysql的同学，这里也可以安装Mysql来替换PostgreSQL，运行以下命令安装Mysql&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get install mysql-server
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Mysql的安全设置&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ mysql_secure_installation
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;按照提示一步一步进行即可
+如果你需要修改Mysql的Root密码，那么运行以下命令：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ dpkg-reconfigure mysql-server-5.0
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;进入Mysql控制台
+        $ mysql -uroot -p&lt;/p&gt;
+&lt;p&gt;创建数据库和拥有该数据库权限的用户&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    CREATE DATABASE hello;
+    CREATE USER &amp;#39;example_user&amp;#39; IDENTIFIED BY &amp;#39;password&amp;#39;;
+    GRANT ALL PRIVILEGES ON hello.* TO &amp;#39;example_user&amp;#39;;
+    exit
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;安装virtualenv然后为你的django应用创建一个运行环境&lt;/h3&gt;
+&lt;p&gt;Virtualenv是一个能够允许你在系统中创建隔离的Python环境的工具。这使你能够在同一台服务器上运行需要不同设置的应用程序（例如，一个基于Django1.2，另一个基于Django1.5）。Virtualenv在debian系统上很容易安装：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get install python-virtualenv
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;为你的应用创建并激活一个虚拟环境
+因为django的特性，你可以在任何地方创建你的虚拟环境目录，我这里是在/webapps/目录下创建，如果你习惯使用类似于/var/www/的目录或者其他目录，只需要替换掉/webapps/就行。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ cd /webapps/
+    $ virtualenv hello_django
+    New python executable in hello_django/bin/python
+    Installing distribute.............................done
+    Installing pip........................................done
+    $ cd hello_django
+    $ source bin/activate(hello_django) 
+    $
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;看到上面的提示符时，就表明你的虚拟环境已经激活，然后你就可以在里面安装Django了。在安装的时候你可以看到pip已经被安装到了虚拟环境中，所以你可以直接使用pip来安装需要的python组件。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    (hello_django) $ pip install django
+    Downloading/uppacking django
+    (...)
+    Installing collected packages: django
+    (...)
+    Successfully installed django
+    Cleaning up...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;现在你的Django虚拟环境应该已经可以使用了，创建一个空的Django项目试试看。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    (hello_django) $ django-admin.py startproject hello
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;你可以使用开发服务器来测试一下&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    (hello_django) $ cd hello
+    (hello_django) $ python manage.py runserver example.com:8000
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;使用http://example.com:8000来访问服务器试一下，在这之前，请确保你的服务器防火墙开了8000端口。&lt;/p&gt;
+&lt;h3&gt;设置PostgreSQL在Django下工作&lt;/h3&gt;
+&lt;p&gt;要在Django下使用PostgreSQL，你需要在虚拟环境中安装psycopg2数据库适配器，这一步需要原生扩展编译，如果没法找到头文件、使用libpq（用来与Postgres通信的库）链接C程序的静态库和创建Python模块的python开发库（python-dev package）,编译将会失败。所以我们必须先安装这些依赖包，然后再使用PIP安装psycopg2。
+安装依赖包&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get install libpq-dev python-dev
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;安装psycopg2数据库适配器&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    (hello_django) $ pip install psycopg2
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;在你的django项目settings.py文件中修改数据库连接设置，这一步在默认的settings.py文件中有详细的注释，就不在此列出了。&lt;/p&gt;
+&lt;p&gt;使用Django初始化数据库&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    (hello_django) $ python manage.py syncdb
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;P.S. 如果你使用了MySQL作为数据库，那么你需要安装Python-MySQL来使python程序能够访问mysql，具体安装部骤网上很多，可以自行google一下。&lt;/p&gt;
+&lt;h3&gt;Gunicorn&lt;/h3&gt;
+&lt;p&gt;在生产环境中我们肯定不会使用Django的单线程开发服务器，而是使用一个专用的应用服务器，叫作Gunicorn。&lt;/p&gt;
+&lt;p&gt;在你的应用虚拟环境中安装Gunicorn&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    (hello_django) $ pip install gunicorn
+    Downloading/unpacking gunicorn
+    Downloading gunicorn-0.17.4.tar.gz (372Kb): 372Kb downloaded
+    Running setup.py egg_info for package gunicorn
+    Installing collected packages: gunicorn
+    Running setup.py install for gunicorn
+    Installing gunicorn_paster script to /webapps/hello_django/bin
+    Installing gunicorn script to /webapps/hello_django/bin
+    Installing gunicorn_django script to /webapps/hello_django/bin
+    Successfully installed gunicorn
+    Cleaning up...
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Ok,现在你已经这安装好了Gunicorn，尝试测试一下Gunicorn和Django是否可以正常工作&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    (hello_django) $ gunicorn_django --bind example.com:8001
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;在浏览器中访问http://example.com:8001，看看django是否正常工作。&lt;/p&gt;
+&lt;p&gt;到现在为止，Gunicorn已经安装好，并且已经可以和django一起正常工作了，接下来让我们来做一些设置让gunicorn更加好用一些。我喜欢设置一些参数，所以我们可以把它们放在一个BASH脚本里，我将这个脚本保存在bin/gunicorn_start。&lt;/p&gt;
+&lt;p&gt;bin/gunicorn_start&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt;!/bin/bash&lt;/span&gt;
+&lt;span class="x"&gt;    NAME=&amp;quot;hello_app&amp;quot; &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Name of the application&lt;/span&gt;
+&lt;span class="x"&gt;    DJANGODIR=/webapps/hello_django/hello &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Django project directory&lt;/span&gt;
+&lt;span class="x"&gt;    SOCKFILE=/webapps/hello_django/run/gunicorn.sock &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; we will communicte using this unix socket&lt;/span&gt;
+&lt;span class="x"&gt;    USER=michal &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; the user to run as&lt;/span&gt;
+&lt;span class="x"&gt;    GROUP=michal &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; the group to run as&lt;/span&gt;
+&lt;span class="x"&gt;    NUM_WORKERS=3 &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; how many worker processes should Gunicorn spawn&lt;/span&gt;
+&lt;span class="x"&gt;    DJANGO_SETTINGS_MODULE=hello.settings &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; which settings file should Django use&lt;/span&gt;
+&lt;span class="x"&gt;    echo &amp;quot;Starting &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;NAME&lt;/span&gt;&lt;span class="x"&gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Activate the virtual environment&lt;/span&gt;
+&lt;span class="x"&gt;    cd &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;DJANGODIR&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="x"&gt;    source ../bin/activate&lt;/span&gt;
+&lt;span class="x"&gt;    export DJANGO_SETTINGS_MODULE=&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;DJANGO_SETTINGS_MODULE&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="x"&gt;    export PYTHONPATH=&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;DJANGODIR&lt;/span&gt;&lt;span class="x"&gt;:&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;PYTHONPATH&lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+
+&lt;span class="x"&gt;    Create the run directory if it doesn&amp;#39;t exist&lt;/span&gt;
+&lt;span class="x"&gt;    RUNDIR=&lt;/span&gt;&lt;span class="p"&gt;$(&lt;/span&gt;&lt;span class="err"&gt;dirname&lt;/span&gt; &lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;SOCKFILE&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;span class="x"&gt;    test -d &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;RUNDIR&lt;/span&gt;&lt;span class="x"&gt; || mkdir -p &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;RUNDIR&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Start your Django Unicorn&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)&lt;/span&gt;
+&lt;span class="x"&gt;    exec ../bin/gunicorn_django \&lt;/span&gt;
+&lt;span class="x"&gt;    --name &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;NAME&lt;/span&gt;&lt;span class="x"&gt; \&lt;/span&gt;
+&lt;span class="x"&gt;    --workers &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;NUM_WORKERS&lt;/span&gt;&lt;span class="x"&gt; \&lt;/span&gt;
+&lt;span class="x"&gt;    --user=&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;USER&lt;/span&gt;&lt;span class="x"&gt; &lt;/span&gt;
+&lt;span class="x"&gt;    --group=&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;GROUP&lt;/span&gt;&lt;span class="x"&gt; \&lt;/span&gt;
+&lt;span class="x"&gt;    --log-level=debug \&lt;/span&gt;
+&lt;span class="x"&gt;    --bind=unix:&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;SOCKFILE&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;接下来将gunicorn_start脚本设置为可执行&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ chmod u+x bin/gunicorn_start
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;运行以下命令来测试gunicorn_start是否正常&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ ./bin/gunicorn_startStarting hello_app
+    2013-06-09 21:14:07 [2792] [INFO] Starting gunicorn 0.17.4
+    2013-06-09 21:14:07 [2792] [DEBUG] Arbiter booted
+    2013-06-09 21:14:07 [2792] [INFO] Listening at: unix:/webapps/hello_django/run/gunicorn.sock (2792)
+    2013-06-09 21:14:07 [2792] [INFO] Using worker: sync
+    2013-06-09 21:14:07 [2798] [INFO] Booting worker with pid: 2798
+    2013-06-09 21:14:07 [2799] [INFO] Booting worker with pid: 2799
+    2013-06-09 21:14:07 [2800] [INFO] Booting worker with pid: 2800
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;注意gunicorn_start中的参数设置，你需要修改里面的参数以适合你自己的设置。
+根据经验（as a rule-of-thumb），通过以下公式来设置 –worker(NUM_WORKERS)：
+2 * CPUs + 1。&lt;/p&gt;
+&lt;p&gt;–name(NAME)参数指定你如何在程序中识别你的应用。默认值为gunicorn，如果你不修改的话，当你的服务器中有多个gunicorn驱动的应用时会使应用难以区分。
+为了使–name参数起作用，你需要安装一个叫做setproctitle的Python模块。在你的系统中安装python-dev依赖包然后再安装setproctitle。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get install python-dev(hello_django) 
+    $ pip install setproctitle
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;现在你可以将进程都列出来，你应该可以看到哪个gunicorn进程属于哪个应用。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ ps aux
+    USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND(...)
+    michal 16124 0.0 1.9 56168 9860 ? S 15:37 0:00 gunicorn: master [hello_app]
+    michal 16130 0.0 4.5 73520 23004 ? S 15:37 0:00 gunicorn: worker [hello_app]
+    michal 16131 0.0 4.5 73496 23004 ? S 15:37 0:00 gunicorn: worker [hello_app]
+    michal 16132 0.0 4.5 73504 23004 ? S 15:37 0:00 gunicorn: worker [hello_app]
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;使用Supervisor来启动和监测应用&lt;/h3&gt;
+&lt;p&gt;现在gunicorn_start脚本已经可以正常工作了，下面我们需要让它在开机时自启动，或者在某些情况下能够正常重启。我们使用supervisor来处理这些任务。&lt;/p&gt;
+&lt;p&gt;安装非常简单：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get install supervisor
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;当supervisor安装好后，你可以在/etc/supervisor/conf.d目录下创建配置文件来管理gunicorn。下面是为hello这个应用创建的一个配置文件&lt;/p&gt;
+&lt;p&gt;/etc/supervisor/conf.d/hello.conf&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    [program:hello]
+    command = /webapps/hello_django/bin/gunicorn_start ; Command to start app
+    user = michal ; User to run as
+    stdout_logfile = /webapps/hello_django/logs/gunicorn_supervisor.log ; Where to write log messages
+    redirect_stderr = true ; Save stderr in the same log
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;当然你还可以设置其他的选项，但是基础配置已经足够了。
+保存好后，告诉supervisor重新读取配置文件并更新（这将会启动你刚注册的应用）&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo supervisorctl rereadhello: available
+    $ sudo supervisorctl updatehello: added process group
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;你也可以使用supervisor检查你的应用的状态，或者启动、停止应用。&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo supervisorctl status hello
+    hello RUNNING pid 18020, uptime 0:00:50
+    $ sudo supervisorctl stop hello
+    hello: stopped
+    $ sudo supervisorctl start hello
+    hello: started
+    $ sudo supervisorctl restart hello
+    hello: stopped
+    hello: started
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;现在，你的应用将可以在系统重启之后自动启动，或者在由于某些原因发生错误时自动重启。&lt;/p&gt;
+&lt;h3&gt;Nginx&lt;/h3&gt;
+&lt;p&gt;现在是时候为我们的应用和静态文件配置Nginx服务了，安装并启动Nginx:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo apt-get install nginx$ sudo service nginx start
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;在浏览器中访问你的服务器(http://example.com)。你应该可以看到nginx的欢迎界面-“Welcome to nginx”。&lt;/p&gt;
+&lt;p&gt;每一个Nginx虚拟服务器配置文件应该放在/etc/nginx/sites-available/目录下，你可以选择将你想要启用的站点配置文件符号连接至/etc/nginx/sites-enabled/目录下。&lt;/p&gt;
+&lt;p&gt;在/etc/nginx/sites-available/目录下创建一个新的nginx服务器配置文件。一般来说文件应该包含下面这些配置，如果你需要更详细的配置说明，请看这里：
+&lt;a href="https://github.com/benoitc/gunicorn/blob/master/examples/nginx.conf"&gt;https://github.com/benoitc/gunicorn/blob/master/examples/nginx.conf&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;/etc/nginx/sites-available/hello&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    &lt;span class="nt"&gt;upstream&lt;/span&gt; &lt;span class="nt"&gt;hello_app_server&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+        &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;fail_timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt; &lt;span class="n"&gt;means&lt;/span&gt; &lt;span class="n"&gt;we&lt;/span&gt; &lt;span class="k"&gt;always&lt;/span&gt; &lt;span class="n"&gt;retry&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt; &lt;span class="n"&gt;upstream&lt;/span&gt; &lt;span class="n"&gt;even&lt;/span&gt; &lt;span class="n"&gt;if&lt;/span&gt; &lt;span class="n"&gt;it&lt;/span&gt; &lt;span class="n"&gt;failed&lt;/span&gt;
+        &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;return&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt; &lt;span class="n"&gt;good&lt;/span&gt; &lt;span class="n"&gt;HTTP&lt;/span&gt; &lt;span class="n"&gt;response&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;in&lt;/span&gt; &lt;span class="n"&gt;case&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;Unicorn&lt;/span&gt; &lt;span class="n"&gt;master&lt;/span&gt; &lt;span class="n"&gt;nukes&lt;/span&gt; &lt;span class="n"&gt;a&lt;/span&gt;
+        &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;single&lt;/span&gt; &lt;span class="n"&gt;worker&lt;/span&gt; &lt;span class="n"&gt;for&lt;/span&gt; &lt;span class="n"&gt;timing&lt;/span&gt; &lt;span class="n"&gt;out&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+
+        &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="n"&gt;unix&lt;/span&gt;&lt;span class="o"&gt;:/&lt;/span&gt;&lt;span class="n"&gt;webapps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hello_django&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;run&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;gunicorn&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;sock&lt;/span&gt; &lt;span class="n"&gt;fail_timeout&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="m"&gt;0&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="err"&gt;{&lt;/span&gt;&lt;span class="n"&gt;listen&lt;/span&gt; &lt;span class="m"&gt;80&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;server_name&lt;/span&gt; &lt;span class="n"&gt;example&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;com&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+        &lt;span class="n"&gt;client_max_body_size&lt;/span&gt; &lt;span class="m"&gt;4&lt;/span&gt;&lt;span class="n"&gt;G&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;access_log&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;webapps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hello_django&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;logs&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;nginx&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;access&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;error_log&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;webapps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hello_django&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;logs&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;nginx&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;error&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;log&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+        &lt;span class="n"&gt;location&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;static&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="err"&gt;{&lt;/span&gt;
+            &lt;span class="n"&gt;alias&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;webapps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hello_django&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;static&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+            &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="nt"&gt;location&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;media&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="n"&gt;alias&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;webapps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hello_django&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;media&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+            &lt;span class="p"&gt;}&lt;/span&gt;
+        &lt;span class="nt"&gt;location&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt; &lt;span class="n"&gt;HTTP&lt;/span&gt; &lt;span class="n"&gt;header&lt;/span&gt; &lt;span class="n"&gt;important&lt;/span&gt; &lt;span class="n"&gt;enough&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;have&lt;/span&gt; &lt;span class="n"&gt;its&lt;/span&gt; &lt;span class="n"&gt;own&lt;/span&gt; &lt;span class="n"&gt;Wikipedia&lt;/span&gt; &lt;span class="n"&gt;entry&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="o"&gt;&amp;lt;&lt;/span&gt;&lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="n"&gt;en&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;wikipedia&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;org&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;wiki&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Forwarded&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;For&lt;/span&gt;&lt;span class="o"&gt;&amp;gt;&lt;/span&gt;
+            &lt;span class="n"&gt;proxy_set_header&lt;/span&gt; &lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Forwarded&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;For&lt;/span&gt; &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;proxy_add_x_forwarded_for&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;enable&lt;/span&gt; &lt;span class="n"&gt;this&lt;/span&gt; &lt;span class="n"&gt;if&lt;/span&gt; &lt;span class="n"&gt;and&lt;/span&gt; &lt;span class="n"&gt;only&lt;/span&gt; &lt;span class="n"&gt;if&lt;/span&gt; &lt;span class="n"&gt;you&lt;/span&gt; &lt;span class="n"&gt;use&lt;/span&gt; &lt;span class="n"&gt;HTTPS&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="n"&gt;this&lt;/span&gt; &lt;span class="n"&gt;helps&lt;/span&gt; &lt;span class="n"&gt;Rack&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;proper&lt;/span&gt; &lt;span class="n"&gt;protocol&lt;/span&gt; &lt;span class="n"&gt;for&lt;/span&gt; &lt;span class="n"&gt;doing&lt;/span&gt; &lt;span class="n"&gt;redirects&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;proxy_set_header&lt;/span&gt; &lt;span class="n"&gt;X&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Forwarded&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;Proto&lt;/span&gt; &lt;span class="n"&gt;https&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;pass&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;Host&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="n"&gt;header&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;client&lt;/span&gt; &lt;span class="k"&gt;right&lt;/span&gt; &lt;span class="n"&gt;along&lt;/span&gt; &lt;span class="n"&gt;so&lt;/span&gt; &lt;span class="n"&gt;redirects&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;can&lt;/span&gt; &lt;span class="n"&gt;be&lt;/span&gt; &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;properly&lt;/span&gt; &lt;span class="n"&gt;within&lt;/span&gt; &lt;span class="n"&gt;the&lt;/span&gt; &lt;span class="n"&gt;Rack&lt;/span&gt; &lt;span class="n"&gt;application&lt;/span&gt;
+            &lt;span class="n"&gt;proxy_set_header&lt;/span&gt; &lt;span class="n"&gt;Host&lt;/span&gt; &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;http_host&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;we&lt;/span&gt; &lt;span class="n"&gt;don&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;t want nginx trying to do something clever with&lt;/span&gt;
+&lt;span class="s1"&gt;            # redirects, we set the Host: header above already.&lt;/span&gt;
+&lt;span class="s1"&gt;            proxy_redirect off;&lt;/span&gt;
+
+&lt;span class="s1"&gt;            # set &amp;quot;proxy_buffering off&amp;quot; *only* for Rainbows! when doing&lt;/span&gt;
+&lt;span class="s1"&gt;            # Comet/long-poll stuff. It&amp;#39;&lt;/span&gt;&lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="n"&gt;also&lt;/span&gt; &lt;span class="n"&gt;safe&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;set&lt;/span&gt; &lt;span class="n"&gt;if&lt;/span&gt; &lt;span class="n"&gt;you&lt;/span&gt;&lt;span class="err"&gt;&amp;#39;&lt;/span&gt;&lt;span class="n"&gt;re&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;using&lt;/span&gt; &lt;span class="n"&gt;only&lt;/span&gt; &lt;span class="n"&gt;serving&lt;/span&gt; &lt;span class="k"&gt;fast&lt;/span&gt; &lt;span class="n"&gt;clients&lt;/span&gt; &lt;span class="n"&gt;with&lt;/span&gt; &lt;span class="n"&gt;Unicorn&lt;/span&gt; &lt;span class="o"&gt;+&lt;/span&gt; &lt;span class="n"&gt;nginx&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;Otherwise&lt;/span&gt; &lt;span class="n"&gt;you&lt;/span&gt; &lt;span class="n"&gt;_want_&lt;/span&gt; &lt;span class="n"&gt;nginx&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;buffer&lt;/span&gt; &lt;span class="n"&gt;responses&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="k"&gt;slow&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;clients&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="n"&gt;really&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;proxy_buffering&lt;/span&gt; &lt;span class="n"&gt;off&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="n"&gt;Try&lt;/span&gt; &lt;span class="n"&gt;to&lt;/span&gt; &lt;span class="n"&gt;serve&lt;/span&gt; &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;files&lt;/span&gt; &lt;span class="n"&gt;from&lt;/span&gt; &lt;span class="n"&gt;nginx&lt;/span&gt;&lt;span class="o"&gt;,&lt;/span&gt; &lt;span class="n"&gt;no&lt;/span&gt; &lt;span class="n"&gt;point&lt;/span&gt; &lt;span class="n"&gt;in&lt;/span&gt; &lt;span class="n"&gt;making&lt;/span&gt; &lt;span class="n"&gt;an&lt;/span&gt;
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="o"&gt;*&lt;/span&gt;&lt;span class="n"&gt;application&lt;/span&gt;&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="n"&gt;server&lt;/span&gt; &lt;span class="n"&gt;like&lt;/span&gt; &lt;span class="n"&gt;Unicorn&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Rainbows&lt;/span&gt;&lt;span class="o"&gt;!&lt;/span&gt; &lt;span class="n"&gt;serve&lt;/span&gt; &lt;span class="k"&gt;static&lt;/span&gt; &lt;span class="n"&gt;files&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;
+            &lt;span class="n"&gt;if&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="o"&gt;!-&lt;/span&gt;&lt;span class="n"&gt;f&lt;/span&gt; &lt;span class="err"&gt;$&lt;/span&gt;&lt;span class="n"&gt;request_filename&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt; &lt;span class="err"&gt;{&lt;/span&gt;
+                &lt;span class="n"&gt;proxy_pass&lt;/span&gt; &lt;span class="n"&gt;http&lt;/span&gt;&lt;span class="o"&gt;://&lt;/span&gt;&lt;span class="n"&gt;hello_app_server&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;&lt;span class="n"&gt;break&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                &lt;span class="p"&gt;}&lt;/span&gt;
+                &lt;span class="err"&gt;}&lt;/span&gt;
+
+            &lt;span class="err"&gt;#&lt;/span&gt; &lt;span class="nt"&gt;Error&lt;/span&gt; &lt;span class="nt"&gt;pages&lt;/span&gt;
+            &lt;span class="nt"&gt;error_page&lt;/span&gt; &lt;span class="nt"&gt;500&lt;/span&gt; &lt;span class="nt"&gt;502&lt;/span&gt; &lt;span class="nt"&gt;503&lt;/span&gt; &lt;span class="nt"&gt;504&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;500&lt;/span&gt;&lt;span class="nc"&gt;.html&lt;/span&gt;&lt;span class="o"&gt;;&lt;/span&gt;
+            &lt;span class="nt"&gt;location&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="nt"&gt;500&lt;/span&gt;&lt;span class="nc"&gt;.html&lt;/span&gt; &lt;span class="p"&gt;{&lt;/span&gt;
+                &lt;span class="n"&gt;root&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;webapps&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;hello_django&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="k"&gt;static&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;;&lt;/span&gt;
+                &lt;span class="p"&gt;}&lt;/span&gt;
+                &lt;span class="err"&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;重启Nginx
+        $ sudo service nginx restart&lt;/p&gt;
+&lt;p&gt;现在再访问http://example.com你应该要以看到django的欢迎界面了。
+如果你在以上的配置中发现任何问题，可以在评论中留言。
+最终的目录结构：
+/webapps/hello_django/  &lt;/p&gt;
+&lt;p&gt;├── bin  /usr/include/python2.7&lt;/p&gt;
+&lt;p&gt;├── lib&lt;/p&gt;
+&lt;p&gt;│ └── python2.7&lt;/p&gt;
+&lt;p&gt;├── lib64 -&amp;gt; /webapps/proxydemo/lib&lt;/p&gt;
+&lt;p&gt;├── logs &lt;/p&gt;
+&lt;h3&gt;卸载django应用&lt;/h3&gt;
+&lt;p&gt;如果你需要卸载掉你的django应用，按照以下步骤
+移除Nginx sites-enabled文件夹中的虚拟服务器配置文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo rm /etc/nginx/sites-enabled/hello_django
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;重启Nginx&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo service nginx restart
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;如果你不想再次使用该应用，你可以从sites-available文件夹中删除掉真实的配置文件&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo rm /etc/nginx/sites-available/hello_django
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;使用supervisor停止应用&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo supervisorctl stop hello
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;从supervisor的控制脚本目录中移除应用&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo rm /etc/supervisor/conf.d/hello.conf
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;如果你真的不想再使用这个应用了，哥们，你肯定是受到什么打击了。你可以在webapps中移除整个目录：&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo rm -rf /webapps/hello_django
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 10 Apr 2014 14:25:57 +0800</pubDate><guid>tag:2bapm.com,2014-04-10:shi-yong-nginxgunicornvirtualenvsupervisorhe-postgresqlda-jian-djangosheng-chan-huan-jing.html</guid></item><item><title>Ubuntu下安装zsh</title><link>http://2bapm.com/ubuntuxia-an-zhuang-zsh.html</link><description>&lt;h1&gt;Ubuntu下安装zsh，配置oh-my-zsh&lt;/h1&gt;
+&lt;h2&gt;一、首先安装zsh&lt;/h2&gt;
+&lt;h3&gt;1. 去zsh官网&lt;a href="http://zsh.org"&gt;http://zsh.org&lt;/a&gt;下载最新版zsh安装包&lt;/h3&gt;
+&lt;h3&gt;2. 解压到任意目录&lt;/h3&gt;
+&lt;h3&gt;3. 编译安装&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ ./configure
+    $ make
+    $ sudo make install
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;4. 将系统旧版本zsh替换&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo mv /usr/local/bin/zsh /usr/local/bin/zsh-old
+    $ sudo mv /usr/local/bin/zsh-x.x.x /usr/local/bin/zsh
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;注：x.x.x为你下载安装的zsh版本号&lt;/p&gt;
+&lt;h3&gt;5. 将zsh注册为系统shell&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo add-shell /usr/local/bin/zsh
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2&gt;二、 配置oh-my-zsh&lt;/h2&gt;
+&lt;h3&gt;1. 安装oh-my-zsh&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;注： 这里会报错“密码： chsh: PAM authentication failed”
+无需理会，只是将zsh切换为系统默认sh时出错，下一步我们手动切换就好。&lt;/p&gt;
+&lt;h3&gt;2. 将系统默认shell设置为zsh&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ chsh -s `which zsh`
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;3. 重启&lt;/h3&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;    $ sudo reboot
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;4. 重启后配置oh-my-zsh&lt;/h3&gt;
+&lt;p&gt;配置文件为~/.oh-my-zsh 这里不描述如何配置了，只把我的配置文件贴出来吧&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Path to your oh-my-zsh installation.&lt;/span&gt;
+&lt;span class="x"&gt;    export ZSH=&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;HOME&lt;/span&gt;&lt;span class="x"&gt;/.oh-my-zsh&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Set name of the theme to load.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Look in ~/.oh-my-zsh/themes/&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Optionally, if you set this to &amp;quot;random&amp;quot;, it&amp;#39;ll load a random theme each&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; time that oh-my-zsh is loaded.&lt;/span&gt;
+&lt;span class="x"&gt;    ZSH_THEME=&amp;quot;xiong-chiamiov-plus&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Example aliases&lt;/span&gt;
+&lt;span class="x"&gt;    alias zshconfig=&amp;quot;mate ~/.zshrc&amp;quot;&lt;/span&gt;
+&lt;span class="x"&gt;    alias ohmyzsh=&amp;quot;mate ~/.oh-my-zsh&amp;quot;&lt;/span&gt;
+&lt;span class="x"&gt;    alias ssh=&amp;#39;ssh -R 52698:localhost:52698&amp;#39;&lt;/span&gt;
+
+&lt;span class="x"&gt;    alias ls=&amp;quot;ls -F --show-control-chars --color=auto&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    alias ll=&amp;quot;ls -al&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    export WORKON_HOME=~/Envs&lt;/span&gt;
+&lt;span class="x"&gt;    source /usr/local/bin/virtualenvwrapper.sh&lt;/span&gt;
+&lt;span class="x"&gt;    export PYTHONPATH=/usr/local/opt/libxml2/lib/python2.7/site-packages:&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;PYTHONPATH&lt;/span&gt;&lt;span class="x"&gt;&lt;/span&gt;
+
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line to use case-sensitive completion.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; CASE_SENSITIVE=&amp;quot;true&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line to disable bi-weekly auto-update checks.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; DISABLE_AUTO_UPDATE=&amp;quot;true&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line to change how often to auto-update (in days).&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; export UPDATE_ZSH_DAYS=13&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line to disable colors in ls.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; DISABLE_LS_COLORS=&amp;quot;true&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line to disable auto-setting terminal title.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; DISABLE_AUTO_TITLE=&amp;quot;true&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line to disable command auto-correction.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; DISABLE_CORRECTION=&amp;quot;true&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line to display red dots whilst waiting for completion.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; COMPLETION_WAITING_DOTS=&amp;quot;true&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line if you want to disable marking untracked files&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; under VCS as dirty. This makes repository status check for large repositories&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; much, much faster.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; DISABLE_UNTRACKED_FILES_DIRTY=&amp;quot;true&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Uncomment the following line if you want to change the command execution time&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; stamp shown in the history command output.&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; The optional three formats: &amp;quot;mm/dd/yyyy&amp;quot;|&amp;quot;dd.mm.yyyy&amp;quot;|&amp;quot;yyyy-mm-dd&amp;quot;&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; HIST_STAMPS=&amp;quot;mm/dd/yyyy&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Would you like to use another custom folder than &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;ZSH&lt;/span&gt;&lt;span class="x"&gt;/custom?&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; ZSH_CUSTOM=/path/to/new-custom-folder&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Example format: plugins=(rails git textmate ruby lighthouse)&lt;/span&gt;
+&lt;span class="x"&gt;    plugins=(git node brew bundle cap gem github osx rails ruby rvm svn textmate python virtualenv virtualenvwapper sudo django gitignore supervisor git-remote-branch)&lt;/span&gt;
+
+&lt;span class="x"&gt;    source &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;ZSH&lt;/span&gt;&lt;span class="x"&gt;/oh-my-zsh.sh&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; User configuration&lt;/span&gt;
+
+&lt;span class="x"&gt;    export PATH=&amp;quot;/usr/local/opt/coreutils/libexec/gnubin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin&amp;quot;&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; export MANPATH=&amp;quot;/usr/local/man:&lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;MANPATH&lt;/span&gt;&lt;span class="x"&gt;&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; You may need to manually set your language environment&lt;/span&gt;
+&lt;span class="x"&gt;    export LANG=zh_CN.UTF-8&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Preferred editor for local and remote sessions&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; if [[ -n &lt;/span&gt;&lt;span class="p"&gt;$&lt;/span&gt;&lt;span class="nv"&gt;SSH_CONNECTION&lt;/span&gt;&lt;span class="x"&gt; ]]; then&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt;   export EDITOR=&amp;#39;vim&amp;#39;&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; else&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt;   export EDITOR=&amp;#39;mvim&amp;#39;&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; fi&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; Compilation flags&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; export ARCHFLAGS=&amp;quot;-arch x86_64&amp;quot;&lt;/span&gt;
+
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; ssh&lt;/span&gt;
+&lt;span class="x"&gt;    &lt;/span&gt;&lt;span class="err"&gt;#&lt;/span&gt;&lt;span class="x"&gt; export SSH_KEY_PATH=&amp;quot;~/.ssh/dsa_id&amp;quot;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 10 Apr 2014 10:47:35 +0800</pubDate><guid>tag:2bapm.com,2014-04-10:ubuntuxia-an-zhuang-zsh.html</guid></item><item><title>Virtualenv 使用</title><link>http://2bapm.com/virtualenv-shi-yong.html</link><description>&lt;h1 id="virtualenv"&gt;virtualenv&lt;/h1&gt;
+
+&lt;h2 id="_"&gt;一. 安装&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    #sudo pip install virtualenv
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="_"&gt;二. 配置&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    #sudo virtualenv env1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="_"&gt;三. 激活&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    #source ../env1/bin/active
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="_"&gt;四. 删除&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    #virtualenv --clear env1
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="_"&gt;五. 退出&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    #deactivate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Virtualenv＠Debian 安装及配置cnblogs.com&lt;/p&gt;
+&lt;p&gt;基本是照着这篇资料来的：http://www.openfoundry.org/tw/tech-column/8516-pythons-virtual-environment-and-multi-version-programming-tools-virtualenv-and-pythonbrew
+Virtualenv的官网：传送门
+Virtualenv 可以隔離函數庫需求不同的專案，讓它們不會互相影響。在建立並啟動虛擬環境後，透過 pip 安裝的套件會被放在虛擬環境中，專案就可以擁有一個獨立的環境。
+簡而言之，Virtualenv 可以幫你做到：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在沒有權限的情況下安裝新套件&lt;/li&gt;
+&lt;li&gt;不同專案可以使用不同版本的相同套件&lt;/li&gt;
+&lt;li&gt;套件版本升級時不會影響其他專案&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;一、安装
+我是用pip安装的，其实Virtualenv 在安裝时会附带 pip 这个 Python 的套件安裝工具，所以你直接用apt-get install也可以
+ sudo pip install Virtualenv
+口胡！安装就是这么简单，关键还是使用嘛：
+二、建立虚拟环境
+$ virtualenv [虚拟环境名称]
+插个嘴，回想当年犯过用sudo执行这个命令的傻逼行为，默哀。。
+我的命令是这样滴：
+$ virtualenv war
+现在用ls就可以看到你刚刚建的那个环境了。
+預設在建立虛擬環境時，會依賴系統環境中的 site packages，如果想完全不依賴系統的 packages，可以加上參數 --no-site-packages 來建立虛擬環境：
+$ virtualenv --no-site-packages [指定虛擬環境的名稱]
+这个我用不着，不过还是贴上以备将来需要
+另外，在创建Virtualenv的时候指定python版本只需要加上－p
+mkvirtualenv war --no-site-packages -p /usr/local/bin/python2.7
+三、启动虚拟环境
+进入你刚刚建立的那个虚拟环境
+$ cd war
+启动她（邪恶感）
+$ source bin/activate
+这时候你的命令行就变身了！ (￣ˇ￣) 然後就可以注意到，在 shell 提示字元的最前面多了虛擬環境的名稱提示：
+(war)user@host-name:~/war$
+四、退出
+耍完之后怎么退出？
+$ deactivate
+●ω● 这样你就回到系统的环境中鸟～
+五、在虚拟环境中安装python套件
+换句话说就是怎么在这个小世界里为所欲为 hia hia hia
+在虚拟环境中安装各种python的包都用pip
+如果系统已经装了pip，用的时候一定注意下是不是在虚拟环境中，不然的话东西可就装到系统中了。像我这样的马大哈说不准哪天就会被这种问题困扰半天，为了避免pip在没有进入虚拟环境的时候使用，也就是说只能在虚拟环境中使用，可以在 ~/.bashrc 加上：
+export PIP_REQUIRE_VIRTUALENV=true
+也可以用下面的设定，让系統的 pip 自动使用启动中的虚拟环境。
+export PIP_RESPECT_VIRTUALENV=true
+如果上面的操作已经了如指掌就可以进阶啦～
+六、延伸套件 Virtualenvwrapper
+这个是用来干啥的呢？
+Virtualenvwrapper 是一個 Virtualenv 的 extension，可使虛擬環境的管理變得更容易。
+詳細來說，Virtualenvwrapper 提供下述功能：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;將所有的虛擬環境整合在一個目錄下。&lt;/li&gt;
+&lt;li&gt;管理（新增、移除、複製）所有的虛擬環境。&lt;/li&gt;
+&lt;li&gt;可以使用一個命令切換虛擬環境。&lt;/li&gt;
+&lt;li&gt;Tab 補全虛擬環境的名字。&lt;/li&gt;
+&lt;li&gt;每個操作都提供允許使用者自訂的 hooks。&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;可撰寫容易分享的 extension plugin 系統。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;安装，这次我是用apt－get装的
+$ sudo apt-get install virtualenvwrapper&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;使用方法
+a.设定老窝
+也就是设定$WORKON_HOME，因为所有的环境均在$WORKON_HOME下
+export WORKON_HOME=~/Envsmkdir -p $WORKON_HOMEsource /usr/local/bin/virtualenvwrapper.sh#修改bash_profileexport WORKON_HOME=~/Envssource /usr/local/bin/virtualenvwrapper.sh
+b.进入你的$WORKON_HOME并创建环境
+$ mkvirtualenv [-i package] [-r requirements_file] [virtualenv options] ENVNAME
+c.列出所有的环境，其中-b 是简短模式；-l 是详细模式（预设）；-h 是 help。
+$ lsvirtualenv [-b] [-l] [-h]
+(￣o￣) . z Z　大中午的刚吃完饭好困啊。。好吧继续
+d.删除一个虚拟环境
+$ rmvirtualenv ENVNAME
+e.复制一个虚拟环境：
+$ cpvirtualenv ENVNAME TARGETENVNAME
+f.启动虚拟环境：
+$ workon [environment_name]
+g.如果只輸入workon，则会列出所有的虚拟环境。
+离开虚拟环境一样是使用 deactivate。
+可以使用下面的设定來告诉 pip Virtualenv 的路径。
+export PIP_VIRTUALENV_BASE=$WORKON_HOME
+其他牛逼功能就到官方文档去瞅瞅吧。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Pythonbrew01. 安裝
+Pythonbrew 是個比較新的專案，雖然比較新，卻非常完整。它也有整合上面介紹的 Virtualenv。可以用類似 Virtualenvwrapper 的方式來操作 Virtualenv。
+安裝方式與 Virtualenv 一樣，只要輸入下面的指令就可以了：&lt;/p&gt;
+&lt;h1&gt;easy_install $ pythonbrew&lt;/h1&gt;
+&lt;p&gt;Pythonbrew 官方有推薦的安裝方式，但這篇教學為求一致性，就不額外介紹了，可以參考pythonbrew/README.rst。
+對於 Windows 的使用者，很可惜地，Pythonbrew 暫時沒有支援 Windows 的計畫 (#6: Windows Support? - Issues - utahta/pythonbrew - GitHub)。所以 Windows 暫時還沒辦法使用 Pythonbrew 囉。
+經過 easy_install 的安裝後，還需要在 shell 執行：
+$ pythonbrew_install
+才會把初始的設定檔和資料夾配置進你的家目錄。接著要修改 ~/.bashrc 的配置：
+$ echo "source ~/.pythonbrew/etc/bashrc" &amp;gt;&amp;gt; ~/.bashrc
+這樣就算安裝完全囉。
+Pythonbrew 使用 curl 來抓取資料，如果你的系統沒有，請記得安裝。Ubuntu 上可以使用這行指令：
+$ sudo apt-get install curl02. 編譯前準備
+因為 Pythonbrew 採取下載 tarball，並編譯、安裝的方法，所以我們要先為系統準備好編譯 Python 所需的套件。
+也因為許多 Linux 發行版都已打包 Python，所以我們可以偷懶一點，用已經打包好的套件來解決編譯所需的相依性。在 Ubuntu/Debian 上，可以透過：
+$ sudo apt-get build-dep python2.7
+來安裝所有編譯 Python 2.7 所需的套件。雖然已經能夠安裝得相當完整，但還是缺少了 gdbm 這個 module，如果需要的話，可以透過：
+$ sudo apt-get build-dep python-gdbm
+來安裝編譯 gdbm 所需的套件。
+註：bsddb185、linuxaudiodev、ossaudiodev、sunaudiodev 等是按以上方式安裝後，仍會缺少的 module。其中 ossaudiodev（Open Sound System）在隨 Ubuntu 發布的 Python 中有提供，列出來讓大家參考。
+Fedora/CentOS/Redhat/openSUSE 則可以使用 yum-builddep 這個指令。
+03. 使用方法
+Pythonbrew 的操作不外乎安裝、移除、列出及使用新的 Python 版本，下面是依照初次使用時所需的指令順序來介紹。
+I. 列出可安裝的版本
+首先我們用 list --know 列出可以安裝的 Python 版本：
+$ pythonbrew list --know
+II. 安裝新的版本
+接著利用 install VERSION 來下載並編譯 Python 到本機，除了接 Python 的版本編號以外，也可以接 Python 的 tarball 路徑或網址來安裝；也能調整編譯 Python 的選項。下面是一些例子：
+$ pythonbrew install 2.7.2$ pythonbrew install --verbose 2.7.2$ pythonbrew install --force 2.7.2$ pythonbrew install --no-test 2.7.2$ pythonbrew install --configure="CC=gcc_4.1" 2.7.2$ pythonbrew install --no-setuptools 2.7.2$ pythonbrew install http://www.python.org/ftp/python/2.7/Python-2.7.2.tgz$ pythonbrew install /path/to/Python-2.7.2.tgz$ pythonbrew install /path/to/Python-2.7.2$ pythonbrew install 2.7.2 3.2III. 清理安裝時產生的檔案
+下載的 Python tarball 會放在 ~/.pythonbrew/dists/ 下；而編譯則會在 ~/.pythonbrew/build/ 下進行。如果想清理這兩個目錄，可以使用：
+$ pythonbrew cleanupIV. 列出所有已安裝的版本
+安裝好之後，可以使用 list 命令列出所有已安裝的 Python 版本：
+$ pythonbrew list
+後面有打星號的，就是現在正在使用的 Python 版本。
+V. 切換已安裝的版本
+可以使用 switch 來切換預設的 Python 版本：
+$ pythonbrew switch VERSION
+如果只想在當前的 shell 下切換，可以使用 use：
+$ pythonbrew use VERSION
+要切換回預設的環境時，使用 off：
+$ pythonbrew off
+就會返回系統環境的 Python 了。
+VI. 批次在不同版本下測試
+最重要的是，可以用系統內所有安裝過的 Python 版本，或指定的 Python 版本來測試自己的程式！
+$ pythonbrew py test.py # 使用所有有安裝的版本$ pythonbrew py -v test.py # 詳細輸出$ pythonbrew py -p 2.7.2 -p 3.2 test.py # 指定特定的版本VII. 移除已安裝的版本
+若想移除已經安裝的 Python，則可以使用 uninstall：
+$ pythonbrew uninstall 2.7.2$ pythonbrew uninstall 2.7.2 3.2VIII. 與 Virtualenv 的整合
+要注意 Pythonbrew 中所提供的 Virtualenv，是基於 Pythonbrew 中所安裝的 Python（置於~/.pythonbrew/venvs/Python-VERSION/ 下）。在不使用 Pythonbrew 的情況下，無法使用附屬於 Pythonbrew 的 venv 功能。
+Pythonbrew 提供了和 Virtualenvwrapper 類似的功能，只是沒有像 Virtualenvwrapper 那麼完整的 plugin 系統。所有在 Pythonbrew 中的 Virtualenv 指令都以 venv 作為第一個副命令。
+$ pythonbrew venv create [指定虛擬環境的名稱]$ pythonbrew venv list$ pythonbrew venv use [指定虛擬環境的名稱]$ pythonbrew venv delete [指定虛擬環境的名稱]
+離開虛擬環境一樣是使用 deactivate。
+IX. Buildout
+如果有使用 Buildout 這個工具，也可以透過 Pythonbrew 來執行：
+$ pythonbrew buildout$ pythonbrew buildout -p 2.6.6 # 指定版本
+X. 自我更新
+最後，Pythonbrew 有內建更新自己的指令：
+$ pythonbrew update$ pythonbrew update --master$ pythonbrew update --develop
+Virtualenv 和 Pythonbrew 就介紹到這邊，如果想獲得更多資訊，可以多多參考它們的官網哦。祝大家玩得愉快。
+vim-virtualenv
+vim-virtualenv is Jeremey Cantrell’s plugin for controlling virtualenvs from within vim. When used together with virtualenvwrapper, vim-virtualenv identifies the virtualenv to activate based on the name of the file being edited.
+这个先mark下来抽空研究&lt;/p&gt;
+&lt;p&gt;Original Page: http://www.cnblogs.com/Phenix_Yang/archive/2012/05/08/2489724.html
+Shared from Pocket&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 14:51:09 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:virtualenv-shi-yong.html</guid></item><item><title>ubuntu landscape</title><link>http://2bapm.com/ubuntu-landscape.html</link><description>&lt;h3&gt;ubuntu ssh登录 显示系统信息&lt;/h3&gt;
+&lt;p&gt;apt-get install landscape-common&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 14:50:51 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:ubuntu-landscape.html</guid></item><item><title>在iis7.5上部署Django环境</title><link>http://2bapm.com/zai-iis75shang-bu-shu-djangohuan-jing.html</link><description>&lt;blockquote&gt;
+  &lt;p&gt;终于还是在再一次vps搬家的时候补上了 iis的django配置.又折磨了自己小两天才搞定,这次一定要记住&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=""&gt;一.安装环境及数据库&lt;/h2&gt;
+
+&lt;p&gt;这部分没啥可说,直接用web Platform installer安装相应内容就好,具体要安装的内容如下:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;python&lt;/li&gt;
+&lt;li&gt;django&lt;/li&gt;
+&lt;li&gt;mysql&lt;/li&gt;
+&lt;li&gt;php&lt;/li&gt;
+&lt;li&gt;python fastcgi 网关&lt;/li&gt;
+&lt;li&gt;以上为必装,其他的自己研究就好&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id="_fastcgi"&gt;二. 配置fastcgi&lt;/h2&gt;
+
+&lt;p&gt;以下操作需要在cmd中进行&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;安装iis的fastcgi扩展&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;start /wait %windir%\System32\\PkgMgr.exe /iu:IIS-WebServerRole;IIS-WebServer;IIS-CommonHttpFeatures;IIS-StaticContent;IIS-DefaultDocument;IIS-DirectoryBrowsing;IIS-HttpErrors;IIS-HealthAndDiagnostics;IIS-HttpLogging;IIS-LoggingLibraries;IIS-RequestMonitor;IIS-Security;IIS-RequestFiltering;IIS-HttpCompressionStatic;IIS-WebServerManagementTools;IIS-ManagementConsole;WAS-WindowsActivationService;WAS-ProcessModel;WAS-NetFxEnvironment;WAS-ConfigurationAPI;IIS-CGI
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;设置python fastcgi相关配置&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;%windir%\system32\inetsrv\appcmd set config /section:system.webServer/fastCGI "/+[fullPath='c:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py']"
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;设置网站配置&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;%windir%\system32\inetsrv\appcmd set config /section:system.webServer/handlers "/+[name='Python_via_FastCGI',path='*',verb='*',modules='FastCgiModule',scriptProcessor='c:\Python27\python.exe|C:\Python27\Scripts\wfastcgi.py',resourceType='Unspecified']"
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;django程序运行配置&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;%windir%\system32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='C:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py'].environmentVariables.[name='DJANGO_SETTINGS_MODULE',value='DjangoApplication.settings']" /commit:apphost
+注意 environment后边的配置要根据自己站点更改
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;配置Django环境变量 &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;%windir%\system32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='C:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py'].environmentVariables.[name='PYTHONPATH',value='C:\inetpub\wwwroot\DjangoApplication']" /commit:apphost
+注意 environment后边的配置要根据自己站点更改
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;配置fastcgi&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;%windir%\system32\inetsrv\appcmd.exe set config -section:system.webServer/fastCgi /+"[fullPath='C:\Python27\python.exe', arguments='C:\Python27\Scripts\wfastcgi.py'].environmentVariables.[name='WSGI_HANDLER',value='django.core.handlers.wsgi.WSGIHandler()']" /commit:apphost
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;配置iis
+    在iis主配置中选择fastcgi设置,右键python项目点击编辑,监视对文件所做的更改-定位到djangosite下的settings.py文件
+    环境变量下 pythonpath 定位到settings.py上一级目录
+done!&lt;/p&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h2 id="_"&gt;三. 站点配置部分&lt;/h2&gt;
+
+&lt;p&gt;配置过python环境之后,由于django无默认文件,所以直接默认识别站点文件夹,也就导致了该服务器上的其他站点都是默认使用python进行程序处理,为了解决这个问题,我们可以在iis配置-站点配置-处理程序映射-查看已排序的列表 中调整程序映射的优先级.&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;p&gt;以上 应该就可以了.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;环境为Windows server 2008 r2 ;iis 7.5; windows webPlatform installer 4.6 python 2.7.2 django 1.4 &lt;/p&gt;
+&lt;/blockquote&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 00:38:21 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:zai-iis75shang-bu-shu-djangohuan-jing.html</guid></item><item><title>新技能get√,递归下载整站文件</title><link>http://2bapm.com/download-whole-site.html</link><description>&lt;p&gt;wget是linux下命令行的下载工具，功能很强大，虽然我很少用，一般下在一些小东西都是直接用firefox，seamonkey这些浏览器自带的下载功能下载，没有必要用wget或者其他下载工具。但是某些时候却不是浏览器自带的下载功能和一些其他的下载软件所能做的的，这时候就得用wget了。比如如果你想下载一个网页目录下的所有文件，如何做呢？&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;先介绍几个参数：
+    -c 断点续传（备注：使用断点续传要求服务器支持断点续传）
+    -r 递归下载（目录下的所有文件,包括子目录）
+    -np 递归下载不搜索上层目录
+    -k 把绝对链接转为相对链接这样下载之后的网页方便浏览
+    -L 递归时不进入其他主机
+    -p 下载网页所需要的所有文件。
+
+    比如：#wget -c -r -np -k -L -p http://www.kuqin.com/itman/liyanhong/ 下载酷勤网下面的目录“李彦宏”
+&lt;/code&gt;&lt;/pre&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 00:37:42 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:download-whole-site.html</guid><category>linux</category><category>wget</category></item><item><title>在cent6上分别安装python2.7和python3</title><link>http://2bapm.com/zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html</link><description>&lt;h1 id="cent6python27python3"&gt;在cent6上分别安装python2.7和python3&lt;/h1&gt;
+
+&lt;p&gt;cent6上自带的python版本为2.6.6.你可以在系统中手动升级到2.7或者3.但是你要注意的是,在升级过程中你不能破坏系统原有的2.6.6,因为包括yum在内的一些核心组件是依赖于2.6.6的.如果你破坏了了2.6.6,这些组件就会报错.&lt;/p&gt;
+
+&lt;p&gt;下面我们来看下如何在系统中安装Python2.7和python3而不对2.6.6进行更改.安装2.7和3的步骤除了虚拟环境的文件名不同,其他都差不多.有人反馈说这个方法在centos5.8上依然适用,但是我没测试过.请用root权限或者sudo处理下列命令.&lt;/p&gt;
+
+&lt;h2 id=""&gt;安装开发工具&lt;/h2&gt;
+
+&lt;p&gt;为了编译python包我们首先必须安装开发工具和一些依赖库.严格来说这些依赖库在编译python的过程中并不全是必须的,但是少了这些程序,你的Python程序的作用就会大打折扣.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    # yum groupinstall "Development tools"
+    # yum install zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel readline-devel tk-devel
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="python"&gt;下载安装python&lt;/h2&gt;
+
+&lt;p&gt;在make的时候我们使用altinstall而非install,这样避免了在安装过程中,新python中的可执行程序被命名为python.可以省去很多不必要的麻烦&lt;/p&gt;
+
+&lt;h3 id="python27"&gt;下载安装python2.7&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;    #wget http://python.org/ftp/python/2.7.3/Python-2.7.3.tar.bz2
+    # tar xf Python-2.7.3.tar.bz2
+    # cd Python-2.7.3
+    # ./configure --prefix=/usr/local
+    # make &amp;amp;&amp;amp; make altinstall
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="python3"&gt;下载安装python3&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;    # wget http://python.org/ftp/python/3.3.0/Python-3.3.0.tar.bz2
+    # tar xf Python-3.3.0.tar.bz2
+    # cd Python-3.3.0
+    # ./configure --prefix=/usr/local
+    # make &amp;amp;&amp;amp; make altinstall
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;安装完成之后/uer/local/bin中会出现Python2.7和python3,而系统的python版本仍然为2.6.6&lt;/p&gt;
+
+&lt;h2 id="distribute"&gt;下载安装distribute&lt;/h2&gt;
+
+&lt;h3 id="python27distribute"&gt;为python2.7下载安装distribute&lt;/h3&gt;
+
+&lt;p&gt;distribute 提供了一个从python package index 安装python包的框架.系统中的不同版本的python程序需要安装自己版本的Distribute&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    # wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.35.tar.gz
+    # tar xf distribute-0.6.35.tar.gz
+    # cd distribute-0.6.35
+    # python2.7 setup.py install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果你使用python2.7安装python包系统会默认调用/usr/local/bin/easy_install-2.7安装python包,然后将包安装到/usr/local/lib/python2.7/site-packages/中&lt;/p&gt;
+
+&lt;h3 id="python3distribute"&gt;为python3下载安装distribute&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;    # wget http://pypi.python.org/packages/source/d/distribute/distribute-0.6.35.tar.gz
+    # tar xf distribute-0.6.35.tar.gz
+    # cd distribute-0.6.35
+    # python3.3 setup.py install
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;如果你使用python3安装python包系统会默认调用/usr/local/bin/easy_install-3安装python包,然后将包安装到/usr/local/lib/python3/site-packages/中&lt;/p&gt;
+
+&lt;h2 id=""&gt;下一步&lt;/h2&gt;
+
+&lt;p&gt;使用多版本的python工作极复杂又极易出错,我强烈推荐使用virturalenv virtualenv是一个让python在类沙盒环境中运行的虚拟唤醒,每个沙盒可以有他自己的python版本及包.当你管理多个项目,每个项目的依赖包又不同时这就会变得相当有用&lt;/p&gt;
+
+&lt;h3 id="python27virturalenv"&gt;为python2.7下载安装virturalenv&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;    # easy_install-2.7 virtualenv
+    # virtualenv-2.7 --distribute someproject
+    New python executable in someproject/bin/python2.7
+    Also creating executable in someproject/bin/python
+    Installing distribute...................done.
+    Installing pip................done.
+    # source someproject/bin/activate
+    (someproject)# python --version
+    Python 2.7.3
+    (someproject)#
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id="python3virturalenv"&gt;为python3下载安装virturalenv&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;    # easy_install-3.3 virtualenv
+    # virtualenv-3.3 --distribute otherproject
+    New python executable in otherproject/bin/python3.3
+    Also creating executable in otherproject/bin/python
+    Installing distribute...................done.
+    Installing pip................done.
+    # source otherproject/bin/activate
+    (otherproject)# python --version
+    Python 3.3.0
+    (otherproject)#
+&lt;/code&gt;&lt;/pre&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 00:37:16 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:zai-cent6shang-fen-bie-an-zhuang-python27he-python3.html</guid></item><item><title>ubuntu 中文环境设置</title><link>http://2bapm.com/ubuntu-zhong-wen-huan-jing-she-zhi.html</link><description>&lt;h1 id="ubuntu_"&gt;ubuntu 中文环境设置&lt;/h1&gt;
+
+&lt;h2 id=""&gt;一、安装中文语言包&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    sudo apt-get install language-pack-zh-hans
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="locale"&gt;二、配置自己想要的locale。&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    普遍推荐的方法是拷贝所有ubuntu支持的locale到自己的配置文件里，然后编辑。
+
+    cp /usr/share/i18n/SUPPORTED /var/lib/locales/supported.d/local
+
+    vi /var/lib/locales/supported.d/local，用dd命令删啊删，只留下en_系列和zh_系列, 或者其他你要的locale
+
+    rm /var/lib/locales/supported.d/en 
+
+    rm /var/lib/locales/supported.d/zh 这两个文件跟local一样功能，也可以把en系列写在en文件里，zh系列写在zh文件里，分类方便而已。我既然都写在local里，这两个就用不着了。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="locale"&gt;三、重新生成locale支持文件&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    locale-gen --purge
+
+    这一步会将/usr/lib/locale/里面的locale支持文件删掉，重新生成。如果设置的locale没有生成过，或者设置的时候拼写错误，在这个目录找不到同名的支持文件就会提示No such file了。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="locale"&gt;四、配置locale环境。&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    敲locale把输出的那些环境变量拷贝到/etc/environment里面，自己手工修改。可以设的值就是/var/lib/locales/supported.d/local里面包括的值，或者生成在/usr/lib/locale/里面的文件夹名称。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=""&gt;五、退出重新登录。&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    再敲locale看看，没错误了。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id="man"&gt;六、安装中文man&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;    sudo apt-get install manpages-zh
+&lt;/code&gt;&lt;/pre&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 00:36:41 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:ubuntu-zhong-wen-huan-jing-she-zhi.html</guid></item><item><title>Emacs 使用 auto-complete 补全</title><link>http://2bapm.com/emacs-shi-yong-auto-complete-bu-quan.html</link><description>&lt;p&gt;1st 下载 auto-complete
+$wget http://cx4a.org/pub/auto-complete/auto-complete-1.3.1.tar.bz2
+$tar jxvf auto-complete-1.3.1.tar.bz2
+下载后解压到任意目录。&lt;/p&gt;
+&lt;p&gt;2nd 安装auto-complete
+$cd auto-complete-1.3.1
+$make
+$make install
+这里会让你选择安装目录，这里输入你自己存放emacs插件的路径即可&lt;/p&gt;
+&lt;p&gt;安装完成后会有如下提示
+Successfully installed!&lt;/p&gt;
+&lt;p&gt;Add the following code to your .emacs:&lt;/p&gt;
+&lt;p&gt;(add-to-list 'load-path "/home/backfire/emacs/auto-complete")
+(require 'auto-complete-config)
+(add-to-list 'ac-dictionary-directories "/home/backfire/emacs/auto-complete/ac-dict")
+(ac-config-default)&lt;/p&gt;
+&lt;p&gt;将深蓝色部分添加到/home/$(name)/.emacs文件中后auto-complete即可正常使用了&lt;/p&gt;
+&lt;p&gt;可以补全的地方会弹出窗口，M+n 和M+p上下选择，TAB，回车或者M+j选择
+至于怎么手动启动补全我还不清初，知道后再补上，不过感觉这个补全还是满好用。&lt;/p&gt;
+&lt;p&gt;有大牛说auto-complete最好的地方是可以方便的使用其他语法补全插件的结果，配合使用会非常强大。过阵子研究下&lt;/p&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 00:36:17 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:emacs-shi-yong-auto-complete-bu-quan.html</guid><category>Emacs</category></item><item><title>CentOS 下添加新硬盘</title><link>http://2bapm.com/centos-xia-tian-jia-xin-ying-pan.html</link><description>&lt;ol&gt;
+&lt;li&gt;&lt;p&gt;查看新硬盘&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;`#fdisk -l`
+
+
+`Disk /dev/xvdb: 32.2 GB, 32212254720 bytes
+255 heads, 63 sectors/track, 3916 cylinders
+Units = cylinders of 16065 * 512 = 8225280 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disk identifier: 0x3aca4f94`
+
+
+新添加的硬盘编号为 `/dev/xvdb`
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;硬盘分区&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1) 进入fdisk模式
+    `#fdisk /dev/xvdb`
+
+
+2) 输入n进行分区
+    `Command (m for help): n`
+
+
+3) 选择分区类型
+    `Command action
+        e   extended
+        p   primary partition (1-4)`
+这里有两个选项： 
+
+
+p: 主分区    linux上主分区最多能有4个 
+
+
+e: 扩展分区 linux上扩展分区只能有1个，扩展分区创建后不能直接使用，还要在扩展分区上创建逻辑分区。 
+
+
+这里我选择的p。 
+
+
+4) 选择分区个数 
+    `Partition number (1-4)`
+可以选择4个分区，这里我只分成1个分区 
+
+
+5) 设置柱面，这里选择默认值就可以
+
+
+6)输入w，写入分区表，进行分区 
+    分区结束后，查看/dev目录 
+    `#ls –l /dev`
+    可以看到刚刚生成的新分区xvdb1
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;格式化分区 &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;将新分区格式化为ext3文件系统 
+
+
+1) 如果创建的是主分区 
+    `#mkfs -t ext3 /dev/sdb1` 
+
+
+2) 如果创建的是扩展分区， 由于扩展分区不能直接使用，执行 
+    `#/sbin/mkfs -t ext3 /dev/sdb1 `
+   命令，系统会报下面的错误 
+  `Invalid argument passed to ext2 library while setting up superblock `
+  这种情况下，只能对扩展分区上的逻辑分区进行格式化 
+ `#/sbin/mkfs -t ext3 /dev/sdb1 `
+ 然后就开始格式化   
+ 最后写入文件系统信息。 
+ 此时就可以用新创建的分区了
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;挂载硬盘&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;1)  创建挂载点 
+    在根目录下创建storage目录 
+    `#mkdir /storage `
+2)  将/dev/xvdb1挂载到/storage下 
+    `#mount /dev/xvdb1 /storage `
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;设置开机启动自动挂载 &lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;新创建的分区不能开机自动挂载，每次重启机器都要手动挂载。 
+设置开机自动挂载需要修改/etc/fstab文件 
+`#vi /etc/fstab `
+在文件的最后增加一行 
+/dev/xvdb1 /storage ext3 defaults 1 2
+&lt;/code&gt;&lt;/pre&gt;&lt;/li&gt;
+&lt;/ol&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 00:35:55 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:centos-xia-tian-jia-xin-ying-pan.html</guid></item><item><title>2013年终个人盘点</title><link>http://2bapm.com/2013-final-summary.html</link><description>&lt;h1&gt;2013年终个人盘点&lt;/h1&gt;
+&lt;h2&gt;一. 年度事件&lt;/h2&gt;
+&lt;h3&gt;1. 生活事件&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;生命中最重要的大事之一--结婚&lt;/li&gt;
+&lt;li&gt;买了房子&lt;/li&gt;
+&lt;li&gt;搬家装修买家电&lt;/li&gt;
+&lt;li&gt;和老婆摊牌&lt;/li&gt;
+&lt;li&gt;老婆进了公立学校&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;2. 工作事件&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;离开快播这个奋斗两年的地方&lt;/li&gt;
+&lt;li&gt;进入国康&lt;/li&gt;
+&lt;li&gt;xxgqdy电影站&lt;/li&gt;
+&lt;li&gt;mucaijia木材站&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;3. 个人成长事件&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;由win平台转到了&lt;/li&gt;
+&lt;li&gt;体重稳定在90kg&lt;/li&gt;
+&lt;li&gt;从android平台转到了ios平台&lt;/li&gt;
+&lt;li&gt;参加了一次创业周末&lt;/li&gt;
+&lt;li&gt;工作心态发生变化&lt;/li&gt;
+&lt;li&gt;学习方面:产品,python,django,linux&lt;/li&gt;
+&lt;li&gt;书籍:《英雄志》《人人都是产品经理》《headfirst系列》&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;二. 个人感悟&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;对于爱情有了比较深的感悟,感恩及感谢老婆为我付出的一切.&lt;/li&gt;
+&lt;li&gt;通过回答从小挨揍的孩子对性格有什么影响-知乎 这个问题,反思了自己的性格,以及和父亲之间的心结&lt;/li&gt;
+&lt;li&gt;通过结婚,深刻感悟了父母之爱,时刻想在孩子前边,不声不响为儿女安排所有,这就是父母之爱&lt;/li&gt;
+&lt;li&gt;通过byvoid和程浩的事例,深刻感悟了时间管理的重要性,对自己应该做什么,怎么做进行了思考.&lt;/li&gt;
+&lt;li&gt;回家拜祭了姥爷,解了自己的一个心结&lt;/li&gt;
+&lt;li&gt;看了&amp;#8221;致青春&amp;#8221;,对青春的感悟依然是:青春无悔,选择无错.&lt;/li&gt;
+&lt;li&gt;工作过程中发现大量的内容都可以在大学的时候学到,但是理论无法结合实践.再次觉得荒废了大量的青春.&lt;/li&gt;
+&lt;li&gt;工作心态发生变化,参与经历了一次创业过程之后,加之自身性格中的强烈自信,导致了自己在工作中心态发生较大变化,需要改进.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;三. 2014年计划&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;一份自己喜欢的工作&lt;/li&gt;
+&lt;li&gt;玩啥么项目&lt;/li&gt;
+&lt;li&gt;EHR社区项目&lt;/li&gt;
+&lt;li&gt;买车&lt;/li&gt;
+&lt;li&gt;养成GTD的习惯&lt;/li&gt;
+&lt;li&gt;换台mbp&lt;/li&gt;
+&lt;li&gt;家庭角色转变&lt;/li&gt;
+&lt;li&gt;15-20本书,加上观后感&lt;/li&gt;
+&lt;li&gt;玩明白django&lt;/li&gt;
+&lt;li&gt;Treehouse codecademy&lt;/li&gt;
+&lt;li&gt;随时增减&lt;/li&gt;
+&lt;/ol&gt;</description><dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">Albert Young</dc:creator><pubDate>Thu, 03 Apr 2014 00:06:00 +0800</pubDate><guid>tag:2bapm.com,2014-04-03:2013-final-summary.html</guid><category>personal</category><category>gtd</category></item></channel></rss>

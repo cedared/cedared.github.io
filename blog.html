@@ -328,30 +328,30 @@ __init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使
         <!-- blog short preview -->
         <p>
             <h3>一、安装相关程序</h3>
-<div class="highlight"><pre><span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">proxychains</span>
+<div class="highlight"><pre>sudo apt-get install proxychains
 </pre></div>
 
 
 <h3>二、配置proxychains</h3>
-<div class="highlight"><pre><span class="n">vim</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">proxychains</span><span class="p">.</span><span class="n">conf</span>
+<div class="highlight"><pre>vim /etc/proxychains.conf
 </pre></div>
 
 
 <p>光标移动到最后，配置格式如下：</p>
-<div class="highlight"><pre><span class="err">协议名</span> <span class="n">ip</span> <span class="err">端口</span>
-<span class="n">socks</span> <span class="mf">127.0.0.1</span> <span class="mi">1080</span>
+<div class="highlight"><pre>协议名 ip 端口
+socks 127.0.0.1 1080
 </pre></div>
 
 
 <h3>三、配置代理程序</h3>
 <p>不管你们用啥吧……反正代理要先搭起来啊，我用的是shadowsocks</p>
 <h3>四、使用</h3>
-<div class="highlight"><pre><span class="n">proxychains</span> <span class="err">命令</span>
+<div class="highlight"><pre>proxychains 命令
 </pre></div>
 
 
 <p>例如</p>
-<div class="highlight"><pre><span class="n">proxychiains</span> <span class="o">~/</span><span class="p">.</span><span class="n">dropbox</span><span class="o">-</span><span class="n">dist</span><span class="o">/</span><span class="n">dropboxd</span>
+<div class="highlight"><pre>proxychiains ~/.dropbox-dist/dropboxd
 </pre></div>
 
 
@@ -437,14 +437,19 @@ __init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使
 <p>同样的我也假设你已经将你的域名通过DNS指向了你的服务器IP，而你的域名是example.com。
 升级系统：
 首先我们需要确定我们的系统是否是最新的。</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">upgradePostgreSQL</span>
+<div class="highlight"><pre>    $ sudo apt-get update
+    $ sudo apt-get upgradePostgreSQL
 </pre></div>
 
 
 <h3>PostgreSQL</h3>
 <p>在基于Debian的系统上运行以下命令安装PostgreSQL</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">postgresql</span> <span class="n">postgresql ...</span></pre></div>
+<div class="highlight"><pre>    $ sudo apt-get install postgresql postgresql-contrib
+</pre></div>
+
+
+<p>创建一个数据库以及拥有该数据库权限的用户</p>
+<div class="highlight"><pre>    $ sudo su ...</pre></div>
         </p>
 
         <!-- read more button -->
@@ -466,20 +471,21 @@ __init__.py 中还有一个重要的变量，叫做 __all__。我们有时会使
 <h3>1. 去zsh官网<a href="http://zsh.org">http://zsh.org</a>下载最新版zsh安装包</h3>
 <h3>2. 解压到任意目录</h3>
 <h3>3. 编译安装</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">configure</span>
-    <span class="err">$</span> <span class="n">make</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">make</span> <span class="n">install</span>
+<div class="highlight"><pre>    $ ./configure
+    $ make
+    $ sudo make install
 </pre></div>
 
 
 <h3>4. 将系统旧版本zsh替换</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">old</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">x</span><span class="p">.</span><span class="n">x</span><span class="p">.</span><span class="n">x</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span>
+<div class="highlight"><pre>    $ sudo mv /usr/local/bin/zsh /usr/local/bin/zsh-old
+    $ sudo mv /usr/local/bin/zsh-x.x.x /usr/local/bin/zsh
 </pre></div>
 
 
 <p>注：x.x.x为你下载安装的zsh版本号</p>
-<h3>5 ...</h3>
+<h3>5. 将zsh注册为系统shell</h3>
+<div class="highlight"><pre>    $ sudo ...</pre></div>
         </p>
 
         <!-- read more button -->

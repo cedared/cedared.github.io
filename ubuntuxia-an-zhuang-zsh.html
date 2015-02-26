@@ -112,128 +112,128 @@
 <h3>1. 去zsh官网<a href="http://zsh.org">http://zsh.org</a>下载最新版zsh安装包</h3>
 <h3>2. 解压到任意目录</h3>
 <h3>3. 编译安装</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">configure</span>
-    <span class="err">$</span> <span class="n">make</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">make</span> <span class="n">install</span>
+<div class="highlight"><pre>    $ ./configure
+    $ make
+    $ sudo make install
 </pre></div>
 
 
 <h3>4. 将系统旧版本zsh替换</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">old</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">mv</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span><span class="o">-</span><span class="n">x</span><span class="p">.</span><span class="n">x</span><span class="p">.</span><span class="n">x</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span>
+<div class="highlight"><pre>    $ sudo mv /usr/local/bin/zsh /usr/local/bin/zsh-old
+    $ sudo mv /usr/local/bin/zsh-x.x.x /usr/local/bin/zsh
 </pre></div>
 
 
 <p>注：x.x.x为你下载安装的zsh版本号</p>
 <h3>5. 将zsh注册为系统shell</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">add</span><span class="o">-</span><span class="n">shell</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">zsh</span>
+<div class="highlight"><pre>    $ sudo add-shell /usr/local/bin/zsh
 </pre></div>
 
 
 <h2>二、 配置oh-my-zsh</h2>
 <h3>1. 安装oh-my-zsh</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">wget</span> <span class="n">https</span><span class="o">:</span><span class="c1">//github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh</span>
+<div class="highlight"><pre>    $ wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
 </pre></div>
 
 
 <p>注： 这里会报错“密码： chsh: PAM authentication failed”
 无需理会，只是将zsh切换为系统默认sh时出错，下一步我们手动切换就好。</p>
 <h3>2. 将系统默认shell设置为zsh</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">chsh</span> <span class="o">-</span><span class="n">s</span> <span class="err">`</span><span class="n">which</span> <span class="n">zsh</span><span class="err">`</span>
+<div class="highlight"><pre>    $ chsh -s `which zsh`
 </pre></div>
 
 
 <h3>3. 重启</h3>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">reboot</span>
+<div class="highlight"><pre>    $ sudo reboot
 </pre></div>
 
 
 <h3>4. 重启后配置oh-my-zsh</h3>
 <p>配置文件为~/.oh-my-zsh 这里不描述如何配置了，只把我的配置文件贴出来吧</p>
-<div class="highlight"><pre>    <span class="err">#</span> <span class="n">Path</span> <span class="n">to</span> <span class="n">your</span> <span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span> <span class="n">installation</span><span class="p">.</span>
-    <span class="n">export</span> <span class="n">ZSH</span><span class="o">=</span><span class="err">$</span><span class="n">HOME</span><span class="o">/</span><span class="p">.</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span>
+<div class="highlight"><pre><span class="x">    </span><span class="err">#</span><span class="x"> Path to your oh-my-zsh installation.</span>
+<span class="x">    export ZSH=</span><span class="p">$</span><span class="nv">HOME</span><span class="x">/.oh-my-zsh</span>
 
-    <span class="err">#</span> <span class="n">Set</span> <span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">theme</span> <span class="n">to</span> <span class="n">load</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">Look</span> <span class="n">in</span> <span class="o">~/</span><span class="p">.</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span><span class="o">/</span><span class="n">themes</span><span class="o">/</span>
-    <span class="err">#</span> <span class="n">Optionally</span><span class="p">,</span> <span class="k">if</span> <span class="n">you</span> <span class="n">set</span> <span class="n">this</span> <span class="n">to</span> <span class="s">&quot;random&quot;</span><span class="p">,</span> <span class="n">it</span><span class="err">&#39;</span><span class="n">ll</span> <span class="n">load</span> <span class="n">a</span> <span class="n">random</span> <span class="n">theme</span> <span class="n">each</span>
-    <span class="err">#</span> <span class="n">time</span> <span class="n">that</span> <span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span> <span class="n">is</span> <span class="n">loaded</span><span class="p">.</span>
-    <span class="n">ZSH_THEME</span><span class="o">=</span><span class="s">&quot;xiong-chiamiov-plus&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Set name of the theme to load.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Look in ~/.oh-my-zsh/themes/</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Optionally, if you set this to &quot;random&quot;, it&#39;ll load a random theme each</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> time that oh-my-zsh is loaded.</span>
+<span class="x">    ZSH_THEME=&quot;xiong-chiamiov-plus&quot;</span>
 
-    <span class="err">#</span> <span class="n">Example</span> <span class="n">aliases</span>
-    <span class="n">alias</span> <span class="n">zshconfig</span><span class="o">=</span><span class="s">&quot;mate ~/.zshrc&quot;</span>
-    <span class="n">alias</span> <span class="n">ohmyzsh</span><span class="o">=</span><span class="s">&quot;mate ~/.oh-my-zsh&quot;</span>
-    <span class="n">alias</span> <span class="n">ssh</span><span class="o">=</span><span class="err">&#39;</span><span class="n">ssh</span> <span class="o">-</span><span class="n">R</span> <span class="mi">52698</span><span class="o">:</span><span class="n">localhost</span><span class="o">:</span><span class="mi">52698</span><span class="err">&#39;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Example aliases</span>
+<span class="x">    alias zshconfig=&quot;mate ~/.zshrc&quot;</span>
+<span class="x">    alias ohmyzsh=&quot;mate ~/.oh-my-zsh&quot;</span>
+<span class="x">    alias ssh=&#39;ssh -R 52698:localhost:52698&#39;</span>
 
-    <span class="n">alias</span> <span class="n">ls</span><span class="o">=</span><span class="s">&quot;ls -F --show-control-chars --color=auto&quot;</span>
+<span class="x">    alias ls=&quot;ls -F --show-control-chars --color=auto&quot;</span>
 
-    <span class="n">alias</span> <span class="n">ll</span><span class="o">=</span><span class="s">&quot;ls -al&quot;</span>
+<span class="x">    alias ll=&quot;ls -al&quot;</span>
 
-    <span class="n">export</span> <span class="n">WORKON_HOME</span><span class="o">=~/</span><span class="n">Envs</span>
-    <span class="n">source</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">virtualenvwrapper</span><span class="p">.</span><span class="n">sh</span>
-    <span class="n">export</span> <span class="n">PYTHONPATH</span><span class="o">=/</span><span class="n">usr</span><span class="o">/</span><span class="n">local</span><span class="o">/</span><span class="n">opt</span><span class="o">/</span><span class="n">libxml2</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python2</span><span class="mf">.7</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">:</span><span class="err">$</span><span class="n">PYTHONPATH</span>
+<span class="x">    export WORKON_HOME=~/Envs</span>
+<span class="x">    source /usr/local/bin/virtualenvwrapper.sh</span>
+<span class="x">    export PYTHONPATH=/usr/local/opt/libxml2/lib/python2.7/site-packages:</span><span class="p">$</span><span class="nv">PYTHONPATH</span><span class="x"></span>
 
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="n">to</span> <span class="n">use</span> <span class="k">case</span><span class="o">-</span><span class="n">sensitive</span> <span class="n">completion</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">CASE_SENSITIVE</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line to use case-sensitive completion.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> CASE_SENSITIVE=&quot;true&quot;</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">bi</span><span class="o">-</span><span class="n">weekly</span> <span class="k">auto</span><span class="o">-</span><span class="n">update</span> <span class="n">checks</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">DISABLE_AUTO_UPDATE</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line to disable bi-weekly auto-update checks.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> DISABLE_AUTO_UPDATE=&quot;true&quot;</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="n">to</span> <span class="n">change</span> <span class="n">how</span> <span class="n">often</span> <span class="n">to</span> <span class="k">auto</span><span class="o">-</span><span class="n">update</span> <span class="p">(</span><span class="n">in</span> <span class="n">days</span><span class="p">).</span>
-    <span class="err">#</span> <span class="n">export</span> <span class="n">UPDATE_ZSH_DAYS</span><span class="o">=</span><span class="mi">13</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line to change how often to auto-update (in days).</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> export UPDATE_ZSH_DAYS=13</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">colors</span> <span class="n">in</span> <span class="n">ls</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">DISABLE_LS_COLORS</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line to disable colors in ls.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> DISABLE_LS_COLORS=&quot;true&quot;</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="n">to</span> <span class="n">disable</span> <span class="k">auto</span><span class="o">-</span><span class="n">setting</span> <span class="n">terminal</span> <span class="n">title</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">DISABLE_AUTO_TITLE</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line to disable auto-setting terminal title.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> DISABLE_AUTO_TITLE=&quot;true&quot;</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">command</span> <span class="k">auto</span><span class="o">-</span><span class="n">correction</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">DISABLE_CORRECTION</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line to disable command auto-correction.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> DISABLE_CORRECTION=&quot;true&quot;</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="n">to</span> <span class="n">display</span> <span class="n">red</span> <span class="n">dots</span> <span class="n">whilst</span> <span class="n">waiting</span> <span class="k">for</span> <span class="n">completion</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">COMPLETION_WAITING_DOTS</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line to display red dots whilst waiting for completion.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> COMPLETION_WAITING_DOTS=&quot;true&quot;</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">disable</span> <span class="n">marking</span> <span class="n">untracked</span> <span class="n">files</span>
-    <span class="err">#</span> <span class="n">under</span> <span class="n">VCS</span> <span class="n">as</span> <span class="n">dirty</span><span class="p">.</span> <span class="n">This</span> <span class="n">makes</span> <span class="n">repository</span> <span class="n">status</span> <span class="n">check</span> <span class="k">for</span> <span class="n">large</span> <span class="n">repositories</span>
-    <span class="err">#</span> <span class="n">much</span><span class="p">,</span> <span class="n">much</span> <span class="n">faster</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">DISABLE_UNTRACKED_FILES_DIRTY</span><span class="o">=</span><span class="s">&quot;true&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line if you want to disable marking untracked files</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> under VCS as dirty. This makes repository status check for large repositories</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> much, much faster.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> DISABLE_UNTRACKED_FILES_DIRTY=&quot;true&quot;</span>
 
-    <span class="err">#</span> <span class="n">Uncomment</span> <span class="n">the</span> <span class="n">following</span> <span class="n">line</span> <span class="k">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">to</span> <span class="n">change</span> <span class="n">the</span> <span class="n">command</span> <span class="n">execution</span> <span class="n">time</span>
-    <span class="err">#</span> <span class="n">stamp</span> <span class="n">shown</span> <span class="n">in</span> <span class="n">the</span> <span class="n">history</span> <span class="n">command</span> <span class="n">output</span><span class="p">.</span>
-    <span class="err">#</span> <span class="n">The</span> <span class="n">optional</span> <span class="n">three</span> <span class="n">formats</span><span class="o">:</span> <span class="s">&quot;mm/dd/yyyy&quot;</span><span class="o">|</span><span class="s">&quot;dd.mm.yyyy&quot;</span><span class="o">|</span><span class="s">&quot;yyyy-mm-dd&quot;</span>
-    <span class="err">#</span> <span class="n">HIST_STAMPS</span><span class="o">=</span><span class="s">&quot;mm/dd/yyyy&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Uncomment the following line if you want to change the command execution time</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> stamp shown in the history command output.</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> The optional three formats: &quot;mm/dd/yyyy&quot;|&quot;dd.mm.yyyy&quot;|&quot;yyyy-mm-dd&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> HIST_STAMPS=&quot;mm/dd/yyyy&quot;</span>
 
-    <span class="err">#</span> <span class="n">Would</span> <span class="n">you</span> <span class="n">like</span> <span class="n">to</span> <span class="n">use</span> <span class="n">another</span> <span class="n">custom</span> <span class="n">folder</span> <span class="n">than</span> <span class="err">$</span><span class="n">ZSH</span><span class="o">/</span><span class="n">custom</span><span class="o">?</span>
-    <span class="err">#</span> <span class="n">ZSH_CUSTOM</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">new</span><span class="o">-</span><span class="n">custom</span><span class="o">-</span><span class="n">folder</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Would you like to use another custom folder than </span><span class="p">$</span><span class="nv">ZSH</span><span class="x">/custom?</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> ZSH_CUSTOM=/path/to/new-custom-folder</span>
 
-    <span class="err">#</span> <span class="n">Which</span> <span class="n">plugins</span> <span class="n">would</span> <span class="n">you</span> <span class="n">like</span> <span class="n">to</span> <span class="n">load</span><span class="o">?</span> <span class="p">(</span><span class="n">plugins</span> <span class="n">can</span> <span class="n">be</span> <span class="n">found</span> <span class="n">in</span> <span class="o">~/</span><span class="p">.</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span><span class="o">/</span><span class="n">plugins</span><span class="o">/*</span><span class="p">)</span>
-    <span class="err">#</span> <span class="n">Custom</span> <span class="n">plugins</span> <span class="n">may</span> <span class="n">be</span> <span class="n">added</span> <span class="n">to</span> <span class="o">~/</span><span class="p">.</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span><span class="o">/</span><span class="n">custom</span><span class="o">/</span><span class="n">plugins</span><span class="o">/</span>
-    <span class="err">#</span> <span class="n">Example</span> <span class="n">format</span><span class="o">:</span> <span class="n">plugins</span><span class="o">=</span><span class="p">(</span><span class="n">rails</span> <span class="n">git</span> <span class="n">textmate</span> <span class="n">ruby</span> <span class="n">lighthouse</span><span class="p">)</span>
-    <span class="n">plugins</span><span class="o">=</span><span class="p">(</span><span class="n">git</span> <span class="n">node</span> <span class="n">brew</span> <span class="n">bundle</span> <span class="n">cap</span> <span class="n">gem</span> <span class="n">github</span> <span class="n">osx</span> <span class="n">rails</span> <span class="n">ruby</span> <span class="n">rvm</span> <span class="n">svn</span> <span class="n">textmate</span> <span class="n">python</span> <span class="n">virtualenv</span> <span class="n">virtualenvwapper</span> <span class="n">sudo</span> <span class="n">django</span> <span class="n">gitignore</span> <span class="n">supervisor</span> <span class="n">git</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">branch</span><span class="p">)</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Example format: plugins=(rails git textmate ruby lighthouse)</span>
+<span class="x">    plugins=(git node brew bundle cap gem github osx rails ruby rvm svn textmate python virtualenv virtualenvwapper sudo django gitignore supervisor git-remote-branch)</span>
 
-    <span class="n">source</span> <span class="err">$</span><span class="n">ZSH</span><span class="o">/</span><span class="n">oh</span><span class="o">-</span><span class="n">my</span><span class="o">-</span><span class="n">zsh</span><span class="p">.</span><span class="n">sh</span>
+<span class="x">    source </span><span class="p">$</span><span class="nv">ZSH</span><span class="x">/oh-my-zsh.sh</span>
 
-    <span class="err">#</span> <span class="n">User</span> <span class="n">configuration</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> User configuration</span>
 
-    <span class="n">export</span> <span class="n">PATH</span><span class="o">=</span><span class="s">&quot;/usr/local/opt/coreutils/libexec/gnubin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin&quot;</span>
-    <span class="err">#</span> <span class="n">export</span> <span class="n">MANPATH</span><span class="o">=</span><span class="s">&quot;/usr/local/man:$MANPATH&quot;</span>
+<span class="x">    export PATH=&quot;/usr/local/opt/coreutils/libexec/gnubin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> export MANPATH=&quot;/usr/local/man:</span><span class="p">$</span><span class="nv">MANPATH</span><span class="x">&quot;</span>
 
-    <span class="err">#</span> <span class="n">You</span> <span class="n">may</span> <span class="n">need</span> <span class="n">to</span> <span class="n">manually</span> <span class="n">set</span> <span class="n">your</span> <span class="n">language</span> <span class="n">environment</span>
-    <span class="n">export</span> <span class="n">LANG</span><span class="o">=</span><span class="n">zh_CN</span><span class="p">.</span><span class="n">UTF</span><span class="o">-</span><span class="mi">8</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> You may need to manually set your language environment</span>
+<span class="x">    export LANG=zh_CN.UTF-8</span>
 
-    <span class="err">#</span> <span class="n">Preferred</span> <span class="n">editor</span> <span class="k">for</span> <span class="n">local</span> <span class="n">and</span> <span class="n">remote</span> <span class="n">sessions</span>
-    <span class="err">#</span> <span class="k">if</span> <span class="p">[[</span> <span class="o">-</span><span class="n">n</span> <span class="err">$</span><span class="n">SSH_CONNECTION</span> <span class="p">]];</span> <span class="n">then</span>
-    <span class="err">#</span>   <span class="n">export</span> <span class="n">EDITOR</span><span class="o">=</span><span class="err">&#39;</span><span class="n">vim</span><span class="err">&#39;</span>
-    <span class="err">#</span> <span class="k">else</span>
-    <span class="err">#</span>   <span class="n">export</span> <span class="n">EDITOR</span><span class="o">=</span><span class="err">&#39;</span><span class="n">mvim</span><span class="err">&#39;</span>
-    <span class="err">#</span> <span class="n">fi</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Preferred editor for local and remote sessions</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> if [[ -n </span><span class="p">$</span><span class="nv">SSH_CONNECTION</span><span class="x"> ]]; then</span>
+<span class="x">    </span><span class="err">#</span><span class="x">   export EDITOR=&#39;vim&#39;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> else</span>
+<span class="x">    </span><span class="err">#</span><span class="x">   export EDITOR=&#39;mvim&#39;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> fi</span>
 
-    <span class="err">#</span> <span class="n">Compilation</span> <span class="n">flags</span>
-    <span class="err">#</span> <span class="n">export</span> <span class="n">ARCHFLAGS</span><span class="o">=</span><span class="s">&quot;-arch x86_64&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Compilation flags</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> export ARCHFLAGS=&quot;-arch x86_64&quot;</span>
 
-    <span class="err">#</span> <span class="n">ssh</span>
-    <span class="err">#</span> <span class="n">export</span> <span class="n">SSH_KEY_PATH</span><span class="o">=</span><span class="s">&quot;~/.ssh/dsa_id&quot;</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> ssh</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> export SSH_KEY_PATH=&quot;~/.ssh/dsa_id&quot;</span>
 </pre></div>
   </article>
 

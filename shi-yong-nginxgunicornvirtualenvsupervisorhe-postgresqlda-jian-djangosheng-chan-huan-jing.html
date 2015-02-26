@@ -116,102 +116,102 @@
 <p>同样的我也假设你已经将你的域名通过DNS指向了你的服务器IP，而你的域名是example.com。
 升级系统：
 首先我们需要确定我们的系统是否是最新的。</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">upgradePostgreSQL</span>
+<div class="highlight"><pre>    $ sudo apt-get update
+    $ sudo apt-get upgradePostgreSQL
 </pre></div>
 
 
 <h3>PostgreSQL</h3>
 <p>在基于Debian的系统上运行以下命令安装PostgreSQL</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">postgresql</span> <span class="n">postgresql</span><span class="o">-</span><span class="n">contrib</span>
+<div class="highlight"><pre>    $ sudo apt-get install postgresql postgresql-contrib
 </pre></div>
 
 
 <p>创建一个数据库以及拥有该数据库权限的用户</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">su</span> <span class="o">-</span> <span class="n">post</span>
-    <span class="n">grespostgres</span><span class="err">@</span><span class="n">django</span><span class="o">:~</span><span class="err">$</span> <span class="n">createdb</span> <span class="n">hello</span>
-    <span class="n">postgres</span><span class="err">@</span><span class="n">django</span><span class="o">:~</span><span class="err">$</span> <span class="n">createuser</span> <span class="o">-</span><span class="n">P</span>
-    <span class="n">Enter</span> <span class="n">name</span> <span class="n">of</span> <span class="n">role</span> <span class="n">to</span> <span class="n">add</span><span class="o">:</span> <span class="n">hello_django</span>
-    <span class="n">Enter</span> <span class="n">password</span> <span class="k">for</span> <span class="n">new</span> <span class="n">role</span><span class="o">:</span>
-    <span class="n">Enter</span> <span class="n">it</span> <span class="n">again</span><span class="o">:</span>
-    <span class="n">Shall</span> <span class="n">the</span> <span class="n">new</span> <span class="n">role</span> <span class="n">be</span> <span class="n">a</span> <span class="n">superuser</span><span class="o">?</span> <span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">n</span><span class="p">)</span> <span class="n">n</span>
-    <span class="n">Shall</span> <span class="n">the</span> <span class="n">new</span> <span class="n">role</span> <span class="n">be</span> <span class="n">allowed</span> <span class="n">to</span> <span class="n">create</span> <span class="n">databases</span><span class="o">?</span> <span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">n</span><span class="p">)</span> <span class="n">n</span>
-    <span class="n">Shall</span> <span class="n">the</span> <span class="n">new</span> <span class="n">role</span> <span class="n">be</span> <span class="n">allowed</span> <span class="n">to</span> <span class="n">create</span> <span class="n">more</span> <span class="n">new</span> <span class="n">roles</span><span class="o">?</span> <span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="n">n</span><span class="p">)</span> <span class="n">n</span>
-    <span class="n">postgres</span><span class="err">@</span><span class="n">django</span><span class="o">:~</span><span class="err">$</span> <span class="n">psql</span>
-    <span class="n">psql</span> <span class="p">(</span><span class="mf">9.1.9</span><span class="p">)</span>
-    <span class="n">Type</span> <span class="s">&quot;help&quot;</span> <span class="k">for</span> <span class="n">help</span><span class="p">.</span>
-    <span class="n">postgres</span><span class="o">=</span><span class="err">#</span> <span class="n">GRANT</span> <span class="n">ALL</span> <span class="n">PRIVILEGES</span> <span class="n">ON</span> <span class="n">DATABASE</span> <span class="n">hello</span> <span class="n">TO</span> <span class="n">hello_django</span><span class="p">;</span>
-    <span class="n">GRANT</span>
-    <span class="n">postgres</span><span class="o">=</span><span class="err">#</span> <span class="err">\</span><span class="n">q</span>
-    <span class="n">postgres</span><span class="err">@</span><span class="n">django</span><span class="o">:~</span><span class="err">$</span> <span class="n">logout</span>
-    <span class="err">$</span>
+<div class="highlight"><pre>    $ sudo su - post
+    grespostgres@django:~$ createdb hello
+    postgres@django:~$ createuser -P
+    Enter name of role to add: hello_django
+    Enter password for new role:
+    Enter it again:
+    Shall the new role be a superuser? (y/n) n
+    Shall the new role be allowed to create databases? (y/n) n
+    Shall the new role be allowed to create more new roles? (y/n) n
+    postgres@django:~$ psql
+    psql (9.1.9)
+    Type &quot;help&quot; for help.
+    postgres=# GRANT ALL PRIVILEGES ON DATABASE hello TO hello_django;
+    GRANT
+    postgres=# \q
+    postgres@django:~$ logout
+    $
 </pre></div>
 
 
 <p>对于习惯使用Mysql的同学，这里也可以安装Mysql来替换PostgreSQL，运行以下命令安装Mysql</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">mysql</span><span class="o">-</span><span class="n">server</span>
+<div class="highlight"><pre>    $ sudo apt-get install mysql-server
 </pre></div>
 
 
 <p>Mysql的安全设置</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">mysql_secure_installation</span>
+<div class="highlight"><pre>    $ mysql_secure_installation
 </pre></div>
 
 
 <p>按照提示一步一步进行即可
 如果你需要修改Mysql的Root密码，那么运行以下命令：</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">dpkg</span><span class="o">-</span><span class="n">reconfigure</span> <span class="n">mysql</span><span class="o">-</span><span class="n">server</span><span class="o">-</span><span class="mf">5.0</span>
+<div class="highlight"><pre>    $ dpkg-reconfigure mysql-server-5.0
 </pre></div>
 
 
 <p>进入Mysql控制台
         $ mysql -uroot -p</p>
 <p>创建数据库和拥有该数据库权限的用户</p>
-<div class="highlight"><pre>    <span class="n">CREATE</span> <span class="n">DATABASE</span> <span class="n">hello</span><span class="p">;</span>
-    <span class="n">CREATE</span> <span class="n">USER</span> <span class="err">&#39;</span><span class="n">example_user</span><span class="err">&#39;</span> <span class="n">IDENTIFIED</span> <span class="n">BY</span> <span class="err">&#39;</span><span class="n">password</span><span class="err">&#39;</span><span class="p">;</span>
-    <span class="n">GRANT</span> <span class="n">ALL</span> <span class="n">PRIVILEGES</span> <span class="n">ON</span> <span class="n">hello</span><span class="p">.</span><span class="o">*</span> <span class="n">TO</span> <span class="err">&#39;</span><span class="n">example_user</span><span class="err">&#39;</span><span class="p">;</span>
-    <span class="n">exit</span>
+<div class="highlight"><pre>    CREATE DATABASE hello;
+    CREATE USER &#39;example_user&#39; IDENTIFIED BY &#39;password&#39;;
+    GRANT ALL PRIVILEGES ON hello.* TO &#39;example_user&#39;;
+    exit
 </pre></div>
 
 
 <h3>安装virtualenv然后为你的django应用创建一个运行环境</h3>
 <p>Virtualenv是一个能够允许你在系统中创建隔离的Python环境的工具。这使你能够在同一台服务器上运行需要不同设置的应用程序（例如，一个基于Django1.2，另一个基于Django1.5）。Virtualenv在debian系统上很容易安装：</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">virtualenv</span>
+<div class="highlight"><pre>    $ sudo apt-get install python-virtualenv
 </pre></div>
 
 
 <p>为你的应用创建并激活一个虚拟环境
 因为django的特性，你可以在任何地方创建你的虚拟环境目录，我这里是在/webapps/目录下创建，如果你习惯使用类似于/var/www/的目录或者其他目录，只需要替换掉/webapps/就行。</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">cd</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span>
-    <span class="err">$</span> <span class="n">virtualenv</span> <span class="n">hello_django</span>
-    <span class="n">New</span> <span class="n">python</span> <span class="n">executable</span> <span class="n">in</span> <span class="n">hello_django</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">python</span>
-    <span class="n">Installing</span> <span class="n">distribute</span><span class="p">.............................</span><span class="n">done</span>
-    <span class="n">Installing</span> <span class="n">pip</span><span class="p">........................................</span><span class="n">done</span>
-    <span class="err">$</span> <span class="n">cd</span> <span class="n">hello_django</span>
-    <span class="err">$</span> <span class="n">source</span> <span class="n">bin</span><span class="o">/</span><span class="n">activate</span><span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> 
-    <span class="err">$</span>
+<div class="highlight"><pre>    $ cd /webapps/
+    $ virtualenv hello_django
+    New python executable in hello_django/bin/python
+    Installing distribute.............................done
+    Installing pip........................................done
+    $ cd hello_django
+    $ source bin/activate(hello_django) 
+    $
 </pre></div>
 
 
 <p>看到上面的提示符时，就表明你的虚拟环境已经激活，然后你就可以在里面安装Django了。在安装的时候你可以看到pip已经被安装到了虚拟环境中，所以你可以直接使用pip来安装需要的python组件。</p>
-<div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">django</span>
-    <span class="n">Downloading</span><span class="o">/</span><span class="n">uppacking</span> <span class="n">django</span>
-    <span class="p">(...)</span>
-    <span class="n">Installing</span> <span class="n">collected</span> <span class="n">packages</span><span class="o">:</span> <span class="n">django</span>
-    <span class="p">(...)</span>
-    <span class="n">Successfully</span> <span class="n">installed</span> <span class="n">django</span>
-    <span class="n">Cleaning</span> <span class="n">up</span><span class="p">...</span>
+<div class="highlight"><pre>    (hello_django) $ pip install django
+    Downloading/uppacking django
+    (...)
+    Installing collected packages: django
+    (...)
+    Successfully installed django
+    Cleaning up...
 </pre></div>
 
 
 <p>现在你的Django虚拟环境应该已经可以使用了，创建一个空的Django项目试试看。</p>
-<div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">django</span><span class="o">-</span><span class="n">admin</span><span class="p">.</span><span class="n">py</span> <span class="n">startproject</span> <span class="n">hello</span>
+<div class="highlight"><pre>    (hello_django) $ django-admin.py startproject hello
 </pre></div>
 
 
 <p>你可以使用开发服务器来测试一下</p>
-<div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">cd</span> <span class="n">hello</span>
-    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">python</span> <span class="n">manage</span><span class="p">.</span><span class="n">py</span> <span class="n">runserver</span> <span class="n">example</span><span class="p">.</span><span class="n">com</span><span class="o">:</span><span class="mi">8000</span>
+<div class="highlight"><pre>    (hello_django) $ cd hello
+    (hello_django) $ python manage.py runserver example.com:8000
 </pre></div>
 
 
@@ -219,18 +219,18 @@
 <h3>设置PostgreSQL在Django下工作</h3>
 <p>要在Django下使用PostgreSQL，你需要在虚拟环境中安装psycopg2数据库适配器，这一步需要原生扩展编译，如果没法找到头文件、使用libpq（用来与Postgres通信的库）链接C程序的静态库和创建Python模块的python开发库（python-dev package）,编译将会失败。所以我们必须先安装这些依赖包，然后再使用PIP安装psycopg2。
 安装依赖包</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">libpq</span><span class="o">-</span><span class="n">dev</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span>
+<div class="highlight"><pre>    $ sudo apt-get install libpq-dev python-dev
 </pre></div>
 
 
 <p>安装psycopg2数据库适配器</p>
-<div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">psycopg2</span>
+<div class="highlight"><pre>    (hello_django) $ pip install psycopg2
 </pre></div>
 
 
 <p>在你的django项目settings.py文件中修改数据库连接设置，这一步在默认的settings.py文件中有详细的注释，就不在此列出了。</p>
 <p>使用Django初始化数据库</p>
-<div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">python</span> <span class="n">manage</span><span class="p">.</span><span class="n">py</span> <span class="n">syncdb</span>
+<div class="highlight"><pre>    (hello_django) $ python manage.py syncdb
 </pre></div>
 
 
@@ -238,74 +238,74 @@
 <h3>Gunicorn</h3>
 <p>在生产环境中我们肯定不会使用Django的单线程开发服务器，而是使用一个专用的应用服务器，叫作Gunicorn。</p>
 <p>在你的应用虚拟环境中安装Gunicorn</p>
-<div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">gunicorn</span>
-    <span class="n">Downloading</span><span class="o">/</span><span class="n">unpacking</span> <span class="n">gunicorn</span>
-    <span class="n">Downloading</span> <span class="n">gunicorn</span><span class="o">-</span><span class="mf">0.17.4</span><span class="p">.</span><span class="n">tar</span><span class="p">.</span><span class="n">gz</span> <span class="p">(</span><span class="mi">372</span><span class="n">Kb</span><span class="p">)</span><span class="o">:</span> <span class="mi">372</span><span class="n">Kb</span> <span class="n">downloaded</span>
-    <span class="n">Running</span> <span class="n">setup</span><span class="p">.</span><span class="n">py</span> <span class="n">egg_info</span> <span class="k">for</span> <span class="n">package</span> <span class="n">gunicorn</span>
-    <span class="n">Installing</span> <span class="n">collected</span> <span class="n">packages</span><span class="o">:</span> <span class="n">gunicorn</span>
-    <span class="n">Running</span> <span class="n">setup</span><span class="p">.</span><span class="n">py</span> <span class="n">install</span> <span class="k">for</span> <span class="n">gunicorn</span>
-    <span class="n">Installing</span> <span class="n">gunicorn_paster</span> <span class="n">script</span> <span class="n">to</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">bin</span>
-    <span class="n">Installing</span> <span class="n">gunicorn</span> <span class="n">script</span> <span class="n">to</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">bin</span>
-    <span class="n">Installing</span> <span class="n">gunicorn_django</span> <span class="n">script</span> <span class="n">to</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">bin</span>
-    <span class="n">Successfully</span> <span class="n">installed</span> <span class="n">gunicorn</span>
-    <span class="n">Cleaning</span> <span class="n">up</span><span class="p">...</span>
+<div class="highlight"><pre>    (hello_django) $ pip install gunicorn
+    Downloading/unpacking gunicorn
+    Downloading gunicorn-0.17.4.tar.gz (372Kb): 372Kb downloaded
+    Running setup.py egg_info for package gunicorn
+    Installing collected packages: gunicorn
+    Running setup.py install for gunicorn
+    Installing gunicorn_paster script to /webapps/hello_django/bin
+    Installing gunicorn script to /webapps/hello_django/bin
+    Installing gunicorn_django script to /webapps/hello_django/bin
+    Successfully installed gunicorn
+    Cleaning up...
 </pre></div>
 
 
 <p>Ok,现在你已经这安装好了Gunicorn，尝试测试一下Gunicorn和Django是否可以正常工作</p>
-<div class="highlight"><pre>    <span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> <span class="err">$</span> <span class="n">gunicorn_django</span> <span class="o">--</span><span class="n">bind</span> <span class="n">example</span><span class="p">.</span><span class="n">com</span><span class="o">:</span><span class="mi">8001</span>
+<div class="highlight"><pre>    (hello_django) $ gunicorn_django --bind example.com:8001
 </pre></div>
 
 
 <p>在浏览器中访问http://example.com:8001，看看django是否正常工作。</p>
 <p>到现在为止，Gunicorn已经安装好，并且已经可以和django一起正常工作了，接下来让我们来做一些设置让gunicorn更加好用一些。我喜欢设置一些参数，所以我们可以把它们放在一个BASH脚本里，我将这个脚本保存在bin/gunicorn_start。</p>
 <p>bin/gunicorn_start</p>
-<div class="highlight"><pre>    <span class="err">#</span><span class="o">!/</span><span class="n">bin</span><span class="o">/</span><span class="n">bash</span>
-    <span class="n">NAME</span><span class="o">=</span><span class="s">&quot;hello_app&quot;</span> <span class="err">#</span> <span class="n">Name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">application</span>
-    <span class="n">DJANGODIR</span><span class="o">=/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">hello</span> <span class="err">#</span> <span class="n">Django</span> <span class="n">project</span> <span class="n">directory</span>
-    <span class="n">SOCKFILE</span><span class="o">=/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">gunicorn</span><span class="p">.</span><span class="n">sock</span> <span class="err">#</span> <span class="n">we</span> <span class="n">will</span> <span class="n">communicte</span> <span class="n">using</span> <span class="n">this</span> <span class="n">unix</span> <span class="n">socket</span>
-    <span class="n">USER</span><span class="o">=</span><span class="n">michal</span> <span class="err">#</span> <span class="n">the</span> <span class="n">user</span> <span class="n">to</span> <span class="n">run</span> <span class="n">as</span>
-    <span class="n">GROUP</span><span class="o">=</span><span class="n">michal</span> <span class="err">#</span> <span class="n">the</span> <span class="n">group</span> <span class="n">to</span> <span class="n">run</span> <span class="n">as</span>
-    <span class="n">NUM_WORKERS</span><span class="o">=</span><span class="mi">3</span> <span class="err">#</span> <span class="n">how</span> <span class="n">many</span> <span class="n">worker</span> <span class="n">processes</span> <span class="n">should</span> <span class="n">Gunicorn</span> <span class="n">spawn</span>
-    <span class="n">DJANGO_SETTINGS_MODULE</span><span class="o">=</span><span class="n">hello</span><span class="p">.</span><span class="n">settings</span> <span class="err">#</span> <span class="n">which</span> <span class="n">settings</span> <span class="n">file</span> <span class="n">should</span> <span class="n">Django</span> <span class="n">use</span>
-    <span class="n">echo</span> <span class="s">&quot;Starting $NAME&quot;</span>
+<div class="highlight"><pre><span class="x">    </span><span class="err">#</span><span class="x">!/bin/bash</span>
+<span class="x">    NAME=&quot;hello_app&quot; </span><span class="err">#</span><span class="x"> Name of the application</span>
+<span class="x">    DJANGODIR=/webapps/hello_django/hello </span><span class="err">#</span><span class="x"> Django project directory</span>
+<span class="x">    SOCKFILE=/webapps/hello_django/run/gunicorn.sock </span><span class="err">#</span><span class="x"> we will communicte using this unix socket</span>
+<span class="x">    USER=michal </span><span class="err">#</span><span class="x"> the user to run as</span>
+<span class="x">    GROUP=michal </span><span class="err">#</span><span class="x"> the group to run as</span>
+<span class="x">    NUM_WORKERS=3 </span><span class="err">#</span><span class="x"> how many worker processes should Gunicorn spawn</span>
+<span class="x">    DJANGO_SETTINGS_MODULE=hello.settings </span><span class="err">#</span><span class="x"> which settings file should Django use</span>
+<span class="x">    echo &quot;Starting </span><span class="p">$</span><span class="nv">NAME</span><span class="x">&quot;</span>
 
-    <span class="err">#</span> <span class="n">Activate</span> <span class="n">the</span> <span class="n">virtual</span> <span class="n">environment</span>
-    <span class="n">cd</span> <span class="err">$</span><span class="n">DJANGODIR</span>
-    <span class="n">source</span> <span class="p">..</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">activate</span>
-    <span class="n">export</span> <span class="n">DJANGO_SETTINGS_MODULE</span><span class="o">=</span><span class="err">$</span><span class="n">DJANGO_SETTINGS_MODULE</span>
-    <span class="n">export</span> <span class="n">PYTHONPATH</span><span class="o">=</span><span class="err">$</span><span class="n">DJANGODIR</span><span class="o">:</span><span class="err">$</span><span class="n">PYTHONPATH</span><span class="err">#</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Activate the virtual environment</span>
+<span class="x">    cd </span><span class="p">$</span><span class="nv">DJANGODIR</span><span class="x"></span>
+<span class="x">    source ../bin/activate</span>
+<span class="x">    export DJANGO_SETTINGS_MODULE=</span><span class="p">$</span><span class="nv">DJANGO_SETTINGS_MODULE</span><span class="x"></span>
+<span class="x">    export PYTHONPATH=</span><span class="p">$</span><span class="nv">DJANGODIR</span><span class="x">:</span><span class="p">$</span><span class="nv">PYTHONPATH</span><span class="err">#</span><span class="x"></span>
 
-    <span class="n">Create</span> <span class="n">the</span> <span class="n">run</span> <span class="n">directory</span> <span class="k">if</span> <span class="n">it</span> <span class="n">doesn</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">exist</span>
-    <span class="n">RUNDIR</span><span class="o">=</span><span class="err">$</span><span class="p">(</span><span class="n">dirname</span> <span class="err">$</span><span class="n">SOCKFILE</span><span class="p">)</span>
-    <span class="n">test</span> <span class="o">-</span><span class="n">d</span> <span class="err">$</span><span class="n">RUNDIR</span> <span class="o">||</span> <span class="n">mkdir</span> <span class="o">-</span><span class="n">p</span> <span class="err">$</span><span class="n">RUNDIR</span>
+<span class="x">    Create the run directory if it doesn&#39;t exist</span>
+<span class="x">    RUNDIR=</span><span class="p">$(</span><span class="err">dirname</span> <span class="p">$</span><span class="nv">SOCKFILE</span><span class="p">)</span><span class="x"></span>
+<span class="x">    test -d </span><span class="p">$</span><span class="nv">RUNDIR</span><span class="x"> || mkdir -p </span><span class="p">$</span><span class="nv">RUNDIR</span><span class="x"></span>
 
-    <span class="err">#</span> <span class="n">Start</span> <span class="n">your</span> <span class="n">Django</span> <span class="n">Unicorn</span>
-    <span class="err">#</span> <span class="n">Programs</span> <span class="n">meant</span> <span class="n">to</span> <span class="n">be</span> <span class="n">run</span> <span class="n">under</span> <span class="n">supervisor</span> <span class="n">should</span> <span class="n">not</span> <span class="n">daemonize</span> <span class="n">themselves</span> <span class="p">(</span><span class="k">do</span> <span class="n">not</span> <span class="n">use</span> <span class="o">--</span><span class="n">daemon</span><span class="p">)</span>
-    <span class="n">exec</span> <span class="p">..</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">gunicorn_django</span> \
-    <span class="o">--</span><span class="n">name</span> <span class="err">$</span><span class="n">NAME</span> \
-    <span class="o">--</span><span class="n">workers</span> <span class="err">$</span><span class="n">NUM_WORKERS</span> \
-    <span class="o">--</span><span class="n">user</span><span class="o">=</span><span class="err">$</span><span class="n">USER</span> 
-    <span class="o">--</span><span class="n">group</span><span class="o">=</span><span class="err">$</span><span class="n">GROUP</span> \
-    <span class="o">--</span><span class="n">log</span><span class="o">-</span><span class="n">level</span><span class="o">=</span><span class="n">debug</span> \
-    <span class="o">--</span><span class="n">bind</span><span class="o">=</span><span class="n">unix</span><span class="o">:</span><span class="err">$</span><span class="n">SOCKFILE</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Start your Django Unicorn</span>
+<span class="x">    </span><span class="err">#</span><span class="x"> Programs meant to be run under supervisor should not daemonize themselves (do not use --daemon)</span>
+<span class="x">    exec ../bin/gunicorn_django \</span>
+<span class="x">    --name </span><span class="p">$</span><span class="nv">NAME</span><span class="x"> \</span>
+<span class="x">    --workers </span><span class="p">$</span><span class="nv">NUM_WORKERS</span><span class="x"> \</span>
+<span class="x">    --user=</span><span class="p">$</span><span class="nv">USER</span><span class="x"> </span>
+<span class="x">    --group=</span><span class="p">$</span><span class="nv">GROUP</span><span class="x"> \</span>
+<span class="x">    --log-level=debug \</span>
+<span class="x">    --bind=unix:</span><span class="p">$</span><span class="nv">SOCKFILE</span><span class="x"></span>
 </pre></div>
 
 
 <p>接下来将gunicorn_start脚本设置为可执行</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">chmod</span> <span class="n">u</span><span class="o">+</span><span class="n">x</span> <span class="n">bin</span><span class="o">/</span><span class="n">gunicorn_start</span>
+<div class="highlight"><pre>    $ chmod u+x bin/gunicorn_start
 </pre></div>
 
 
 <p>运行以下命令来测试gunicorn_start是否正常</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="p">.</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">gunicorn_startStarting</span> <span class="n">hello_app</span>
-    <span class="mi">2013</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">09</span> <span class="mi">21</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="mo">07</span> <span class="p">[</span><span class="mi">2792</span><span class="p">]</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Starting</span> <span class="n">gunicorn</span> <span class="mf">0.17.4</span>
-    <span class="mi">2013</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">09</span> <span class="mi">21</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="mo">07</span> <span class="p">[</span><span class="mi">2792</span><span class="p">]</span> <span class="p">[</span><span class="n">DEBUG</span><span class="p">]</span> <span class="n">Arbiter</span> <span class="n">booted</span>
-    <span class="mi">2013</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">09</span> <span class="mi">21</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="mo">07</span> <span class="p">[</span><span class="mi">2792</span><span class="p">]</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Listening</span> <span class="n">at</span><span class="o">:</span> <span class="n">unix</span><span class="o">:/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">gunicorn</span><span class="p">.</span><span class="n">sock</span> <span class="p">(</span><span class="mi">2792</span><span class="p">)</span>
-    <span class="mi">2013</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">09</span> <span class="mi">21</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="mo">07</span> <span class="p">[</span><span class="mi">2792</span><span class="p">]</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Using</span> <span class="n">worker</span><span class="o">:</span> <span class="n">sync</span>
-    <span class="mi">2013</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">09</span> <span class="mi">21</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="mo">07</span> <span class="p">[</span><span class="mi">2798</span><span class="p">]</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Booting</span> <span class="n">worker</span> <span class="n">with</span> <span class="n">pid</span><span class="o">:</span> <span class="mi">2798</span>
-    <span class="mi">2013</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">09</span> <span class="mi">21</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="mo">07</span> <span class="p">[</span><span class="mi">2799</span><span class="p">]</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Booting</span> <span class="n">worker</span> <span class="n">with</span> <span class="n">pid</span><span class="o">:</span> <span class="mi">2799</span>
-    <span class="mi">2013</span><span class="o">-</span><span class="mo">06</span><span class="o">-</span><span class="mi">09</span> <span class="mi">21</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="mo">07</span> <span class="p">[</span><span class="mi">2800</span><span class="p">]</span> <span class="p">[</span><span class="n">INFO</span><span class="p">]</span> <span class="n">Booting</span> <span class="n">worker</span> <span class="n">with</span> <span class="n">pid</span><span class="o">:</span> <span class="mi">2800</span>
+<div class="highlight"><pre>    $ ./bin/gunicorn_startStarting hello_app
+    2013-06-09 21:14:07 [2792] [INFO] Starting gunicorn 0.17.4
+    2013-06-09 21:14:07 [2792] [DEBUG] Arbiter booted
+    2013-06-09 21:14:07 [2792] [INFO] Listening at: unix:/webapps/hello_django/run/gunicorn.sock (2792)
+    2013-06-09 21:14:07 [2792] [INFO] Using worker: sync
+    2013-06-09 21:14:07 [2798] [INFO] Booting worker with pid: 2798
+    2013-06-09 21:14:07 [2799] [INFO] Booting worker with pid: 2799
+    2013-06-09 21:14:07 [2800] [INFO] Booting worker with pid: 2800
 </pre></div>
 
 
@@ -314,62 +314,62 @@
 2 * CPUs + 1。</p>
 <p>–name(NAME)参数指定你如何在程序中识别你的应用。默认值为gunicorn，如果你不修改的话，当你的服务器中有多个gunicorn驱动的应用时会使应用难以区分。
 为了使–name参数起作用，你需要安装一个叫做setproctitle的Python模块。在你的系统中安装python-dev依赖包然后再安装setproctitle。</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">python</span><span class="o">-</span><span class="n">dev</span><span class="p">(</span><span class="n">hello_django</span><span class="p">)</span> 
-    <span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">setproctitle</span>
+<div class="highlight"><pre>    $ sudo apt-get install python-dev(hello_django) 
+    $ pip install setproctitle
 </pre></div>
 
 
 <p>现在你可以将进程都列出来，你应该可以看到哪个gunicorn进程属于哪个应用。</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">ps</span> <span class="n">aux</span>
-    <span class="n">USER</span> <span class="n">PID</span> <span class="o">%</span><span class="n">CPU</span> <span class="o">%</span><span class="n">MEM</span> <span class="n">VSZ</span> <span class="n">RSS</span> <span class="n">TTY</span> <span class="n">STAT</span> <span class="n">START</span> <span class="n">TIME</span> <span class="n">COMMAND</span><span class="p">(...)</span>
-    <span class="n">michal</span> <span class="mi">16124</span> <span class="mf">0.0</span> <span class="mf">1.9</span> <span class="mi">56168</span> <span class="mi">9860</span> <span class="o">?</span> <span class="n">S</span> <span class="mi">15</span><span class="o">:</span><span class="mi">37</span> <span class="mi">0</span><span class="o">:</span><span class="mo">00</span> <span class="n">gunicorn</span><span class="o">:</span> <span class="n">master</span> <span class="p">[</span><span class="n">hello_app</span><span class="p">]</span>
-    <span class="n">michal</span> <span class="mi">16130</span> <span class="mf">0.0</span> <span class="mf">4.5</span> <span class="mi">73520</span> <span class="mi">23004</span> <span class="o">?</span> <span class="n">S</span> <span class="mi">15</span><span class="o">:</span><span class="mi">37</span> <span class="mi">0</span><span class="o">:</span><span class="mo">00</span> <span class="n">gunicorn</span><span class="o">:</span> <span class="n">worker</span> <span class="p">[</span><span class="n">hello_app</span><span class="p">]</span>
-    <span class="n">michal</span> <span class="mi">16131</span> <span class="mf">0.0</span> <span class="mf">4.5</span> <span class="mi">73496</span> <span class="mi">23004</span> <span class="o">?</span> <span class="n">S</span> <span class="mi">15</span><span class="o">:</span><span class="mi">37</span> <span class="mi">0</span><span class="o">:</span><span class="mo">00</span> <span class="n">gunicorn</span><span class="o">:</span> <span class="n">worker</span> <span class="p">[</span><span class="n">hello_app</span><span class="p">]</span>
-    <span class="n">michal</span> <span class="mi">16132</span> <span class="mf">0.0</span> <span class="mf">4.5</span> <span class="mi">73504</span> <span class="mi">23004</span> <span class="o">?</span> <span class="n">S</span> <span class="mi">15</span><span class="o">:</span><span class="mi">37</span> <span class="mi">0</span><span class="o">:</span><span class="mo">00</span> <span class="n">gunicorn</span><span class="o">:</span> <span class="n">worker</span> <span class="p">[</span><span class="n">hello_app</span><span class="p">]</span>
+<div class="highlight"><pre>    $ ps aux
+    USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND(...)
+    michal 16124 0.0 1.9 56168 9860 ? S 15:37 0:00 gunicorn: master [hello_app]
+    michal 16130 0.0 4.5 73520 23004 ? S 15:37 0:00 gunicorn: worker [hello_app]
+    michal 16131 0.0 4.5 73496 23004 ? S 15:37 0:00 gunicorn: worker [hello_app]
+    michal 16132 0.0 4.5 73504 23004 ? S 15:37 0:00 gunicorn: worker [hello_app]
 </pre></div>
 
 
 <h3>使用Supervisor来启动和监测应用</h3>
 <p>现在gunicorn_start脚本已经可以正常工作了，下面我们需要让它在开机时自启动，或者在某些情况下能够正常重启。我们使用supervisor来处理这些任务。</p>
 <p>安装非常简单：</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">supervisor</span>
+<div class="highlight"><pre>    $ sudo apt-get install supervisor
 </pre></div>
 
 
 <p>当supervisor安装好后，你可以在/etc/supervisor/conf.d目录下创建配置文件来管理gunicorn。下面是为hello这个应用创建的一个配置文件</p>
 <p>/etc/supervisor/conf.d/hello.conf</p>
-<div class="highlight"><pre>    <span class="p">[</span><span class="n">program</span><span class="o">:</span><span class="n">hello</span><span class="p">]</span>
-    <span class="n">command</span> <span class="o">=</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">bin</span><span class="o">/</span><span class="n">gunicorn_start</span> <span class="p">;</span> <span class="n">Command</span> <span class="n">to</span> <span class="n">start</span> <span class="n">app</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="n">michal</span> <span class="p">;</span> <span class="n">User</span> <span class="n">to</span> <span class="n">run</span> <span class="n">as</span>
-    <span class="n">stdout_logfile</span> <span class="o">=</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">gunicorn_supervisor</span><span class="p">.</span><span class="n">log</span> <span class="p">;</span> <span class="n">Where</span> <span class="n">to</span> <span class="n">write</span> <span class="n">log</span> <span class="n">messages</span>
-    <span class="n">redirect_stderr</span> <span class="o">=</span> <span class="nb">true</span> <span class="p">;</span> <span class="n">Save</span> <span class="n">stderr</span> <span class="n">in</span> <span class="n">the</span> <span class="n">same</span> <span class="n">log</span>
+<div class="highlight"><pre>    [program:hello]
+    command = /webapps/hello_django/bin/gunicorn_start ; Command to start app
+    user = michal ; User to run as
+    stdout_logfile = /webapps/hello_django/logs/gunicorn_supervisor.log ; Where to write log messages
+    redirect_stderr = true ; Save stderr in the same log
 </pre></div>
 
 
 <p>当然你还可以设置其他的选项，但是基础配置已经足够了。
 保存好后，告诉supervisor重新读取配置文件并更新（这将会启动你刚注册的应用）</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">rereadhello</span><span class="o">:</span> <span class="n">available</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">updatehello</span><span class="o">:</span> <span class="n">added</span> <span class="n">process</span> <span class="n">group</span>
+<div class="highlight"><pre>    $ sudo supervisorctl rereadhello: available
+    $ sudo supervisorctl updatehello: added process group
 </pre></div>
 
 
 <p>你也可以使用supervisor检查你的应用的状态，或者启动、停止应用。</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">status</span> <span class="n">hello</span>
-    <span class="n">hello</span> <span class="n">RUNNING</span> <span class="n">pid</span> <span class="mi">18020</span><span class="p">,</span> <span class="n">uptime</span> <span class="mi">0</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mi">50</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">stop</span> <span class="n">hello</span>
-    <span class="nl">hello:</span> <span class="n">stopped</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">start</span> <span class="n">hello</span>
-    <span class="nl">hello:</span> <span class="n">started</span>
-    <span class="err">$</span> <span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">restart</span> <span class="n">hello</span>
-    <span class="nl">hello:</span> <span class="n">stopped</span>
-    <span class="nl">hello:</span> <span class="n">started</span>
+<div class="highlight"><pre>    $ sudo supervisorctl status hello
+    hello RUNNING pid 18020, uptime 0:00:50
+    $ sudo supervisorctl stop hello
+    hello: stopped
+    $ sudo supervisorctl start hello
+    hello: started
+    $ sudo supervisorctl restart hello
+    hello: stopped
+    hello: started
 </pre></div>
 
 
 <p>现在，你的应用将可以在系统重启之后自动启动，或者在由于某些原因发生错误时自动重启。</p>
 <h3>Nginx</h3>
 <p>现在是时候为我们的应用和静态文件配置Nginx服务了，安装并启动Nginx:</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="n">nginx</span><span class="err">$</span> <span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">start</span>
+<div class="highlight"><pre>    $ sudo apt-get install nginx$ sudo service nginx start
 </pre></div>
 
 
@@ -378,60 +378,60 @@
 <p>在/etc/nginx/sites-available/目录下创建一个新的nginx服务器配置文件。一般来说文件应该包含下面这些配置，如果你需要更详细的配置说明，请看这里：
 <a href="https://github.com/benoitc/gunicorn/blob/master/examples/nginx.conf">https://github.com/benoitc/gunicorn/blob/master/examples/nginx.conf</a></p>
 <p>/etc/nginx/sites-available/hello</p>
-<div class="highlight"><pre>    <span class="n">upstream</span> <span class="n">hello_app_server</span> <span class="p">{</span>
-        <span class="err">#</span> <span class="n">fail_timeout</span><span class="o">=</span><span class="mi">0</span> <span class="n">means</span> <span class="n">we</span> <span class="n">always</span> <span class="n">retry</span> <span class="n">an</span> <span class="n">upstream</span> <span class="n">even</span> <span class="k">if</span> <span class="n">it</span> <span class="n">failed</span>
-        <span class="err">#</span> <span class="n">to</span> <span class="k">return</span> <span class="n">a</span> <span class="n">good</span> <span class="n">HTTP</span> <span class="n">response</span> <span class="p">(</span><span class="n">in</span> <span class="k">case</span> <span class="n">the</span> <span class="n">Unicorn</span> <span class="n">master</span> <span class="n">nukes</span> <span class="n">a</span>
-        <span class="err">#</span> <span class="n">single</span> <span class="n">worker</span> <span class="k">for</span> <span class="n">timing</span> <span class="n">out</span><span class="p">).</span>
+<div class="highlight"><pre>    <span class="nt">upstream</span> <span class="nt">hello_app_server</span> <span class="p">{</span>
+        <span class="err">#</span> <span class="n">fail_timeout</span><span class="o">=</span><span class="m">0</span> <span class="n">means</span> <span class="n">we</span> <span class="k">always</span> <span class="n">retry</span> <span class="n">an</span> <span class="n">upstream</span> <span class="n">even</span> <span class="n">if</span> <span class="n">it</span> <span class="n">failed</span>
+        <span class="err">#</span> <span class="n">to</span> <span class="n">return</span> <span class="n">a</span> <span class="n">good</span> <span class="n">HTTP</span> <span class="n">response</span> <span class="p">(</span><span class="n">in</span> <span class="n">case</span> <span class="n">the</span> <span class="n">Unicorn</span> <span class="n">master</span> <span class="n">nukes</span> <span class="n">a</span>
+        <span class="err">#</span> <span class="n">single</span> <span class="n">worker</span> <span class="n">for</span> <span class="n">timing</span> <span class="n">out</span><span class="p">)</span><span class="o">.</span>
 
-        <span class="n">server</span> <span class="n">unix</span><span class="o">:/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">gunicorn</span><span class="p">.</span><span class="n">sock</span> <span class="n">fail_timeout</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">server</span> <span class="p">{</span><span class="n">listen</span> <span class="mi">80</span><span class="p">;</span>
-        <span class="n">server_name</span> <span class="n">example</span><span class="p">.</span><span class="n">com</span><span class="p">;</span>
+        <span class="n">server</span> <span class="n">unix</span><span class="o">:/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">gunicorn</span><span class="o">.</span><span class="n">sock</span> <span class="n">fail_timeout</span><span class="o">=</span><span class="m">0</span><span class="p">;</span><span class="n">server</span> <span class="err">{</span><span class="n">listen</span> <span class="m">80</span><span class="p">;</span>
+        <span class="n">server_name</span> <span class="n">example</span><span class="o">.</span><span class="n">com</span><span class="p">;</span>
 
-        <span class="n">client_max_body_size</span> <span class="mi">4</span><span class="n">G</span><span class="p">;</span>
-        <span class="n">access_log</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">access</span><span class="p">.</span><span class="n">log</span><span class="p">;</span>
-        <span class="n">error_log</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">error</span><span class="p">.</span><span class="n">log</span><span class="p">;</span>
-        <span class="n">location</span> <span class="o">/</span><span class="k">static</span><span class="o">/</span> <span class="p">{</span>
+        <span class="n">client_max_body_size</span> <span class="m">4</span><span class="n">G</span><span class="p">;</span>
+        <span class="n">access_log</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">access</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+        <span class="n">error_log</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">logs</span><span class="o">/</span><span class="n">nginx</span><span class="o">-</span><span class="n">error</span><span class="o">.</span><span class="n">log</span><span class="p">;</span>
+        <span class="n">location</span> <span class="o">/</span><span class="k">static</span><span class="o">/</span> <span class="err">{</span>
             <span class="n">alias</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="k">static</span><span class="o">/</span><span class="p">;</span>
             <span class="p">}</span>
-        <span class="n">location</span> <span class="o">/</span><span class="n">media</span><span class="o">/</span> <span class="p">{</span>
+        <span class="nt">location</span> <span class="o">/</span><span class="nt">media</span><span class="o">/</span> <span class="p">{</span>
             <span class="n">alias</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="n">media</span><span class="o">/</span><span class="p">;</span>
             <span class="p">}</span>
-        <span class="n">location</span> <span class="o">/</span> <span class="p">{</span>
+        <span class="nt">location</span> <span class="o">/</span> <span class="p">{</span>
             <span class="err">#</span> <span class="n">an</span> <span class="n">HTTP</span> <span class="n">header</span> <span class="n">important</span> <span class="n">enough</span> <span class="n">to</span> <span class="n">have</span> <span class="n">its</span> <span class="n">own</span> <span class="n">Wikipedia</span> <span class="n">entry</span><span class="o">:</span>
-            <span class="err">#</span> <span class="o">&lt;</span><span class="n">http</span><span class="o">:</span><span class="c1">//en.wikipedia.org/wiki/X-Forwarded-For&gt;</span>
+            <span class="err">#</span> <span class="o">&lt;</span><span class="n">http</span><span class="o">://</span><span class="n">en</span><span class="o">.</span><span class="n">wikipedia</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">wiki</span><span class="o">/</span><span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span><span class="o">&gt;</span>
             <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">For</span> <span class="err">$</span><span class="n">proxy_add_x_forwarded_for</span><span class="p">;</span>
 
-            <span class="err">#</span> <span class="n">enable</span> <span class="n">this</span> <span class="k">if</span> <span class="n">and</span> <span class="n">only</span> <span class="k">if</span> <span class="n">you</span> <span class="n">use</span> <span class="n">HTTPS</span><span class="p">,</span> <span class="n">this</span> <span class="n">helps</span> <span class="n">Rack</span>
-            <span class="err">#</span> <span class="n">set</span> <span class="n">the</span> <span class="n">proper</span> <span class="n">protocol</span> <span class="k">for</span> <span class="n">doing</span> <span class="n">redirects</span><span class="o">:</span>
+            <span class="err">#</span> <span class="n">enable</span> <span class="n">this</span> <span class="n">if</span> <span class="n">and</span> <span class="n">only</span> <span class="n">if</span> <span class="n">you</span> <span class="n">use</span> <span class="n">HTTPS</span><span class="o">,</span> <span class="n">this</span> <span class="n">helps</span> <span class="n">Rack</span>
+            <span class="err">#</span> <span class="n">set</span> <span class="n">the</span> <span class="n">proper</span> <span class="n">protocol</span> <span class="n">for</span> <span class="n">doing</span> <span class="n">redirects</span><span class="o">:</span>
             <span class="err">#</span> <span class="n">proxy_set_header</span> <span class="n">X</span><span class="o">-</span><span class="n">Forwarded</span><span class="o">-</span><span class="n">Proto</span> <span class="n">https</span><span class="p">;</span>
 
-            <span class="err">#</span> <span class="n">pass</span> <span class="n">the</span> <span class="n">Host</span><span class="o">:</span> <span class="n">header</span> <span class="n">from</span> <span class="n">the</span> <span class="n">client</span> <span class="n">right</span> <span class="n">along</span> <span class="n">so</span> <span class="n">redirects</span>
+            <span class="err">#</span> <span class="n">pass</span> <span class="n">the</span> <span class="n">Host</span><span class="o">:</span> <span class="n">header</span> <span class="n">from</span> <span class="n">the</span> <span class="n">client</span> <span class="k">right</span> <span class="n">along</span> <span class="n">so</span> <span class="n">redirects</span>
             <span class="err">#</span> <span class="n">can</span> <span class="n">be</span> <span class="n">set</span> <span class="n">properly</span> <span class="n">within</span> <span class="n">the</span> <span class="n">Rack</span> <span class="n">application</span>
             <span class="n">proxy_set_header</span> <span class="n">Host</span> <span class="err">$</span><span class="n">http_host</span><span class="p">;</span>
 
-            <span class="err">#</span> <span class="n">we</span> <span class="n">don</span><span class="err">&#39;</span><span class="n">t</span> <span class="n">want</span> <span class="n">nginx</span> <span class="n">trying</span> <span class="n">to</span> <span class="k">do</span> <span class="n">something</span> <span class="n">clever</span> <span class="n">with</span>
-            <span class="err">#</span> <span class="n">redirects</span><span class="p">,</span> <span class="n">we</span> <span class="n">set</span> <span class="n">the</span> <span class="n">Host</span><span class="o">:</span> <span class="n">header</span> <span class="n">above</span> <span class="n">already</span><span class="p">.</span>
-            <span class="n">proxy_redirect</span> <span class="n">off</span><span class="p">;</span>
+            <span class="err">#</span> <span class="n">we</span> <span class="n">don</span><span class="s1">&#39;t want nginx trying to do something clever with</span>
+<span class="s1">            # redirects, we set the Host: header above already.</span>
+<span class="s1">            proxy_redirect off;</span>
 
-            <span class="err">#</span> <span class="n">set</span> <span class="s">&quot;proxy_buffering off&quot;</span> <span class="o">*</span><span class="n">only</span><span class="o">*</span> <span class="k">for</span> <span class="n">Rainbows</span><span class="o">!</span> <span class="n">when</span> <span class="n">doing</span>
-            <span class="err">#</span> <span class="n">Comet</span><span class="o">/</span><span class="kt">long</span><span class="o">-</span><span class="n">poll</span> <span class="n">stuff</span><span class="p">.</span> <span class="n">It</span><span class="err">&#39;</span><span class="n">s</span> <span class="n">also</span> <span class="n">safe</span> <span class="n">to</span> <span class="n">set</span> <span class="k">if</span> <span class="n">you</span><span class="err">&#39;</span><span class="n">re</span>
-            <span class="err">#</span> <span class="n">using</span> <span class="n">only</span> <span class="n">serving</span> <span class="n">fast</span> <span class="n">clients</span> <span class="n">with</span> <span class="n">Unicorn</span> <span class="o">+</span> <span class="n">nginx</span><span class="p">.</span>
-            <span class="err">#</span> <span class="n">Otherwise</span> <span class="n">you</span> <span class="n">_want_</span> <span class="n">nginx</span> <span class="n">to</span> <span class="n">buffer</span> <span class="n">responses</span> <span class="n">to</span> <span class="n">slow</span>
-            <span class="err">#</span> <span class="n">clients</span><span class="p">,</span> <span class="n">really</span><span class="p">.</span>
+<span class="s1">            # set &quot;proxy_buffering off&quot; *only* for Rainbows! when doing</span>
+<span class="s1">            # Comet/long-poll stuff. It&#39;</span><span class="n">s</span> <span class="n">also</span> <span class="n">safe</span> <span class="n">to</span> <span class="n">set</span> <span class="n">if</span> <span class="n">you</span><span class="err">&#39;</span><span class="n">re</span>
+            <span class="err">#</span> <span class="n">using</span> <span class="n">only</span> <span class="n">serving</span> <span class="k">fast</span> <span class="n">clients</span> <span class="n">with</span> <span class="n">Unicorn</span> <span class="o">+</span> <span class="n">nginx</span><span class="o">.</span>
+            <span class="err">#</span> <span class="n">Otherwise</span> <span class="n">you</span> <span class="n">_want_</span> <span class="n">nginx</span> <span class="n">to</span> <span class="n">buffer</span> <span class="n">responses</span> <span class="n">to</span> <span class="k">slow</span>
+            <span class="err">#</span> <span class="n">clients</span><span class="o">,</span> <span class="n">really</span><span class="o">.</span>
             <span class="err">#</span> <span class="n">proxy_buffering</span> <span class="n">off</span><span class="p">;</span>
 
-            <span class="err">#</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">serve</span> <span class="k">static</span> <span class="n">files</span> <span class="n">from</span> <span class="n">nginx</span><span class="p">,</span> <span class="n">no</span> <span class="n">point</span> <span class="n">in</span> <span class="n">making</span> <span class="n">an</span>
-            <span class="err">#</span> <span class="o">*</span><span class="n">application</span><span class="o">*</span> <span class="n">server</span> <span class="n">like</span> <span class="n">Unicorn</span><span class="o">/</span><span class="n">Rainbows</span><span class="o">!</span> <span class="n">serve</span> <span class="k">static</span> <span class="n">files</span><span class="p">.</span>
-            <span class="k">if</span> <span class="p">(</span><span class="o">!-</span><span class="n">f</span> <span class="err">$</span><span class="n">request_filename</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">proxy_pass</span> <span class="n">http</span><span class="o">:</span><span class="c1">//hello_app_server;break;</span>
+            <span class="err">#</span> <span class="n">Try</span> <span class="n">to</span> <span class="n">serve</span> <span class="k">static</span> <span class="n">files</span> <span class="n">from</span> <span class="n">nginx</span><span class="o">,</span> <span class="n">no</span> <span class="n">point</span> <span class="n">in</span> <span class="n">making</span> <span class="n">an</span>
+            <span class="err">#</span> <span class="o">*</span><span class="n">application</span><span class="o">*</span> <span class="n">server</span> <span class="n">like</span> <span class="n">Unicorn</span><span class="o">/</span><span class="n">Rainbows</span><span class="o">!</span> <span class="n">serve</span> <span class="k">static</span> <span class="n">files</span><span class="o">.</span>
+            <span class="n">if</span> <span class="p">(</span><span class="o">!-</span><span class="n">f</span> <span class="err">$</span><span class="n">request_filename</span><span class="p">)</span> <span class="err">{</span>
+                <span class="n">proxy_pass</span> <span class="n">http</span><span class="o">://</span><span class="n">hello_app_server</span><span class="p">;</span><span class="n">break</span><span class="p">;</span>
                 <span class="p">}</span>
-                <span class="p">}</span>
+                <span class="err">}</span>
 
-            <span class="err">#</span> <span class="n">Error</span> <span class="n">pages</span>
-            <span class="n">error_page</span> <span class="mi">500</span> <span class="mi">502</span> <span class="mi">503</span> <span class="mi">504</span> <span class="o">/</span><span class="mf">500.</span><span class="n">html</span><span class="p">;</span>
-            <span class="n">location</span> <span class="o">=</span> <span class="o">/</span><span class="mf">500.</span><span class="n">html</span> <span class="p">{</span>
+            <span class="err">#</span> <span class="nt">Error</span> <span class="nt">pages</span>
+            <span class="nt">error_page</span> <span class="nt">500</span> <span class="nt">502</span> <span class="nt">503</span> <span class="nt">504</span> <span class="o">/</span><span class="nt">500</span><span class="nc">.html</span><span class="o">;</span>
+            <span class="nt">location</span> <span class="o">=</span> <span class="o">/</span><span class="nt">500</span><span class="nc">.html</span> <span class="p">{</span>
                 <span class="n">root</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span><span class="o">/</span><span class="k">static</span><span class="o">/</span><span class="p">;</span>
                 <span class="p">}</span>
-                <span class="p">}</span>
+                <span class="err">}</span>
 </pre></div>
 
 
@@ -449,32 +449,32 @@
 <h3>卸载django应用</h3>
 <p>如果你需要卸载掉你的django应用，按照以下步骤
 移除Nginx sites-enabled文件夹中的虚拟服务器配置文件</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">rm</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">enabled</span><span class="o">/</span><span class="n">hello_django</span>
+<div class="highlight"><pre>    $ sudo rm /etc/nginx/sites-enabled/hello_django
 </pre></div>
 
 
 <p>重启Nginx</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">service</span> <span class="n">nginx</span> <span class="n">restart</span>
+<div class="highlight"><pre>    $ sudo service nginx restart
 </pre></div>
 
 
 <p>如果你不想再次使用该应用，你可以从sites-available文件夹中删除掉真实的配置文件</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">rm</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">nginx</span><span class="o">/</span><span class="n">sites</span><span class="o">-</span><span class="n">available</span><span class="o">/</span><span class="n">hello_django</span>
+<div class="highlight"><pre>    $ sudo rm /etc/nginx/sites-available/hello_django
 </pre></div>
 
 
 <p>使用supervisor停止应用</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">supervisorctl</span> <span class="n">stop</span> <span class="n">hello</span>
+<div class="highlight"><pre>    $ sudo supervisorctl stop hello
 </pre></div>
 
 
 <p>从supervisor的控制脚本目录中移除应用</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">rm</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">supervisor</span><span class="o">/</span><span class="n">conf</span><span class="p">.</span><span class="n">d</span><span class="o">/</span><span class="n">hello</span><span class="p">.</span><span class="n">conf</span>
+<div class="highlight"><pre>    $ sudo rm /etc/supervisor/conf.d/hello.conf
 </pre></div>
 
 
 <p>如果你真的不想再使用这个应用了，哥们，你肯定是受到什么打击了。你可以在webapps中移除整个目录：</p>
-<div class="highlight"><pre>    <span class="err">$</span> <span class="n">sudo</span> <span class="n">rm</span> <span class="o">-</span><span class="n">rf</span> <span class="o">/</span><span class="n">webapps</span><span class="o">/</span><span class="n">hello_django</span>
+<div class="highlight"><pre>    $ sudo rm -rf /webapps/hello_django
 </pre></div>
   </article>
 
