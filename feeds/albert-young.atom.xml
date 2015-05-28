@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom"><title>Just Be Free!</title><link href="https://2bapm.com/" rel="alternate"></link><link href="https://2bapm.com/feeds/albert-young.atom.xml" rel="self"></link><id>https://2bapm.com/</id><updated>2015-05-28T17:59:00+08:00</updated><entry><title>Xcode “Missing file” 警告处理</title><link href="https://2bapm.com/missingfile.html" rel="alternate"></link><updated>2015-05-28T17:59:00+08:00</updated><author><name>Albert Young</name></author><id>tag:2bapm.com,2015-05-28:missingfile.html</id><summary type="html">&lt;h1&gt;Xcode “Missing file” 警告&lt;/h1&gt;
-&lt;h2&gt;起因：&lt;/h2&gt;
+&lt;h4&gt;起因：&lt;/h4&gt;
 &lt;p&gt;今天删了项目里的文件，导致“Missing file” warnning。&lt;/p&gt;
-&lt;h2&gt;解决方案：&lt;/h2&gt;
+&lt;h4&gt;解决方案：&lt;/h4&gt;
 &lt;p&gt;到xcodeproj文件，或者workspace下，右键点击，查看包内容，删掉里边的xcuserdata文件夹。即可&lt;/p&gt;</summary><category term="xcode"></category><category term="ios"></category></entry><entry><title>SSH反向连接及Autossh</title><link href="https://2bapm.com/ssh-forwards.html" rel="alternate"></link><updated>2015-02-02T15:23:00+08:00</updated><author><name>Albert Young</name></author><id>tag:2bapm.com,2015-02-02:ssh-forwards.html</id><summary type="html">&lt;h1&gt;SSH反向连接及Autossh&lt;/h1&gt;
 &lt;h2&gt;0.理论介绍&lt;/h2&gt;
 &lt;p&gt;接 触Linux恐怕对SSH再熟悉不过了，还有scp，sftp各种方便的功能，一般的使用都需要ip:port（如果不是默认22的话），但有些情况比较 特殊，就是想连接一台内网主机（比如公司内网，当然你肯定做不了Port Forwarding，除非你想在公司防火墙上拆个洞）。稍懂一点网络的童鞋会明白，Internet上去主动连接一台内网是不可能的，一般的解决方案分 两种，一种是端口映射（Port Forwarding），将内网主机的某个端口Open出防火墙，相当于两个外网主机通信；另一种是内网主机主动连接到外网主机，又被称作反向连接 （Reverse Connection），这样NAT路由/防火墙就会在内网主机和外网主机之间建立映射，自然可以相互通信了。但是，这种映射是NAT路由自动维持的，不 会持续下去，如果连接断开或者网络不稳定都会导致通信失败，这时内网主机需要再次主动连接到外网主机，建立连接。
