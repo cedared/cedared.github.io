@@ -16,20 +16,20 @@
 <![endif]--> 
 
 <!-- GOOGLE FONTS -->
-<link href="http://cedared.qiniudn.com/googlefonts.css" rel="stylesheet" type="text/css" />
+<link href="https://dn-cedared.qbox.me/googlefonts.css" rel="stylesheet" type="text/css" />
 
 
 <!-- CORE CSS FRAMEWORK -->
-<link href="http://cedared.qiniudn.com/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-<link href="http://cedared.qiniudn.com/css/font-awesome.css" rel="stylesheet">
+<link href="https://dn-cedared.qbox.me/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="https://dn-cedared.qbox.me/css/font-awesome.css" rel="stylesheet">
 
 <!-- CSS TEMPLATE -->
-<link href="http://2bapm.com/theme/css/reset.css" rel="stylesheet" type="text/css" />
-<link href="http://2bapm.com/theme/css/framework.css" rel="stylesheet" type="text/css" />
-<link href="http://2bapm.com/theme/css/typography.css" rel="stylesheet" type="text/css" />
-<link href="http://2bapm.com/theme/css/layout.css" rel="stylesheet" type="text/css" />
+<link href="https://2bapm.com/theme/css/reset.css" rel="stylesheet" type="text/css" />
+<link href="https://2bapm.com/theme/css/framework.css" rel="stylesheet" type="text/css" />
+<link href="https://2bapm.com/theme/css/typography.css" rel="stylesheet" type="text/css" />
+<link href="https://2bapm.com/theme/css/layout.css" rel="stylesheet" type="text/css" />
 
-<link href="http://2bapm.com/theme/css/blog.css" rel="stylesheet" type="text/css" />
+<link href="https://2bapm.com/theme/css/blog.css" rel="stylesheet" type="text/css" />
 
 <!-- ICONS -->
 
@@ -37,7 +37,7 @@
 <meta name="viewport" content="width=device-width, maximum-scale=1, initial-scale=1, user-scalable=0" />
 
 <!-- Morenizr -->
-<script type="text/javascript" src="http://2bapm.com/theme/js/modernizr.min.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/modernizr.min.js"></script>
 
 <!-- google authorship -->
     <a href="https://plus.google.com/+AlbertYoungcedared/?rel=author"></a>
@@ -62,7 +62,7 @@
               <hr /><hr />
             </div>
             <span class="overlay"></span>
-            <div style="background-image: url('http://cedared.qiniudn.com/pic/bg.jpg');" class="fullscreen-img"></div>
+                <div style="background-image: url('https://dn-cedared.qbox.me/pic/bg.jpg');" class="fullscreen-img"></div>
             
           </li>
         </ul>
@@ -86,7 +86,7 @@
           <!-- Brand and toggle get grouped for better mobile display -->
           <div class="navbar-header">
             <a class="navbar-brand scrollTo" href="#home">
-              <img src="http://cedared.qiniudn.com/pic/logo-invert.png" alt="" width="50" height="50" /> 
+              <img src="https://dn-cedared.qbox.me/pic/logo-invert.png" alt="" width="50" height="50" />
               <span class="hidden-xs">Just Be Free!</span>
             </a>
           </div>
@@ -133,7 +133,7 @@
 
           <div class="me-picture text-center">
             <div class="item">
-              <img class="img-responsive" src="http://cedared.qiniudn.com/pic/me.jpg" width="200" height="200" alt="" />
+              <img class="img-responsive" src="https://dn-cedared.qbox.me/pic/me.jpg" width="200" height="200" alt="" />
             </div><hr />
           </div>
 
@@ -287,7 +287,18 @@
 
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
-                    <h4><a href="http://2bapm.com/ssh-forwards.html">SSH反向连接及Autossh</a></h4>
+                    <h4><a href="https://2bapm.com/missingfile.html">Xcode “Missing file” 警告处理</a></h4>
+                  <p><h1>Xcode “Missing file” 警告</h1>
+<h2>起因：</h2>
+<p>今天删了项目里的文件，导致“Missing file” warnning。</p>
+<h2>解决方案：</h2>
+<p>到xcodeproj文件，或者workspace下，右键点击，查看包内容，删掉里边的xcuserdata文件夹。即可</p></p>
+                  <a href="https://2bapm.com/missingfile.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                </div>
+              </div>
+              <div class="col-md-4 quick-hover">
+                <div class="quick-item">
+                    <h4><a href="https://2bapm.com/ssh-forwards.html">SSH反向连接及Autossh</a></h4>
                   <p><h1>SSH反向连接及Autossh</h1>
 <h2>0.理论介绍</h2>
 <p>接 触Linux恐怕对SSH再熟悉不过了，还有scp，sftp各种方便的功能，一般的使用都需要ip:port（如果不是默认22的话），但有些情况比较 特殊，就是想连接一台内网主机（比如公司内网，当然你肯定做不了Port Forwarding，除非你想在公司防火墙上拆个洞）。稍懂一点网络的童鞋会明白，Internet上去主动连接一台内网是不可能的，一般的解决方案分 两种，一种是端口映射（Port Forwarding），将内网主机的某个端口Open出防火墙，相当于两个外网主机通信；另一种是内网主机主动连接到外网主机，又被称作反向连接 （Reverse Connection），这样NAT路由/防火墙就会在内网主机和外网主机之间建立映射，自然可以相互通信了。但是，这种映射是NAT路由自动维持的，不 会持续下去，如果连接断开或者网络不稳定都会导致通信失败，这时内网主机需要再次主动连接到外网主机，建立连接。
@@ -295,12 +306,12 @@
 <h2>1.理论的介绍完了，下面实际操作：</h2>
 <p>A要控制B</p>
 <p>A主机：外网，ip：123.123.123 ...</p></p>
-                  <a href="http://2bapm.com/ssh-forwards.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                  <a href="https://2bapm.com/ssh-forwards.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
               <div class="col-md-4 quick-hover">
                 <div class="quick-item">
-                    <h4><a href="http://2bapm.com/raspberry-bluetooth.html">树莓派蓝牙配置</a></h4>
+                    <h4><a href="https://2bapm.com/raspberry-bluetooth.html">树莓派蓝牙配置</a></h4>
                   <p><h1>树莓派蓝牙配置</h1>
 <p>Raspbian ( Raspberry Pi Debian）装蓝牙：</p>
 <p><code>#apt-get install bluetooth bluez-utils bluez-compat blueman</code></p>
@@ -314,27 +325,7 @@
 <code>ok  bluetooth is running.</code></p>
 <p>用这个命令查看周围可见设备的地址和名称：
 <code># hcitool ...</code></p></p>
-                  <a href="http://2bapm.com/raspberry-bluetooth.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
-                </div>
-              </div>
-              <div class="col-md-4 quick-hover">
-                <div class="quick-item">
-                    <h4><a href="http://2bapm.com/raspberry-wifi.html">树莓派wifi配置</a></h4>
-                  <p><h1>树莓派wifi配置</h1>
-<h2>一、把WIFI网卡插入树莓派的USB口中，　用 lsusb 命令查看USB设备列表</h2>
-<p><code>lsusb</code></p>
-<p>可以见到USB设备列表中有 "RTL8188CUS 802.11N WLAN Adapter" 的字样
-说明该USB设备已被系统识别，芯片是RTL8188</p>
-<p>用 ifconfig 命令可以看到 wlan0 设备，但没有IP地址(未连接)</p>
-<h2>二、修改 /etc/network/interfaces 文件(这个文件是定义网络配置的)</h2>
-<p><code>sudo nano /etc/network/interfaces</code></p>
-<p>修改后文件内容如下：
-<code>auto lo</code>
-<code>iface lo inet loopback</code>
-<code>iface eth0 inet dhcp</code></p>
-<p><code>auto wlan0
-``allow-hotplug wlan0 ...</code></p></p>
-                  <a href="http://2bapm.com/raspberry-wifi.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
+                  <a href="https://2bapm.com/raspberry-bluetooth.html" class="btn btn-xs"><i class="fa fa-sign-out"></i> READ MORE</a>
                 </div>
               </div>
  
@@ -374,7 +365,7 @@
               <a href="https://github.com/cedared" class="social fa fa-github"></a>
               <a href="https://plus.google.com/+AlbertYoungcedared/" class="social fa fa-google-plus"></a>
             <a href="https://www.upyun.com/index.html" >
-              	<img src="http://cedared.qiniudn.com/pic/90x45.png" >
+              	<img src="https://dn-cedared.qbox.me/pic/90x45.png" >
               </a>
         </div>
 
@@ -387,27 +378,27 @@
 
 
 <!-- CORE FILES -->
-<script type="text/javascript" src="http://cedared.qiniudn.com/js/jquery.min.js"></script>
-<script type="text/javascript" src="http://cedared.qiniudn.com/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/jquery.isotope.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/masonry.js"></script>
+<script type="text/javascript" src="https://dn-cedared.qbox.me/js/jquery.min.js"></script>
+<script type="text/javascript" src="https://dn-cedared.qbox.me/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/jquery.isotope.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/masonry.js"></script>
 
 <!-- PLUGINS -->
-<script type="text/javascript" src="http://2bapm.com/theme/js/jquery.fitvids.min.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/jquery.appear.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/jquery.superslides.min.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/owl.carousel.min.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/jquery.carouFredSel-6.2.1-packed.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/jquery.countTo.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/jquery.magnific-popup.min.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/holder.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/jquery.fitvids.min.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/jquery.appear.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/jquery.superslides.min.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/owl.carousel.min.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/jquery.carouFredSel-6.2.1-packed.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/jquery.countTo.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/jquery.magnific-popup.min.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/holder.js"></script>
 <!-- delete on production -->
 
 <!-- js scripts -->
-<script async type="text/javascript" src="http://2bapm.com/theme/js/scripts.js"></script>
+<script async type="text/javascript" src="https://2bapm.com/theme/js/scripts.js"></script>
 
-<script type="text/javascript" src="http://2bapm.com/theme/js/ImageAutoResize.js"></script>
-<script type="text/javascript" src="http://2bapm.com/theme/js/application.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/ImageAutoResize.js"></script>
+<script type="text/javascript" src="https://2bapm.com/theme/js/application.js"></script>
 
 
  <script>
@@ -430,7 +421,7 @@
   (function () {
   var s = document.createElement('script'); s.async = true;
   s.type = 'text/javascript';
-  s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+  s.src = 'https://' + disqus_shortname + '.disqus.com/count.js';
   (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
   }());
 </script>
