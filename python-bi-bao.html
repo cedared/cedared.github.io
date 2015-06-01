@@ -98,110 +98,111 @@
         <div id="blog_main_area" class="left col-md-9" count=24>
   <!-- article title -->
   <header>
-      <h1>linux的进程管理</h1>
+      <h1>Python 闭包 </h1>
     <small class="fsize13">
-            <a href="https://2bapm.com/category/linux.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="11 articles in this category"><i class="fa fa-dot-circle-o"></i> Linux</a>
-      <a href="https://2bapm.com/linuxprocess.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="linuxprocess.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
-      <span class="label label-default light">二 14 十月 2014</span> 
+            <a href="https://2bapm.com/category/python.html" rel="tag tooltip" class="label label-default light" data-placement="right" data-original-title="5 articles in this category"><i class="fa fa-dot-circle-o"></i> Python</a>
+      <a href="https://2bapm.com/python-bi-bao.html#disqus_thread" class="scrollTo label label-default light" data-disqus-identifier="python-bi-bao.html"><i class="fa fa-comment-o"></i> ?? Comments</a>
+      <span class="label label-default light">一 01 六月 2015</span> 
     </small>
   </header>
 
   <article class='content'>
-    <h1>linux的进程管理</h1>
-<p>fg、bg、jobs、&amp;、ctrl + z都是跟系统任务有关的，虽然现在基本上不怎么需要用到这些命令，但学会了也是很实用的
-一。&amp; 最经常被用到
-   这个用在一个命令的最后，可以把这个命令放到后台执行
-二。ctrl + z
-     可以将一个正在前台执行的命令放到后台，并且暂停
-三。jobs
-     查看当前有多少在后台运行的命令
-四。fg
-     将后台中的命令调至前台继续运行
-   如果后台中有多个命令，可以用 fg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid)
-五。bg
-     将一个在后台暂停的命令，变成继续执行
-   如果后台中有多个命令，可以用bg %jobnumber将选中的命令调出，%jobnumber是通过jobs命令查到的后台正在执行的命令的序号(不是pid) 
-  
-  
-Linux下使用Shell命令控制任务Jobs执行</p>
-<p>下列命令可以用来操纵进程任务：
-　　ps 列出系统中正在运行的进程；
-　　kill 发送信号给一个或多个进程（经常用来杀死一个进程）；
-　　jobs 列出当前shell环境中已启动的任务状态，若未指定jobsid，则显示所有活动的任务状态信息；如果报告了一个任务的终止(即任务的状态被标记为Terminated)，shell 从当前的shell环境已知的列表中删除任务的进程标识；
-　　bg 将进程搬到后台运行（Background）；
-　　fg 将进程搬到前台运行（Foreground）； </p>
-<p>将job转移到后台运行 
-　　如果你经常在X图形下工作，你可能有这样的经历：通过终端命令运行一个GUI程序，GUI界面出来了，但是你的终端还停留在原地，你不能在shell中继续执行其他命令了，除非将GUI程序关掉。 </p>
-<p>为了使程序执行后终端还能继续接受命令，你可以将进程移到后台运行，使用如下命令运行程序： #假设要运行xmms</p>
-<p>$xmms &amp;</p>
-<p>这样打开xmms后，终端的提示又回来了。现在xmms在后台运行着呢；但万一你运行程序时忘记使用“&amp;”了，又不想重新执行；你可以先使用ctrl+z挂起程序，然后敲入bg命令，这样程序就在后台继续运行了。</p>
-<p>概念：当前任务 </p>
-<p>如果后台的任务号有2个，<a href="">1</a>,<a href="">2</a>；如果当第一个后台任务顺利执行完毕，第二个后台任务还在执行中时，当前任务便会自动变成后台任务号码“<a href="">2</a>”的后台任务。所以可以得出一点，即当前任务是会变动的。当用户输入“fg”、“bg”和“stop”等命令时，如果不加任何引号，则所变动的均是当前任务。</p>
-<p>察看jobs 
-　　使用jobs或ps命令可以察看正在执行的jobs。 </p>
-<p>jobs命令执行的结果，＋表示是一个当前的作业，减号表是是一个当前作业之后的一个作业，jobs -l选项可显示所有任务的PID,jobs的状态可以是running, stopped, Terminated,但是如果任务被终止了（kill），shell 从当前的shell环境已知的列表中删除任务的进程标识；也就是说，jobs命令显示的是当前shell环境中所起的后台正在运行或者被挂起的任务信息；</p>
-<p>进程的挂起 </p>
-<p>后台进程的挂起： </p>
-<p>在solaris中通过stop命令执行，通过jobs命令查看job号(假设为num)，然后执行stop %num；</p>
-<p>在redhat中，不存在stop命令，可通过执行命令kill -stop PID，将进程挂起；</p>
-<p>当要重新执行当前被挂起的任务时，通过bg %num 即可将挂起的job的状态由stopped改为running，仍在后台执行；当需要改为在前台执行时，执行命令fg %num即可；</p>
-<p>前台进程的挂起：</p>
-<p>ctrl+Z;</p>
-<p>进程的终止 </p>
-<p>后台进程的终止：
-　　方法一：
-　　通过jobs命令查看job号（假设为num），然后执行kill %num</p>
-<p>方法二：
-　　通过ps命令查看job的进程号（PID，假设为pid），然后执行kill pid </p>
-<p>前台进程的终止：</p>
-<p>ctrl+c</p>
-<p>kill的其他作用 
-　　kill除了可以终止进程，还能给进程发送其它信号，使用kill -l 可以察看kill支持的信号。 </p>
-<p>SIGTERM是不带参数时kill发送的信号，意思是要进程终止运行，但执行与否还得看进程是否支持。如果进程还没有终止，可以使用kill -SIGKILL pid，这是由内核来终止进程，进程不能监听这个信号。
- 
- 
-ctrl+c和ctrl+z都是中断命令,但是他们的作用却不一样.
-ctrl+c是强制中断程序的执行,
-而ctrl+z的是将任务中断,但是此任务并没有结束,他仍然在进程中他只是维持挂起的状态,用户可以使用fg/bg操作继续前台或后台的任务,fg命令重新启动前台被中断的任务,bg命令把被中断的任务放在后台执行.（jobs查看后台运行的进程）
-例如:
-当你vi一个文件是,如果需要用shell执行别的操作,但是你又不打算关闭vi,因为你得
-存盘推出,你可以简单的按下ctrl+z,shell会将vi进程挂起,当你结束了那个shell操作之后,你可以用fg命令继续vi你的文件.
- 
-ctrl+c强行中断当前程序的执行。
-ctrl+d表示结束当前输入（即用户不再给当前程序发出指令），那么Linux通常将结束当前程序。
-ctrl+z表示将当前前台运行的经常放在后台并挂起，如需其在后台继续运行，需用“bg 进程号”使其继续运行；再用"fg 进程号"可将后台进程前台化。
- 
-ctrl+c,ctrl+d,ctrl+z在linux中意义
- linux下： ctrl-c 发送 SIGINT 信号给前台进程组中的所有进程。常用于终止正在运行的程序。 ctrl-z 发送 SIGTSTP 信号给前台进程组中的所有进程，常用于挂起一个进程。 ctrl-d 不是发送信号，而是表示一个特殊的二进制值，表
-linux下：
-ctrl-c 发送 SIGINT 信号给前台进程组中的所有进程。常用于终止正在运行的程序。
-ctrl-z 发送 SIGTSTP 信号给前台进程组中的所有进程，常用于挂起一个进程。
-ctrl-d 不是发送信号，而是表示一个特殊的二进制值，表示 EOF。
-ctrl-\ 发送 SIGQUIT 信号给前台进程组中的所有进程，终止前台进程并生成 core 文件。
-Key Function
-Ctrl-c Kill foreground process
-Ctrl-z Suspend foreground process
-Ctrl-d Terminate input, or exit shell
-Ctrl-s Suspend output
-Ctrl-q Resume output
-Ctrl-o Discard output
-Ctrl-l Clear screen</p>
+    
+  
+  <div id="titlearea">
+    <h2>Python 闭包</h2>
+  </div>
+  <div id="contentarea"><div class="cell markdown-cell"><h1 id="python-">python中的闭包</h1>
+<h2 id="-">什么是闭包？</h2>
+<hr>
+<p>简单说，闭包就是根据不同的配置信息得到不同的结果<br>再来看看专业的解释：闭包（Closure）是词法闭包（Lexical Closure）的简称，是引用了自由变量的函数。这个被引用的自由变量将和这个函数一同存在，即使已经离开了创造它的环境也不例外。所以，有另一种说法认为闭包是由函数和与其相关的引用环境组合而成的实体。</p>
+<h2 id="python-">python实例</h2>
+<hr>
+<p>看概念总是让人摸不着头脑，看几个python小例子就会了</p>
+<h2 id="-1">例1</h2>
+<hr>
+</div><pre class="cell code-cell"><code>def make_adder(addend):
+  def adder(augend):
+    return augend + addend
+  return adder
+  
+p = make_adder(23)
+q = make_adder(23)
+
+print p(100)
+print q(100)
+</code></pre><div class="cell markdown-cell"><p>运行结果：</p>
+</div><pre class="cell code-cell"><code>123
+144</code></pre><div class="cell markdown-cell"><p>分析一下：</p>
+<p>我们发现, <code>make_adder</code>是一个函数，包括一个参数<code>addend</code>，比较特殊的地方是这个函数里面有定义了一个新函数，这个新函数里边的一个变量正好是外部<code>make_adder</code>的参数，也就是说，外部传递过来的<code>addend</code>参数已经和<code>adder</code>函数绑定到一起了，形成了一个新函数，我们可以把<code>addend</code>看做新函数的一个配置信息，配置信息不同，函数的功能也就不一样了，也就是能得到定制之后的函数。</p>
+<p>再看看运行结果，我们发现，虽然p和q都是<code>make_adder</code>生成的，但是因为配置参数不同，后面在执行相同参数的函数后得到了不同的结果，这就是闭包。</p>
+<h2 id="-2">例2</h2>
+<hr>
+</div><pre class="cell code-cell"><code>def hellocounter(name):
+  count = [0]
+  def counter():
+    count[0]+=1
+    print &#39;Hello,&#39;, name, &#39;,&#39;, str(count[0]) + &#39;access!&#39;
+  return counter
+  
+hello = hellocounter(&#39;ma6147&#39;)
+hello()
+hello()
+hello()</code></pre><div class="cell markdown-cell"><p>运行结果</p>
+</div><pre class="cell code-cell"><code>Hello, ma6714, 1 access!
+Hello, ma6714, 2 access!
+Hello, ma6714, 3 access!</code></pre><div class="cell markdown-cell"><p>分析一下</p>
+<p>这个程序比较有趣， 我们可以把这个程序看做统计一个函数调用次数的函数。<code>count[0]</code>可以看做一个计数器，每执行一次<code>hello</code>函数， <code>count[0]</code>的值就加1.也许你会有疑问：为什么不直接写<code>count</code>而用一个列表？这是python2的一个bug，如果不用列表的话，会报这样一个错误： <code>UnboundLocalError: local variable &#39;count&#39; referenced before assignment</code>.<br>意思是<code>count</code>这个变量你没有定义就直接引用了， 我不知道这个是什么东西，程序就崩溃了，于是，在python3里边，饮用了一个关键字：<code>nonlocal</code>，这个关键字就是告诉python程序，我的这个<code>count</code>变量是在外部定义的，你去外边找吧。然后python就去外层函数找，然后就找到了<code>count = 0</code>这个定义和赋值，程序就能正常执行了。</p>
+<p>python3代码</p>
+</div><pre class="cell code-cell"><code>def hellocounter(name):
+    count = 0
+    def counter():
+        nonlocal count
+        count += 1
+        print  &#39;Hello,&#39;, name, &#39;,&#39;, str(count[0]) + &#39; access!&#39;
+    return counter
+    
+hello = hellocounter(&#39;ma6174)
+hello()
+hello()
+hello()</code></pre><div class="cell markdown-cell"><h2 id="-3">例3</h2>
+<hr>
+</div><pre class="cell code-cell"><code>def makebold(fn):
+    def wrapped():
+        return &quot;&lt;b&gt;&quot; + fn() + &quot;&lt;/b&gt;&quot;
+    return wrapped
+    
+def makeitalic(fn):
+    def wrapped():
+        return &quot;&lt;i&gt;&quot; + fn() + &quot;&lt;/i&gt;&quot;
+    return wrapped
+    
+@makebold
+@makeitalic
+def hello():
+  return &quot;hello world&quot;
+  
+print hello()</code></pre><div class="cell markdown-cell"><p>执行结果</p>
+</div><pre class="cell code-cell"><code>
+
+</code></pre><div class="cell markdown-cell"></div><div class="cell markdown-cell"></div><div class="cell markdown-cell"></div><div class="cell markdown-cell"></div><div class="cell markdown-cell"></div></div>
+
   </article>
 
   <div class="divider"><!-- lines divider --></div>
 
   <!-- SOCIAL -->
 <p class="socials">
-    <a href="http://www.facebook.com/sharer/sharer.php?u=https://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
-    <a href="http://twitter.com/home?status=https://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
-    <a href="https://plus.google.com/share?url=https://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
-    <a href="http://pinterest.com/pin/create/link/?url==https://2bapm.com/linuxprocess.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
-    <a href="http://www.linkedin.com/shareArticle?mini=true&url=https://2bapm.com/linuxprocess.html&title=linux的进程管理&summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
+    <a href="http://www.facebook.com/sharer/sharer.php?u=https://2bapm.com/python-bi-bao.html" class="rounded-icon social fa fa-facebook" target="_blank" title="Share on Facebook"><!-- facebook --></a>
+    <a href="http://twitter.com/home?status=https://2bapm.com/python-bi-bao.html" class="rounded-icon social fa fa-twitter" target="_blank" title="Share on Twitter"><!-- twitter --></a>
+    <a href="https://plus.google.com/share?url=https://2bapm.com/python-bi-bao.html" class="rounded-icon social fa fa-google-plus" target="_blank" title="Share on Google+"><!-- google plus --></a>
+    <a href="http://pinterest.com/pin/create/link/?url==https://2bapm.com/python-bi-bao.html" class="rounded-icon social fa fa-pinterest"  target="_blank" title="Share on Pinterest"><!-- pinterest --></a>
+    <a href="http://www.linkedin.com/shareArticle?mini=true&url=https://2bapm.com/python-bi-bao.html&title=Python 闭包 &summary=&source=" class="rounded-icon social fa fa-linkedin" target="_blank" title="Share on Linkedin"><!-- linkedin --></a>
 </p>  
 
   <!-- TAGS -->
   <p class="fsize16"> Tags:
-        <a href="/tag/linux.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="3 articles with this tag"><i class="fa fa-tags"></i> linux</a>
+        <a href="/tag/python.html" rel="tooltip" class="label label-default light" data-placement="right" data-original-title="1 article with this tag"><i class="fa fa-tags"></i> Python</a>
   </p>
 
   <hr /><!-- divider -->
@@ -210,9 +211,9 @@ Ctrl-l Clear screen</p>
       <div id="disqus_thread"></div>
       <script type="text/javascript">
         var disqus_shortname = '2bapm';
-        var disqus_identifier = "linuxprocess.html";
-        var disqus_title = "linux的进程管理";
-        var disqus_url = "https://2bapm.com/linuxprocess.html";
+        var disqus_identifier = "python-bi-bao.html";
+        var disqus_title = "Python 闭包";
+        var disqus_url = "https://2bapm.com/python-bi-bao.html";
         (function() {
           var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
           dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
